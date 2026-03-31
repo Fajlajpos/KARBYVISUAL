@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO & META -->
+    <title>KARBYVISUAL | Avant-Garde Portfolio</title>
+    <meta name="description" content="KARBYVISUAL - Avant-Garde visual storytelling. Videography, editing, cinematography, and photography by a creative director based in Czech Republic.">
+    <meta name="keywords" content="KARBYVISUAL, videographer, photographer, videograf, fotograf, střih videa, cinematography, editorial portfolio, režisér">
+    <meta name="author" content="KARBYVISUAL">
+    
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:title" content="KARBYVISUAL | Avant-Garde Portfolio">
+    <meta property="og:description" content="Oceňovaná video produkce, střih a fotografie. Raw, temná, precizní vizuální stránka.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://karbyvisual.com/">
+    <!-- Used one of the new assets for the social preview image -->
+    <meta property="og:image" content="https://karbyvisual.com/assets/download_1774982650042.jpeg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="KARBYVISUAL | Creative Director">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="loading">
+    <div class="tv-noise"></div>
+    <!-- Body Background textures driven purely by CSS now -->
+
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-text" data-cs="SYS.INIT / KARBYVISUAL" data-en="SYS.INIT / KARBYVISUAL">SYS.INIT / KARBYVISUAL</div>
+        <div class="preloader-progress"></div>
+    </div>
+
+    <!-- Admin Toolbar (hidden / redundant, keeping for fallback logic) -->
+    <div id="admin-toolbar" class="admin-toolbar hidden">
+        <div class="admin-user"><i class="ph ph-user-circle"></i> SYS.ADMIN</div>
+        <div class="admin-actions">
+            <button id="add-portfolio-btn" class="admin-btn"><i class="ph ph-plus"></i> <span data-cs="NOVÝ ZÁZNAM" data-en="NEW ENTRY">NOVÝ ZÁZNAM</span></button>
+            <button id="logout-btn" class="admin-btn logout"><i class="ph ph-sign-out"></i> <span data-cs="ODHLÁSIT" data-en="LOGOUT">ODHLÁSIT</span></button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="#hero">
+                KARBYVISUAL 
+                <span class="tag" data-cs="ZAL. 2026" data-en="EST. 2026">ZAL. 2026</span>
+            </a>
+        </div>
+        <!-- Navigation Links -->
+        <div class="nav-links desktop-only">
+            <a href="#portfolio" class="nav-link" data-cs="VÝSTAVA / 01" data-en="EXHIBITION / 01">VÝSTAVA / 01</a>
+            <a href="#about" class="nav-link" data-cs="O MNĚ / 02" data-en="ABOUT ME / 02">O MNĚ / 02</a>
+            <a href="#services" class="nav-link" data-cs="DISCIPLÍNY / 03" data-en="DISCIPLINES / 03">DISCIPLÍNY / 03</a>
+            <a href="#process" class="nav-link" data-cs="METODA / 04" data-en="METHOD / 04">METODA / 04</a>
+            <a href="#contact" class="nav-link" data-cs="KONTAKT / 05" data-en="INITIATE / 05">KONTAKT / 05</a>
+            
+            <!-- Default Login Button -->
+            <a href="#" id="top-login-btn" class="nav-link" style="color:var(--accent);" data-cs="PŘIHLÁŠENÍ / REGISTRACE" data-en="LOGIN / REGISTER">PŘIHLÁŠENÍ / REGISTRACE</a>
+            
+            <!-- Admin Menu & Actions (Hidden until auth) -->
+            <div id="nav-admin-wrapper" class="nav-admin-wrapper hidden" style="display:flex; gap:10px; align-items:center;">
+                <button id="nav-admin-btn" class="nav-admin-btn"><i class="ph ph-plus-circle"></i> <span data-cs="UPLOAD PRÁCE" data-en="UPLOAD WORK">UPLOAD PRÁCE</span></button>
+                <button id="nav-logout-btn" class="nav-admin-btn logout" style="background:transparent; border:1px solid #444; color:#fff;"><i class="ph ph-sign-out"></i></button>
+            </div>
+        </div>
+        
+        <!-- Language Switcher -->
+        <div class="lang-switcher">
+            <button id="lang-cs" class="lang-btn active">CS</button>
+            <span class="lang-div"> | </span>
+            <button id="lang-en" class="lang-btn">EN</button>
+        </div>
+        
+        <div class="mobile-menu-btn">
+            <i class="ph ph-list"></i>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- 1. FULL WIDTH BIG HERO WITH NAME -->
+        <section id="hero" class="hero-brand-section">
+            <div class="giant-branding-wrapper">
+                <!-- Glitch animation completely removed to prevent disappearing. It is now a solid element. -->
+                <h1 class="giant-branding reveal-text" data-cs="KARBYVISUAL" data-en="KARBYVISUAL">KARBYVISUAL</h1>
+            </div>
+            
+            <div class="hero-grid container">
+                <div class="hero-text-col">
+                    <div class="hero-top-labels">
+                        <span class="mono-label" data-cs="SYS_ID: 9948.1" data-en="SYS_ID: 9948.1">SYS_ID: 9948.1</span>
+                        <span class="mono-label" data-cs="LAT 50.0755° N" data-en="LAT 50.0755° N">LAT 50.0755° N</span>
+                    </div>
+                    <h2 class="hero-title reveal-text" data-cs="AESTHETIC<br>BRUTALISM." data-en="AESTHETIC<br>BRUTALISM.">AESTHETIC<br>BRUTALISM.</h2>
+                    <div class="hero-bottom-info">
+                        <p class="hero-subtitle" data-cs="Vizuální storytelling zbavený nadbytečných ornamentů. Syrový, temný, precizní." data-en="Visual storytelling stripped of unnecessary ornaments. Raw, dark, precise.">Vizuální storytelling zbavený nadbytečných ornamentů. Syrový, temný, precizní.</p>
+                        <div class="hero-cta">
+                            <a href="#portfolio" class="btn-primary"><span data-cs="VSTOUPIT DO ARCHIVU" data-en="ACCESS ARCHIVE">VSTOUPIT DO ARCHIVU</span> <i class="ph ph-arrow-right"></i></a>
+                            <div class="scroll-indicator">
+                                <span class="mono-label" style="text-orientation: mixed; writing-mode: vertical-rl;" data-cs="SCROLL" data-en="SCROLL">SCROLL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-media-col">
+                    <div class="media-frame">
+                        <div class="frame-corners">
+                            <i class="ph ph-corners-out"></i>
+                        </div>
+                        <video autoplay loop muted playsinline class="hero-video">
+                            <!-- Placeholder -->
+                        </video>
+                        <div class="frame-label mono-label" data-cs="[ ZÁZNAM 01 / V-CAM ]" data-en="[ FEED 01 / V-CAM ]">[ ZÁZNAM 01 / V-CAM ]</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. (NEW) THE MARQUEE BANNER -->
+        <section class="marquee-section">
+            <div class="marquee-inner">
+                <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
+                <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
+                <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
+                <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
+            </div>
+        </section>
+
+        <!-- 3. PORTFOLIO SECTION (Work First Focus) -->
+        <section id="portfolio" class="portfolio-section bordered-section">
+            <div class="container container-tight">
+                <div class="portfolio-header">
+                    <div class="ph-left">
+                        <span class="mono-label" data-cs="VÝSTAVA // 01" data-en="EXHIBITION // 01">VÝSTAVA // 01</span><br><br>
+                        <h2 class="section-title reveal-text" data-cs="ARCHIV" data-en="ARCHIVE">ARCHIV</h2>
+                    </div>
+                    <div class="ph-right portfolio-filters">
+                        <button class="filter-btn active" data-filter="all" data-cs="[ VŠE ]" data-en="[ ALL ]">[ VŠE ]</button>
+                        <button class="filter-btn" data-filter="CINEMATOGRAPHY" data-cs="[ KAMERA ]" data-en="[ CINEMA ]">[ KAMERA ]</button>
+                        <button class="filter-btn" data-filter="EDITING" data-cs="[ STŘIH ]" data-en="[ EDITING ]">[ STŘIH ]</button>
+                        <button class="filter-btn" data-filter="PHOTOGRAPHY" data-cs="[ FOTO ]" data-en="[ PHOTO ]">[ FOTO ]</button>
+                    </div>
+                </div>
+                
+                <div class="portfolio-grid editorial-grid" id="portfolio-grid">
+                    <div class="db-loading mono-label" data-cs="NAČÍTÁNÍ DB_ARCHIVU..." data-en="FETCHING DB_ARCHIVE...">NAČÍTÁNÍ DB_ARCHIVU...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ABOUT ME SECTION (Moved down) -->
+        <section id="about" class="about-me-section bordered-section">
+            <div class="container container-tight about-me-container">
+                <div class="section-top-label">
+                    <span class="mono-label" data-cs="O MNĚ // 02" data-en="ABOUT ME // 02">O MNĚ // 02</span>
+                </div>
+                
+                <div class="about-me-split">
+                    <div class="about-me-photo-placeholder reveal-fade">
+                        <div class="frame-corners"><i class="ph ph-focus"></i></div>
+                        <div class="mono-label" style="position: absolute; top:50%; left:50%; transform: translate(-50%,-50%); text-align: center;" data-cs="[ DUMMY FOTKA  <br> (Představení autora) ]" data-en="[ DUMMY PHOTO <br> (Author introduction) ]">[ DUMMY FOTKA <br> (Představení autora) ]</div>
+                    </div>
+                    
+                    <div class="about-me-text bento-cell reveal-fade" style="grid-column: span 1; padding: 2rem;">
+                         <div class="cell-header">
+                            <span class="mono-label" data-cs="[ PROFIL ]" data-en="[ PROFILE ]">[ PROFIL ]</span>
+                            <i class="ph ph-identification-card"></i>
+                        </div>
+                        <h3 class="section-title reveal-text" style="font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 2rem;" data-cs="REŽISÉR &<br>VISUAL ARTIST" data-en="DIRECTOR &<br>VISUAL ARTIST">REŽISÉR &<br>VISUAL ARTIST</h3>
+                        <p class="cell-desc" data-cs="Můj přístup je klinický. Rozkládám narativy na absolutní kontrasty, diktuji tempo pohybu kamery a hledám viscerální emoci v každém střihu. Pracuji s brutální elegancí napříč módou, muzikou i komercí." data-en="My approach is clinical. I deconstruct narratives into absolute contrasts, dictate the pace of movement, and seek visceral emotion in every cut. I work with brutal elegance across fashion, music, and commercials.">
+                            Můj přístup je klinický. Rozkládám narativy na absolutní kontrasty, diktuji tempo pohybu kamery a hledám viscerální emoci v každém střihu. Pracuji s brutální elegancí napříč módou, muzikou i komercí.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bento Metrics -->
+                <div class="bento-grid" style="margin-top: 2rem; grid-template-columns: 1fr 1fr;">
+                    <div class="bento-cell bento-metric reveal-fade">
+                        <div class="cell-header">
+                            <span class="mono-label" data-cs="[ METRIKA 01 ]" data-en="[ METRIC 01 ]">[ METRIKA 01 ]</span>
+                        </div>
+                        <!-- Color logic handled via CSS -->
+                        <span class="stat-number" data-target="150" style="color: white; font-weight:700;">000</span>
+                        <span class="stat-label" data-cs="DOKONČENÝCH PROJEKTŮ" data-en="PROJECTS DEPLOYED">DOKONČENÝCH PROJEKTŮ</span>
+                    </div>
+                    <div class="bento-cell bento-metric reveal-fade">
+                        <div class="cell-header">
+                             <span class="mono-label" data-cs="[ METRIKA 02 ]" data-en="[ METRIC 02 ]">[ METRIKA 02 ]</span>
+                        </div>
+                        <span class="stat-number" data-target="8" style="color: white; font-weight:700;">00</span>
+                        <span class="stat-label" data-cs="LET V OBORU" data-en="YEARS IN FIELD">LET V OBORU</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SERVICES -->
+        <!-- Omitted comments, staying as before -->
+        <section id="services" class="services-section bordered-section">
+            <div class="container container-tight">
+                <div class="section-top-label">
+                    <span class="mono-label" data-cs="DISCIPLÍNY // 03" data-en="DISCIPLINES // 03">DISCIPLÍNY // 03</span>
+                </div>
+                <div class="services-list">
+                    <div class="svc-row">
+                        <div class="svc-index">01</div>
+                        <div class="svc-content">
+                            <h3 data-cs="CINEMATOGRAFIE (KAMERA)" data-en="CINEMATOGRAPHY">CINEMATOGRAFIE (KAMERA)</h3>
+                            <p data-cs="Kompozice, svícení a pohyb konstruovaný s absolutní precizností." data-en="Composition, lighting, and movement constructed with absolute precision.">Kompozice, svícení a pohyb konstruovaný s absolutní precizností.</p>
+                        </div>
+                        <div class="svc-action"><i class="ph ph-arrow-up-right"></i></div>
+                    </div>
+                    <div class="svc-row">
+                        <div class="svc-index">02</div>
+                        <div class="svc-content">
+                            <h3 data-cs="STŘIH VIDEA (EDITING)" data-en="VIDEO EDITING">STŘIH VIDEA (EDITING)</h3>
+                            <p data-cs="Viscerální, rytmická postprodukce diktující emocionální tempo." data-en="Visceral, rhythmic post-production dictating the emotional pace.">Viscerální, rytmická postprodukce diktující emocionální tempo.</p>
+                        </div>
+                        <div class="svc-action"><i class="ph ph-arrow-up-right"></i></div>
+                    </div>
+                    <div class="svc-row">
+                        <div class="svc-index">03</div>
+                        <div class="svc-content">
+                            <h3 data-cs="FOTOGRAFIE" data-en="PHOTOGRAPHY">FOTOGRAFIE</h3>
+                            <p data-cs="Editorial a reklamní statické záběry zaměřené na syrový kontrast." data-en="Editorial and commercial stills focused on raw contrasts and brutal elegance.">Editorial a reklamní statické záběry zaměřené na syrový kontrast.</p>
+                        </div>
+                        <div class="svc-action"><i class="ph ph-arrow-up-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. PROCESS SECTION -->
+        <section id="process" class="process-section bordered-section">
+            <div class="container container-tight">
+                <div class="section-top-label">
+                    <span class="mono-label" data-cs="METODIKA // 04" data-en="METHODOLOGY // 04">METODIKA // 04</span>
+                </div>
+                
+                <div class="process-vertical">
+                    <div class="process-card reveal-fade textured-bg">
+                        <div class="pc-header">
+                            <span class="pc-num" data-cs="FÁZE_01" data-en="PHASE_01">FÁZE_01</span>
+                            <span class="pc-line"></span>
+                        </div>
+                        <div class="pc-body">
+                            <h3 data-cs="DEKONSTRUKCE" data-en="DECONSTRUCTION">DEKONSTRUKCE</h3>
+                            <p data-cs="Rozpad klientského briefu na základní syrové elementy. Strategie a myšlenka." data-en="Breaking down the client brief to core raw elements. Strategy and ideation.">Rozpad klientského briefu na základní syrové elementy. Strategie a myšlenka.</p>
+                        </div>
+                    </div>
+                    <div class="process-card offset-right reveal-fade textured-bg">
+                        <div class="pc-header">
+                            <span class="pc-num" data-cs="FÁZE_02" data-en="PHASE_02">FÁZE_02</span>
+                            <span class="pc-line"></span>
+                        </div>
+                        <div class="pc-body">
+                            <h3 data-cs="PŘÍPRAVA (ASSEMBLY)" data-en="ASSEMBLY">PŘÍPRAVA (ASSEMBLY)</h3>
+                            <p data-cs="Logistika předprodukce, obhlídky lokací, alokování techniky." data-en="Pre-production logistics, scouting, equipment allocation.">Logistika předprodukce, obhlídky lokací, alokování techniky.</p>
+                        </div>
+                    </div>
+                    <div class="process-card reveal-fade textured-bg">
+                        <div class="pc-header">
+                            <span class="pc-num" data-cs="FÁZE_03" data-en="PHASE_03">FÁZE_03</span>
+                            <span class="pc-line"></span>
+                        </div>
+                        <div class="pc-body">
+                            <h3 data-cs="EXEKUCE" data-en="EXECUTION">EXEKUCE</h3>
+                            <p data-cs="Klinické snímání vizuálních assetů. Preciznost a chladnokrevnost na natáčení." data-en="Clinical capture of visual assets. Precision on set.">Klinické snímání vizuálních assetů. Preciznost a chladnokrevnost na natáčení.</p>
+                        </div>
+                    </div>
+                    <div class="process-card offset-right reveal-fade textured-bg">
+                        <div class="pc-header">
+                            <span class="pc-num" data-cs="FÁZE_04" data-en="PHASE_04">FÁZE_04</span>
+                            <span class="pc-line"></span>
+                        </div>
+                        <div class="pc-body">
+                            <h3 data-cs="SYNTÉZA" data-en="SYNTHESIS">SYNTÉZA</h3>
+                            <p data-cs="Postprodukce, barvení, zvukový design. Finální surový výstup." data-en="Post-production, grading, sound design. Final delivery.">Postprodukce, barvení, zvukový design. Finální surový výstup.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. CONTACT SECTION -->
+        <section id="contact" class="contact-section bordered-section">
+            <div class="container container-tight contact-grid">
+                <div class="contact-info">
+                    <h2 class="section-title reveal-text" style="font-size: clamp(3rem, 5vw, 5rem);" data-cs="ZAHÁJIT<br>SEKVENCI" data-en="INITIATE<br>SEQUENCE">ZAHÁJIT<br>SEKVENCI</h2>
+                    <br>
+                    <div class="social-links-minimal">
+                        <a href="#"><i class="ph ph-instagram-logo"></i> @KARBYVISUAL</a>
+                        <a href="#"><i class="ph ph-vimeo-logo"></i> VIMEO.COM</a>
+                        <a href="#"><i class="ph ph-youtube-logo"></i> YOUTUBE</a>
+                    </div>
+                </div>
+                
+                <div class="contact-form-wrapper form-bento textured-bg">
+                    <div class="form-header">
+                        <span class="mono-label" data-cs="ZABEZPEČENÁ_LINKA [FORMULÁŘ]" data-en="SECURE_LINK [FORM]">ZABEZPEČENÁ_LINKA [FORMULÁŘ]</span>
+                    </div>
+                    <form id="contact-form" class="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" placeholder="IDENTIFIKACE (JMÉNO) *" required data-placeholder-cs="IDENTIFIKACE (JMÉNO) *" data-placeholder-en="IDENTIFICATION (NAME) *">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="ADRESA (EMAIL) *" required data-placeholder-cs="ADRESA (EMAIL) *" data-placeholder-en="ADDRESS (EMAIL) *">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select id="project_type" name="project_type">
+                                    <option value="" disabled selected data-cs="TYP OPERACE" data-en="TYPE OF OPERATION">TYP OPERACE</option>
+                                    <option value="Music Video" data-cs="HUDEBNÍ KLIP" data-en="MUSIC VIDEO">HUDEBNÍ KLIP</option>
+                                    <option value="Commercial" data-cs="REKLAMA" data-en="COMMERCIAL">REKLAMA</option>
+                                    <option value="Editorial" data-cs="EDITORIAL / FASHION" data-en="EDITORIAL / FASHION">EDITORIAL / FASHION</option>
+                                    <option value="Other" data-cs="JINÉ" data-en="OTHER">JINÉ</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="budget" name="budget">
+                                    <option value="" disabled selected data-cs="KAPITÁL (ROZPOČET)" data-en="CAPITAL (BUDGET)">KAPITÁL (ROZPOČET)</option>
+                                    <option value="< 20k">Menší než 20 000 CZK</option>
+                                    <option value="20k - 50k">20 000 - 50 000 CZK</option>
+                                    <option value="50k+">50 000+ CZK</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" name="message" rows="4" placeholder="POSLAT DIREKTIVU (ZPRÁVA) *" required data-placeholder-cs="POSLAT DIREKTIVU (ZPRÁVA) *" data-placeholder-en="TRANSMIT DIRECTIVE (MESSAGE) *"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submit-btn" style="position:relative; z-index:2; overflow:hidden;">
+                            <span class="btn-text" data-cs="[ VYKONAT ]" data-en="[ EXECUTE ]">[ VYKONAT ]</span>
+                            <div class="loader-ring hidden"></div>
+                            <div class="btn-glitch-overlay textured-bg" style="opacity: 0.2"></div>
+                        </button>
+                        <div class="form-status mono-label" id="form-status"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container container-tight footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">KARBYVISUAL.</div>
+                <div class="mono-label mt-1" data-cs="SYSTÉMOVÁ ARCHITEKTURA O1" data-en="SYSTEM ARCHITECTURE O1">SYSTÉMOVÁ ARCHITEKTURA O1</div>
+            </div>
+            <div class="footer-right">
+                <a href="#about" class="mono-link" data-cs="O MNĚ" data-en="ABOUT">O MNĚ</a>
+                <a href="#portfolio" class="mono-link" data-cs="PRÁCE" data-en="WORK">PRÁCE</a>
+                <a href="#contact" class="mono-link" data-cs="KONTAKT" data-en="CONTACT">KONTAKT</a>
+                <a href="#" id="login-trigger" class="mono-link" data-cs="[ PŘIHLÁŠENÍ ]" data-en="[ SYS.LOGIN ]">[ PŘIHLÁŠENÍ ]</a>
+            </div>
+        </div>
+        <div class="container container-tight footer-bottom mono-label">
+            <span>&copy; <span id="year"></span> KARBYVISUAL_</span>
+            <span data-cs="AVANT-GARDE NASAZENÍ" data-en="AVANT-GARDE DEPLOYMENT">AVANT-GARDE NASAZENÍ</span>
+        </div>
+    </footer>
+
+    <!-- Modals for Admin -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content bento-modal textured-bg">
+            <div class="modal-header">
+                <span class="mono-label" data-cs="PŘIHLÁŠENÍ DO SYSTÉMU" data-en="SYSTEM LOGIN">PŘIHLÁŠENÍ DO SYSTÉMU</span>
+                <span class="close-btn"><i class="ph ph-x"></i></span>
+            </div>
+            <form id="login-form">
+                <input type="email" id="admin-email" placeholder="ID (EMAIL)" required autocomplete="email">
+                <input type="password" id="admin-password" placeholder="KEY (PASSWORD)" required autocomplete="current-password">
+                <button type="submit" class="btn-primary" style="width:100%;" data-cs="POVVOLIT PŘÍSTUP" data-en="GRANT ACCESS">POVVOLIT PŘÍSTUP</button>
+                <div id="login-status" class="status-msg mono-label" style="margin-top:10px;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Upload Modal -->
+    <div id="admin-upload-modal" class="modal">
+        <div class="modal-content bento-modal textured-bg" style="width:500px;">
+            <div class="modal-header">
+                <span class="mono-label" data-cs="[ UPLOAD NOVÉ PRÁCE ]" data-en="[ UPLOAD NEW WORK ]">[ UPLOAD NOVÉ PRÁCE ]</span>
+                <span class="close-btn" id="close-upload-btn"><i class="ph ph-x"></i></span>
+            </div>
+            <form id="portfolio-form" enctype="multipart/form-data">
+                <input type="text" id="p-title" name="title" placeholder="NÁZEV ZÁZNAMU" required>
+                
+                <div class="form-row" style="margin-bottom:1rem; display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                    <select id="p-category" name="category" required style="width:100%; padding: 1rem; background: rgba(10,10,10,0.8); border: 1px solid #333; color:#fff; font-family: var(--font-mono); outline:none;">
+                        <option value="CINEMATOGRAPHY" data-cs="CINEMATOGRAFIE (KAMERA)" data-en="CINEMATOGRAPHY">CINEMATOGRAFIE (KAMERA)</option>
+                        <option value="EDITING" data-cs="STŘIH (EDITING)" data-en="EDITING">STŘIH (EDITING)</option>
+                        <option value="PHOTOGRAPHY" data-cs="FOTOGRAFIE" data-en="PHOTOGRAPHY">FOTOGRAFIE</option>
+                    </select>
+                    
+                    <select id="p-media-type" name="mediaType" required style="width:100%; padding: 1rem; background: rgba(10,10,10,0.8); border: 1px solid #333; color:#fff; font-family: var(--font-mono); outline:none;">
+                        <option value="image">OBRÁZEK (FOTO)</option>
+                        <option value="video">VIDEO (MP4 / WEBM)</option>
+                        <option value="vimeo">VIMEO ODKAZ</option>
+                    </select>
+                </div>
+
+                <div id="file-upload-section">
+                    <input type="file" id="p-media" name="media" accept="image/*,video/*" style="font-size:0.8rem; padding: 0.5rem;" required>
+                </div>
+                
+                <div id="vimeo-upload-section" class="hidden">
+                    <input type="url" id="p-vimeo" name="vimeoUrl" placeholder="VIMEO URL (např. https://vimeo.com/123456)">
+                </div>
+
+                <textarea id="p-desc-cs" name="descriptionCS" placeholder="POPIS (ČEŠTINA)" rows="3" required></textarea>
+                <textarea id="p-desc-en" name="descriptionEN" placeholder="POPIS (ENGLISH)" rows="3" required></textarea>
+                
+                <button type="submit" class="btn-primary" style="width:100%; margin-top:1rem;">NAHRÁT ZÁZNAM</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Portfolio Item Modal (Lightbox) -->
+    <div id="lightbox-modal" class="modal lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-header">
+                <span class="mono-label lightbox-index" data-cs="[ PROHLÍŽENÍ ZÁZNAMU ]" data-en="[ VIEWING RECORD ]">[ PROHLÍŽENÍ ZÁZNAMU ]</span>
+                <span class="close-btn"><i class="ph ph-x"></i></span>
+            </div>
+            <div id="lightbox-media-container"></div>
+            <div class="lightbox-info">
+                <h3 id="lightbox-title">RECORD_NAME</h3>
+                <span id="lightbox-category" class="mono-label cat-tag">TYPE</span>
+                <span class="mono-label" style="float:right; opacity:0.5;">[ARCHIVE_ITEM]</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+
+    <!-- App Data -->
+    <script src="/main.js"></script>
+    <script src="/animations.js"></script>
+    <script src="/admin.js"></script>
+</body>
+</html>
