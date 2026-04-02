@@ -19,6 +19,41 @@ let slideIndex = 0;
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
+    // REGISTRATION MODAL LOGIC
+    const regModal = document.getElementById('registration-modal');
+    const regTrigger = document.getElementById('register-trigger');
+    const modalClose = document.getElementById('modal-close');
+
+    if (regTrigger && regModal && modalClose) {
+        regTrigger.addEventListener('click', () => {
+            regModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        });
+
+        modalClose.addEventListener('click', () => {
+            regModal.classList.remove('active');
+            document.body.style.overflow = ''; // Enable scrolling
+        });
+
+        // Close on escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && regModal.classList.contains('active')) {
+                regModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // HERO CLOCK
+    const heroClock = document.getElementById('hero-clock');
+    if (heroClock) {
+        setInterval(() => {
+            const now = new Date();
+            heroClock.textContent = now.toLocaleTimeString('en-GB');
+        }, 1000);
+    }
+
+    // 1. Loading Sequence & Remove Noise Preloader
     if (yearEl) yearEl.textContent = new Date().getFullYear();
     
     initLocalization();

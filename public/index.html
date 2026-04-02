@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;700&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
         rel="stylesheet">
 
     <!-- Icons -->
@@ -40,7 +40,50 @@
 </head>
 
 <body class="loading">
+    <!-- Clean Overlays -->
     <div class="tv-noise"></div>
+    <div class="vignette"></div>
+
+    <div class="registration-modal" id="registration-modal">
+        <div class="modal-close" id="modal-close"><i class="ph ph-x"></i></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="mono-label">[ ACCESS PORTAL ]</span>
+                <h2 class="section-title">CLIENT REGISTRATION</h2>
+            </div>
+            <form class="registration-form" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label>NAME</label>
+                    <input type="text" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>EMAIL</label>
+                    <input type="email" placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>PASSWORD</label>
+                    <input type="password" placeholder="********">
+                </div>
+                <button class="btn-primary" style="width: 100%;">CREATE ACCOUNT</button>
+            </form>
+            <div class="modal-footer">
+                <p class="mono-label">SECURE_AUTH // ENDPOINT_V01</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-pattern"></div>
+    
+    <!-- Micro-details and Data Frame -->
+    <div class="ui-frame">
+        <div class="ui-crosshair ui-ch-tl"></div>
+        <div class="ui-crosshair ui-ch-tr"></div>
+        <div class="ui-crosshair ui-ch-bl"></div>
+        <div class="ui-crosshair ui-ch-br"></div>
+    </div>
+    <div class="bg-data-ticker">
+        <span data-cs="0x102A_SYS_INIT_VOL_01 0x1F2B_SYS_DEPLOY_RAW_DATA 50.0755_N_14.4378_E ENCRYPTION:OFF ARCHIVE:ONLINE BRUTALISM:ACTIVE AESTHETIC_SYS_99 0x102A_SYS_INIT_VOL_01 0x1F2B_SYS_DEPLOY_RAW_DATA 50.0755_N_14.4378_E ENCRYPTION:OFF ARCHIVE:ONLINE BRUTALISM:ACTIVE AESTHETIC_SYS_99 0x102A_SYS_INIT_VOL_01 0x1F2B_SYS_DEPLOY_RAW_DATA">0x102A_SYS_INIT_VOL_01 0x1F2B_SYS_DEPLOY_RAW_DATA 50.0755_N_14.4378_E ENCRYPTION:OFF ARCHIVE:ONLINE BRUTALISM:ACTIVE AESTHETIC_SYS_99 0x102A_SYS_INIT_VOL_01 0x1F2B_SYS_DEPLOY_RAW_DATA 50.0755_N_14.4378_E ENCRYPTION:OFF ARCHIVE:ONLINE BRUTALISM:ACTIVE AESTHETIC_SYS_99 0x102A_SYS_INIT_VOL_01 0x1F2B_SYS_DEPLOY_RAW_DATA</span>
+    </div>
     <!-- Body Background textures driven purely by CSS now -->
 
     <!-- Preloader -->
@@ -71,16 +114,14 @@
         </div>
         <!-- Navigation Links -->
         <div class="nav-links desktop-only">
-            <a href="#portfolio" class="nav-link" data-cs="VÝSTAVA / 01" data-en="EXHIBITION / 01">VÝSTAVA / 01</a>
-            <a href="#about" class="nav-link" data-cs="O MNĚ / 02" data-en="ABOUT ME / 02">O MNĚ / 02</a>
-            <a href="#services" class="nav-link" data-cs="DISCIPLÍNY / 03" data-en="DISCIPLINES / 03">DISCIPLÍNY /
-                03</a>
-            <a href="#process" class="nav-link" data-cs="METODA / 04" data-en="METHOD / 04">METODA / 04</a>
-            <a href="#contact" class="nav-link" data-cs="KONTAKT / 05" data-en="INITIATE / 05">KONTAKT / 05</a>
-
-            <!-- Default Login Button -->
-            <a href="#" id="top-login-btn" class="nav-link" style="color:var(--accent);"
-                data-cs="PŘIHLÁŠENÍ / REGISTRACE" data-en="LOGIN / REGISTER">PŘIHLÁŠENÍ / REGISTRACE</a>
+            <div class="nav-links">
+                <a href="#about" class="nav-link" data-cs="O MNĚ" data-en="ABOUT">ABOUT</a>
+                <a href="#portfolio" class="nav-link" data-cs="ARCHIV" data-en="ARCHIVE">ARCHIVE</a>
+                <a href="#services" class="nav-link" data-cs="SLUŽBY" data-en="SERVICES">SERVICES</a>
+                <a href="#contact" class="nav-link" data-cs="KONTAKT" data-en="CONTACT">CONTACT</a>
+                <button class="nav-admin-btn" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
+                <a href="/admin" class="nav-admin-btn"><i class="ph ph-lock-key"></i></a>
+            </div>
 
             <!-- Admin Menu & Actions (Hidden until auth) -->
             <div id="nav-admin-wrapper" class="nav-admin-wrapper hidden"
@@ -106,17 +147,17 @@
     </nav>
 
     <main id="main-content">
-        <!-- 1. FULL WIDTH BIG HERO WITH NAME -->
         <section id="hero" class="hero-brand-section">
             <div class="giant-branding-wrapper">
-                <!-- Glitch animation completely removed to prevent disappearing. It is now a solid element. -->
-                <h1 class="giant-branding reveal-text" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">KARBYVISUALS</h1>
+                <h1 class="giant-branding reveal-fade" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">KARBYVISUALS</h1>
+                <div class="hero-subline mono-label reveal-fade" style="margin-top: 1rem; color: var(--text-sec);">Creative Director & Cinematographer</div>
             </div>
 
             <div class="hero-grid container">
                 <div class="hero-text-col">
                     <div class="hero-top-labels">
-                        <span class="mono-label" data-cs="SYS_ID: 9948.1" data-en="SYS_ID: 9948.1">SYS_ID: 9948.1</span>
+                        <span class="mono-label" id="hero-clock">00:00:00</span>
+                        <span class="mono-label" data-cs="REC [●] LIVE" data-en="REC [●] LIVE">REC [●] LIVE</span>
                         <span class="mono-label" data-cs="LAT 50.0755° N" data-en="LAT 50.0755° N">LAT 50.0755° N</span>
                     </div>
                     <h2 class="hero-title reveal-text" data-cs="AESTHETIC<br>BRUTALISM."
@@ -154,47 +195,25 @@
 
         <!-- 2. (NEW) THE MARQUEE BANNER -->
         <section class="marquee-section">
-            <div class="marquee-inner">
+            <div class="marquee-inner marquee-outline">
                 <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
                 <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
                 <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
                 <span>KARBYVISUAL &mdash; DIRECTOR &mdash; CINEMATOGRAPHER &mdash; EDITOR &mdash; </span>
             </div>
-        </section>
-
-        <!-- 3. PORTFOLIO SECTION (Work First Focus) -->
-        <section id="portfolio" class="portfolio-section bordered-section">
-            <div class="container container-tight">
-                <div class="portfolio-header">
-                    <div class="ph-left">
-                        <span class="mono-label" data-cs="VÝSTAVA // 01" data-en="EXHIBITION // 01">VÝSTAVA //
-                            01</span><br><br>
-                        <h2 class="section-title reveal-text" data-cs="ARCHIV" data-en="ARCHIVE">ARCHIV</h2>
-                    </div>
-                    <div class="ph-right portfolio-filters">
-                        <button class="filter-btn active" data-filter="all" data-cs="[ VŠE ]" data-en="[ ALL ]">[ VŠE
-                            ]</button>
-                        <button class="filter-btn" data-filter="CINEMATOGRAPHY" data-cs="[ KAMERA ]"
-                            data-en="[ CINEMA ]">[ KAMERA ]</button>
-                        <button class="filter-btn" data-filter="EDITING" data-cs="[ STŘIH ]" data-en="[ EDITING ]">[
-                            STŘIH ]</button>
-                        <button class="filter-btn" data-filter="PHOTOGRAPHY" data-cs="[ FOTO ]" data-en="[ PHOTO ]">[
-                            FOTO ]</button>
-                    </div>
-                </div>
-
-                <div class="portfolio-grid editorial-grid" id="portfolio-grid">
-                    <div class="db-loading mono-label" data-cs="NAČÍTÁNÍ DB_ARCHIVU..."
-                        data-en="FETCHING DB_ARCHIVE...">NAČÍTÁNÍ DB_ARCHIVU...</div>
-                </div>
+            <div class="marquee-inner marquee-solid marquee-reverse">
+                <span>NEW RAW AESTHETIC &mdash; BRUTALISM &mdash; VANGUARD &mdash; NOISE &mdash; </span>
+                <span>NEW RAW AESTHETIC &mdash; BRUTALISM &mdash; VANGUARD &mdash; NOISE &mdash; </span>
+                <span>NEW RAW AESTHETIC &mdash; BRUTALISM &mdash; VANGUARD &mdash; NOISE &mdash; </span>
+                <span>NEW RAW AESTHETIC &mdash; BRUTALISM &mdash; VANGUARD &mdash; NOISE &mdash; </span>
             </div>
         </section>
 
-        <!-- 4. ABOUT ME SECTION (Moved down) -->
-        <section id="about" class="about-me-section bordered-section">
+        <!-- 2. ABOUT ME SECTION (Moved UP) -->
+        <section id="about" class="about-me-section bordered-section" style="border-top: none;">
             <div class="container container-tight about-me-container">
                 <div class="section-top-label">
-                    <span class="mono-label" data-cs="O MNĚ // 02" data-en="ABOUT ME // 02">O MNĚ // 02</span>
+                    <span class="mono-label" data-cs="O MNĚ // 01" data-en="ABOUT ME // 01">O MNĚ // 01</span>
                 </div>
 
                 <div class="about-me-split">
@@ -230,18 +249,15 @@
                 <div class="bento-grid" style="margin-top: 2rem; grid-template-columns: 1fr 1fr;">
                     <div class="bento-cell bento-metric reveal-fade">
                         <div class="cell-header">
-                            <span class="mono-label" data-cs="[ METRIKA 01 ]" data-en="[ METRIC 01 ]">[ METRIKA 01
-                                ]</span>
+                            <span class="mono-label" data-cs="[ METRIKA 01 ]" data-en="[ METRIC 01 ]">[ METRIKA 01 ]</span>
                         </div>
-                        <!-- Color logic handled via CSS -->
                         <span class="stat-number" data-target="150" style="color: white; font-weight:700;">000</span>
                         <span class="stat-label" data-cs="DOKONČENÝCH PROJEKTŮ" data-en="PROJECTS DEPLOYED">DOKONČENÝCH
                             PROJEKTŮ</span>
                     </div>
                     <div class="bento-cell bento-metric reveal-fade">
                         <div class="cell-header">
-                            <span class="mono-label" data-cs="[ METRIKA 02 ]" data-en="[ METRIC 02 ]">[ METRIKA 02
-                                ]</span>
+                            <span class="mono-label" data-cs="[ METRIKA 02 ]" data-en="[ METRIC 02 ]">[ METRIKA 02 ]</span>
                         </div>
                         <span class="stat-number" data-target="8" style="color: white; font-weight:700;">00</span>
                         <span class="stat-label" data-cs="LET V OBORU" data-en="YEARS IN FIELD">LET V OBORU</span>
@@ -249,6 +265,29 @@
                 </div>
             </div>
         </section>
+
+        <!-- 3. PORTFOLIO SECTION (Massive Impact) -->
+        <section id="portfolio" class="portfolio-section bordered-section">
+            <div class="container container-tight">
+                <div class="portfolio-header">
+                    <div class="ph-left">
+                        <span class="mono-label" data-cs="VÝSTAVA // 02" data-en="EXHIBITION // 02">VÝSTAVA // 02</span><br><br>
+                        <h2 class="section-title reveal-text" data-cs="ARCHIV" data-en="ARCHIVE">ARCHIV</h2>
+                    </div>
+                    <div class="ph-right portfolio-filters">
+                        <button class="filter-btn active" data-filter="all" data-cs="[ VŠE ]" data-en="[ ALL ]">[ VŠE ]</button>
+                        <button class="filter-btn" data-filter="CINEMATOGRAPHY" data-cs="[ KAMERA ]" data-en="[ CINEMA ]">[ KAMERA ]</button>
+                        <button class="filter-btn" data-filter="EDITING" data-cs="[ STŘIH ]" data-en="[ EDITING ]">[ STŘIH ]</button>
+                        <button class="filter-btn" data-filter="PHOTOGRAPHY" data-cs="[ FOTO ]" data-en="[ PHOTO ]">[ FOTO ]</button>
+                    </div>
+                </div>
+
+                <div class="portfolio-grid editorial-grid" id="portfolio-grid">
+                    <div class="db-loading mono-label" data-cs="NAČÍTÁNÍ DB_ARCHIVU..." data-en="FETCHING DB_ARCHIVE...">NAČÍTÁNÍ DB_ARCHIVU...</div>
+                </div>
+            </div>
+        </section>
+
 
         <!-- 5. SERVICES -->
         <!-- Omitted comments, staying as before -->
@@ -293,60 +332,74 @@
             </div>
         </section>
 
-        <!-- 6. PROCESS SECTION -->
-        <section id="process" class="process-section bordered-section">
-            <div class="container container-tight">
+        <!-- 6. DOCTRINE & ARSENAL SECTION (REPLACED PROCESS) -->
+        <section id="doctrine" class="doctrine-section bordered-section">
+            <div class="container container-tight" style="border-bottom: var(--border-thin); padding-bottom: 5rem; margin-bottom: 5rem;">
                 <div class="section-top-label">
-                    <span class="mono-label" data-cs="METODIKA // 04" data-en="METHODOLOGY // 04">METODIKA // 04</span>
+                    <span class="mono-label" data-cs="DOKTRÍNA // 04" data-en="DOCTRINE // 04">DOKTRÍNA // 04</span>
                 </div>
+                <div class="giant-manifesto-wrapper" style="margin-top: 3rem;">
+                    <h2 class="giant-manifesto-text">
+                        <div class="manifesto-line reveal-text" data-cs="TVORBA NENÍ" data-en="CREATION IS NOT">TVORBA NENÍ</div>
+                        <div class="manifesto-line reveal-text" style="color: var(--accent)" data-cs="O DETAILECH." data-en="ABOUT DETAILS.">O DETAILECH.</div>
+                        <div class="manifesto-line reveal-text" data-cs="JE O SYROVÉM" data-en="IT'S ABOUT RAW">JE O SYROVÉM</div>
+                        <div class="manifesto-line reveal-text" data-cs="SEKÁNÍ" data-en="CUTTING">SEKÁNÍ</div>
+                        <div class="manifesto-line reveal-text" data-cs="DO MORKU KOSTI." data-en="TO THE BONE.">DO MORKU KOSTI.</div>
+                    </h2>
+                </div>
+            </div>
 
-                <div class="process-vertical">
-                    <div class="process-card reveal-fade textured-bg">
-                        <div class="pc-header">
-                            <span class="pc-num" data-cs="FÁZE_01" data-en="PHASE_01">FÁZE_01</span>
-                            <span class="pc-line"></span>
+            <div class="container container-tight">
+                <div class="section-top-label" style="margin-bottom: 3rem;">
+                    <span class="mono-label" data-cs="ARZENÁL // 04.1" data-en="ARSENAL // 04.1">ARZENÁL // 04.1</span>
+                </div>
+                
+                <div class="arsenal-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    <div class="arsenal-item form-bento reveal-fade">
+                        <div class="ai-header" style="display:flex; justify-content:space-between; margin-bottom:2rem; font-size:1.5rem;">
+                            <span class="mono-label">SYS.OPTICS</span>
+                            <i class="ph ph-aperture" style="color:var(--accent);"></i>
                         </div>
-                        <div class="pc-body">
-                            <h3 data-cs="DEKONSTRUKCE" data-en="DECONSTRUCTION">DEKONSTRUKCE</h3>
-                            <p data-cs="Rozpad klientského briefu na základní syrové elementy. Strategie a myšlenka."
-                                data-en="Breaking down the client brief to core raw elements. Strategy and ideation.">
-                                Rozpad klientského briefu na základní syrové elementy. Strategie a myšlenka.</p>
-                        </div>
-                    </div>
-                    <div class="process-card offset-right reveal-fade textured-bg">
-                        <div class="pc-header">
-                            <span class="pc-num" data-cs="FÁZE_02" data-en="PHASE_02">FÁZE_02</span>
-                            <span class="pc-line"></span>
-                        </div>
-                        <div class="pc-body">
-                            <h3 data-cs="PŘÍPRAVA (ASSEMBLY)" data-en="ASSEMBLY">PŘÍPRAVA (ASSEMBLY)</h3>
-                            <p data-cs="Logistika předprodukce, obhlídky lokací, alokování techniky."
-                                data-en="Pre-production logistics, scouting, equipment allocation.">Logistika
-                                předprodukce, obhlídky lokací, alokování techniky.</p>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">ARRI MASTER PRIME</h3>
+                        <p class="mono-label" style="opacity: 0.6; margin-bottom: 2rem;">SADA OBJEKTIVŮ / T1.3</p>
+                        <div class="ai-status" style="display:flex; align-items:center; gap:0.5rem;">
+                            <div class="status-dot" style="width:8px; height:8px; background:var(--accent); border-radius:50%;"></div><span class="mono-label">ONLINE</span>
                         </div>
                     </div>
-                    <div class="process-card reveal-fade textured-bg">
-                        <div class="pc-header">
-                            <span class="pc-num" data-cs="FÁZE_03" data-en="PHASE_03">FÁZE_03</span>
-                            <span class="pc-line"></span>
+
+                    <div class="arsenal-item form-bento reveal-fade">
+                        <div class="ai-header" style="display:flex; justify-content:space-between; margin-bottom:2rem; font-size:1.5rem;">
+                            <span class="mono-label">SYS.SENSOR</span>
+                            <i class="ph ph-video-camera" style="color:var(--accent);"></i>
                         </div>
-                        <div class="pc-body">
-                            <h3 data-cs="EXEKUCE" data-en="EXECUTION">EXEKUCE</h3>
-                            <p data-cs="Klinické snímání vizuálních assetů. Preciznost a chladnokrevnost na natáčení."
-                                data-en="Clinical capture of visual assets. Precision on set.">Klinické snímání
-                                vizuálních assetů. Preciznost a chladnokrevnost na natáčení.</p>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">ALEXA MINI LF</h3>
+                        <p class="mono-label" style="opacity: 0.6; margin-bottom: 2rem;">LARGET FORMAT / 4.5K</p>
+                        <div class="ai-status" style="display:flex; align-items:center; gap:0.5rem;">
+                            <div class="status-dot" style="width:8px; height:8px; background:var(--accent); border-radius:50%;"></div><span class="mono-label">ONLINE</span>
                         </div>
                     </div>
-                    <div class="process-card offset-right reveal-fade textured-bg">
-                        <div class="pc-header">
-                            <span class="pc-num" data-cs="FÁZE_04" data-en="PHASE_04">FÁZE_04</span>
-                            <span class="pc-line"></span>
+
+                    <div class="arsenal-item form-bento reveal-fade">
+                        <div class="ai-header" style="display:flex; justify-content:space-between; margin-bottom:2rem; font-size:1.5rem;">
+                            <span class="mono-label">SYS.POST</span>
+                            <i class="ph ph-cpu" style="color:var(--accent);"></i>
                         </div>
-                        <div class="pc-body">
-                            <h3 data-cs="SYNTÉZA" data-en="SYNTHESIS">SYNTÉZA</h3>
-                            <p data-cs="Postprodukce, barvení, zvukový design. Finální surový výstup."
-                                data-en="Post-production, grading, sound design. Final delivery.">Postprodukce, barvení,
-                                zvukový design. Finální surový výstup.</p>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">DAVINCI RESOLVE ADVANCED</h3>
+                        <p class="mono-label" style="opacity: 0.6; margin-bottom: 2rem;">COLOR GRADING PANEL</p>
+                        <div class="ai-status" style="display:flex; align-items:center; gap:0.5rem;">
+                            <div class="status-dot" style="width:8px; height:8px; background:var(--accent); border-radius:50%;"></div><span class="mono-label">ONLINE</span>
+                        </div>
+                    </div>
+
+                    <div class="arsenal-item form-bento reveal-fade">
+                        <div class="ai-header" style="display:flex; justify-content:space-between; margin-bottom:2rem; font-size:1.5rem;">
+                            <span class="mono-label">SYS.RIGGING</span>
+                            <i class="ph ph-crosshair" style="color:var(--accent);"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">FREEFLY MOVI PRO</h3>
+                        <p class="mono-label" style="opacity: 0.6; margin-bottom: 2rem;">GIMBAL & STABILIZATION</p>
+                        <div class="ai-status" style="display:flex; align-items:center; gap:0.5rem;">
+                            <div class="status-dot" style="width:8px; height:8px; background:var(--accent); border-radius:50%;"></div><span class="mono-label">ONLINE</span>
                         </div>
                     </div>
                 </div>
