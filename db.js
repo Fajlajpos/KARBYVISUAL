@@ -19,10 +19,20 @@ function initDb() {
         db.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE NOT NULL,
+            full_name TEXT,
             password_hash TEXT NOT NULL,
-            role TEXT DEFAULT 'admin',
+            role TEXT DEFAULT 'user',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
+
+        // Check if full_name column exists (migration helper for existing tables)
+        db.all("PRAGMA table_info(users)", (err, columns) => {
+            if (err) return;
+            const hasFullName = columns.some(c => c.name === 'full_name');
+            if (!hasFullName) {
+                db.run("ALTER TABLE users ADD COLUMN full_name TEXT");
+            }
+        });
 
         // Create Portfolio Items table
         db.run(`CREATE TABLE IF NOT EXISTS portfolio_items (
@@ -62,8 +72,8 @@ function initDb() {
             if (!row && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
                 const salt = await bcrypt.genSalt(10);
                 const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD, salt);
-                db.run(`INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)`, 
-                    [process.env.ADMIN_EMAIL, hash, 'admin'], (err) => {
+                db.run(`INSERT INTO users (email, full_name, password_hash, role) VALUES (?, ?, ?, ?)`, 
+                    [process.env.ADMIN_EMAIL, 'System Admin', hash, 'admin'], (err) => {
                         if (err) console.error('Error seeding admin:', err.message);
                         else console.log('Admin user seeded.');
                     });

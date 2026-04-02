@@ -5,7 +5,12 @@ const SECRET = process.env.JWT_SECRET || 'fallback_secret';
 
 function createToken(user) {
     return jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { 
+            id: user.id || user.id, 
+            email: user.email, 
+            full_name: user.full_name || user.fullName, 
+            role: user.role 
+        },
         SECRET,
         { expiresIn: '24h' }
     );

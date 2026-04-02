@@ -16,33 +16,11 @@ let currentLang = localStorage.getItem('karbyLang') || 'cs';
 // State
 let portfolioData = [];
 let slideIndex = 0;
+let currentUser = null;
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-    // REGISTRATION MODAL LOGIC
-    const regModal = document.getElementById('registration-modal');
-    const regTrigger = document.getElementById('register-trigger');
-    const modalClose = document.getElementById('modal-close');
-
-    if (regTrigger && regModal && modalClose) {
-        regTrigger.addEventListener('click', () => {
-            regModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
-        });
-
-        modalClose.addEventListener('click', () => {
-            regModal.classList.remove('active');
-            document.body.style.overflow = ''; // Enable scrolling
-        });
-
-        // Close on escape key
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && regModal.classList.contains('active')) {
-                regModal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-    }
+    // (Removed old modal logic)
 
     // HERO CLOCK
     const heroClock = document.getElementById('hero-clock');
@@ -59,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initLocalization();
     loadPortfolio();
     loadTestimonials();
+    checkAuth(); // Check user status on boot
+    initAuthUI(); // Bind modal and form events
     
     // Filters Event
     filterBtns.forEach(btn => {
@@ -316,4 +296,279 @@ async function handleContactSubmit(e) {
         submitBtn.disabled = false;
         setTimeout(() => { formStatus.innerHTML = ''; }, 5000);
     }
+}
+// ==========================================
+// AUTH & TOASTS
+// ==========================================
+
+// ==========================================
+// AUTH & TOASTS
+// ==========================================
+
+async function checkAuth() {
+    try {
+        const res = await fetch('/api/me');
+        if (res.ok) {
+            currentUser = await res.json();
+            updateNavAuth(true);
+        } else {
+            currentUser = null;
+            updateNavAuth(false);
+        }
+    } catch (err) {
+        currentUser = null;
+        updateNavAuth(false);
+    }
+}
+
+function updateNavAuth(authenticated) {
+    const navAuth = document.getElementById('nav-auth');
+    if (!navAuth) return;
+
+    if (authenticated && currentUser) {
+        const firstName = currentUser.full_name.split(' ')[0];
+        const adminBtn = currentUser.role === 'admin' ? `
+            <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PŘIDAT" data-en="ADD">ADD</span></button>
+            <span class="admin-badge"></span>
+        ` : '';
+        
+        navAuth.innerHTML = `
+            <div class="user-profile">
+                ${adminBtn}
+                <div class="user-info">
+                    <i class="ph ph-user-circle"></i>
+                    <span>${firstName.toUpperCase()}</span>
+                </div>
+                <button class="logout-btn" id="main-logout-btn">LOGOUT</button>
+            </div>
+        `;
+        window.isAdmin = currentUser.role === 'admin';
+    } else {
+        navAuth.innerHTML = `
+            <button class="auth-btn btn-login" id="login-trigger" data-cs="PŘIHLÁSIT" data-en="LOGIN">LOGIN</button>
+            <button class="auth-btn btn-register btn-filled" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
+        `;
+        window.isAdmin = false;
+    }
+    
+    updateLanguageUI(currentLang);
+}
+
+async function handleLogout() {
+    try {
+        const res = await fetch('/api/logout', { method: 'POST' });
+        if (res.ok) {
+            showToast(currentLang === 'cs' ? 'Odhlášení úspěšné.' : 'Logged out successfully.', 'success');
+            checkAuth();
+        }
+    } catch (err) {
+        showToast('Logout failed.', 'error');
+    }
+}
+
+function initAuthUI() {
+    // Event Delegation
+    document.addEventListener('click', (e) => {
+        const id = e.target.id || e.target.closest('[id]')?.id;
+        const isFootLink = e.target.classList.contains('auth-foot-link') || e.target.closest('.auth-foot-link');
+        
+        if (id === 'login-trigger' || isFootLink) {
+            e.preventDefault();
+            openAuthModal('login-modal');
+        }
+        if (id === 'register-trigger') openAuthModal('reg-modal');
+        if (id === 'main-logout-btn') handleLogout();
+        
+        if (id === 'nav-admin-btn') {
+            const modal = document.getElementById('admin-upload-modal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // Closes
+        if (e.target.classList.contains('auth-close') || e.target.closest('.auth-close') || e.target.classList.contains('modal-overlay') || e.target.closest('.close-btn')) {
+            const modal = e.target.closest('.auth-modal') || e.target.closest('.modal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Switches
+        if (e.target.classList.contains('switch-btn')) {
+            const current = e.target.closest('.auth-modal').id;
+            const target = e.target.dataset.target;
+            switchModals(current, target);
+        }
+
+        // Pass Toggle
+        if (e.target.classList.contains('toggle-password')) {
+            const input = e.target.previousElementSibling;
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                e.target.classList.toggle('ph-eye');
+                e.target.classList.toggle('ph-eye-closed');
+            }
+        }
+    });
+
+    // Forms
+    document.addEventListener('submit', (e) => {
+        if (e.target.id === 'login-form') handleLogin(e);
+        if (e.target.id === 'register-form') handleRegister(e);
+    });
+
+    // Password Strength
+    document.addEventListener('input', (e) => {
+        if (e.target.id === 'reg-password') {
+            const val = e.target.value;
+            const bar = document.querySelector('.strength-bar');
+            if (!bar) return;
+            bar.className = 'strength-bar';
+            if (val.length > 0) {
+                if (val.length < 6) bar.classList.add('weak');
+                else if (val.match(/[A-Z]/) && val.match(/[0-9]/)) bar.classList.add('strong');
+                else bar.classList.add('medium');
+            }
+        }
+    });
+}
+
+
+function openAuthModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (window.animateModalOpen) window.animateModalOpen(id);
+}
+
+function closeAuthModal(id) {
+    if (window.animateModalClose) {
+        window.animateModalClose(id, () => {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    } else {
+        document.getElementById(id).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function switchModals(from, to) {
+    if (window.transitionAuthPanels) {
+        window.transitionAuthPanels(from, to);
+    } else {
+        document.getElementById(from).classList.remove('active');
+        document.getElementById(to).classList.add('active');
+    }
+}
+
+// HANDLERS
+async function handleLogin(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('.auth-submit');
+    const email = form.email.value;
+    const password = form.password.value;
+
+    toggleBtnLoading(btn, true);
+
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            showToast(`Welcome basic, ${data.fullName}!`, 'success');
+            closeAuthModal('login-modal');
+            checkAuth();
+        } else {
+            showToast(data.error || 'Login failed', 'error');
+            if (window.shakeError) window.shakeError(form);
+        }
+    } catch (err) {
+        showToast('Connection error', 'error');
+    } finally {
+        toggleBtnLoading(btn, false);
+    }
+}
+
+async function handleRegister(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('.auth-submit');
+    const fullName = form.fullName.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const confirm = form.confirmPassword.value;
+
+    if (password !== confirm) {
+        showToast('Passwords do not match', 'error');
+        if (window.shakeError) window.shakeError(form.confirmPassword.closest('.input-group'));
+        return;
+    }
+
+    toggleBtnLoading(btn, true);
+
+    try {
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullName, email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            showToast('Account created. Welcome.', 'success');
+            closeAuthModal('reg-modal');
+            checkAuth();
+        } else {
+            showToast(data.error || 'Registration failed', 'error');
+            if (window.shakeError) window.shakeError(form);
+        }
+    } catch (err) {
+        showToast('Connection error', 'error');
+    } finally {
+        toggleBtnLoading(btn, false);
+    }
+}
+
+function toggleBtnLoading(btn, loading) {
+    const text = btn.querySelector('.btn-text');
+    const loader = btn.querySelector('.loader-ring');
+    btn.disabled = loading;
+    if (loading) {
+        text.style.opacity = '0';
+        loader.classList.remove('hidden');
+    } else {
+        text.style.opacity = '1';
+        loader.classList.add('hidden');
+    }
+}
+
+// TOAST SYSTEM
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <div class="toast-dot"></div>
+        <div class="toast-msg">${message.toUpperCase()}</div>
+    `;
+    container.appendChild(toast);
+
+    if (window.animateToastIn) window.animateToastIn(toast);
+    
+    setTimeout(() => {
+        if (window.animateToastOut) {
+            window.animateToastOut(toast, () => toast.remove());
+        } else {
+            toast.remove();
+        }
+    }, 4000);
 }

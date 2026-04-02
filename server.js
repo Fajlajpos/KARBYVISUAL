@@ -7,6 +7,7 @@ const fs = require('fs');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
+const rateLimit = require('express-rate-limit');
 const { dbAsync } = require('./db');
 const { createToken, verifyToken, requireAdmin } = require('./auth');
 const { notifyAdmin, sendAutoReply } = require('./mailer');
@@ -40,10 +41,51 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-// --- ROUTES ---
+// Rate Limiting
+const authLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 5, // limit each IP to 5 requests per windowMs
+    message: { error: "Too many login attempts, please try again in a minute" }
+});
 
-// 1. Auth Endpoint
-app.post('/api/login', async (req, res) => {
+// 1. Auth Endpoints
+
+app.post('/api/register', async (req, res) => {
+    try {
+        const { fullName, email, password } = req.body;
+        
+        if (!fullName || !email || !password) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const existing = await dbAsync.get('SELECT id FROM users WHERE email = ?', [email]);
+        if (existing) return res.status(400).json({ error: 'Email already exists' });
+
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+
+        const result = await dbAsync.run(
+            'INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+            [fullName, email, hash, 'user']
+        );
+
+        const user = { id: result.lastID, email, full_name: fullName, role: 'user' };
+        const token = createToken(user);
+        
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 
+        });
+
+        res.json({ message: 'Registration successful', fullName: fullName });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/login', authLimiter, async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await dbAsync.get('SELECT * FROM users WHERE email = ?', [email]);
@@ -54,8 +96,14 @@ app.post('/api/login', async (req, res) => {
         if (!isMatch) return res.status(401).json({ error: 'Invalid email or password' });
 
         const token = createToken(user);
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-        res.json({ message: 'Login successful', role: user.role });
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 
+        });
+
+        res.json({ message: 'Login successful', fullName: user.full_name, role: user.role });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -63,7 +111,16 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/logout', (req, res) => {
     res.clearCookie('token');
-    res.json({ message: 'Logged out' });
+    res.json({ message: 'Logged out successfully' });
+});
+
+app.get('/api/me', verifyToken, (req, res) => {
+    res.json({ 
+        id: req.user.id,
+        email: req.user.email,
+        full_name: req.user.full_name,
+        role: req.user.role 
+    });
 });
 
 app.get('/api/check-auth', verifyToken, (req, res) => {

@@ -88,16 +88,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Subtle Parallax for Media Frame
-    gsap.to('.hero-video', {
-        yPercent: 15,
-        ease: "none",
-        scrollTrigger: {
-            trigger: '.hero-section',
-            start: "top top",
-            end: "bottom top",
-            scrub: true
-        }
-    });
+    if (document.querySelector('.hero-section')) {
+        gsap.to('.hero-video', {
+            yPercent: 15,
+            ease: "none",
+            scrollTrigger: {
+                trigger: '.hero-section',
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+    }
 
     // Preloader Sequence
     const tl = gsap.timeline();
@@ -137,3 +139,127 @@ document.addEventListener("DOMContentLoaded", () => {
     }, "-=0.5");
 
 });
+
+// ==========================================================================
+// AUTH & TOAST ANIMATIONS (GSAP)
+// ==========================================================================
+
+window.animateModalOpen = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    const panel = modal.querySelector('.modal-panel');
+    const overlay = modal.querySelector('.modal-overlay');
+    
+    if (!panel || !overlay) {
+        gsap.set(modal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
+        return;
+    }
+    
+    // Preparation
+    gsap.set(modal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
+    gsap.set(overlay, { opacity: 0 });
+    
+    const isMobile = window.innerWidth <= 768;
+    gsap.set(panel, { 
+        x: isMobile ? '0%' : '100%', 
+        y: isMobile ? '100%' : '0%',
+        opacity: 1
+    });
+
+    const tl = gsap.timeline();
+    tl.to(overlay, { opacity: 1, duration: 0.5, ease: "power2.out" })
+      .to(panel, { x: '0%', y: '0%', duration: 0.8, ease: "expo.out" }, "-=0.3");
+};
+
+window.animateModalClose = function(modalId, callback) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    const panel = modal.querySelector('.modal-panel');
+    const overlay = modal.querySelector('.modal-overlay');
+    
+    if (!panel || !overlay) {
+        gsap.set(modal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 });
+        if (callback) callback();
+        return;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+    const tl = gsap.timeline({ onComplete: () => {
+        gsap.set(modal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 });
+        if (callback) callback();
+    }});
+
+    tl.to(panel, { 
+        x: isMobile ? '0%' : '100%', 
+        y: isMobile ? '100%' : '0%', 
+        duration: 0.6, 
+        ease: "expo.in" 
+    })
+    .to(overlay, { opacity: 0, duration: 0.4, ease: "power2.in" }, "-=0.2");
+};
+
+window.transitionAuthPanels = function(fromId, toId) {
+    const fromModal = document.getElementById(fromId);
+    const toModal = document.getElementById(toId);
+    if (!fromModal || !toModal) return;
+
+    const fromPanel = fromModal.querySelector('.modal-panel');
+    const toPanel = toModal.querySelector('.modal-panel');
+    const toOverlay = toModal.querySelector('.modal-overlay');
+
+    if (!fromPanel || !toPanel) {
+        fromModal.classList.remove('active');
+        toModal.classList.add('active');
+        return;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+    const tl = gsap.timeline();
+    
+    // Slide out current
+    tl.to(fromPanel, { 
+        x: isMobile ? '0%' : '100%', 
+        y: isMobile ? '100%' : '0%', 
+        duration: 0.5, 
+        ease: "expo.in" 
+      })
+      .set(fromModal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 })
+      .set(toModal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 })
+      .set(toOverlay, { opacity: 1 })
+      .set(toPanel, { x: isMobile ? '0%' : '100%', y: isMobile ? '100%' : '0%', opacity: 1 })
+      .to(toPanel, { x: '0%', y: '0%', duration: 0.8, ease: "expo.out" });
+    
+    fromModal.classList.remove('active');
+    toModal.classList.add('active');
+};
+
+window.animateToastIn = function(toast) {
+    gsap.to(toast, { x: '0%', duration: 0.8, ease: "expo.out" });
+};
+
+window.animateToastOut = function(toast, callback) {
+    gsap.to(toast, { x: '110%', opacity: 0, duration: 0.6, ease: "expo.in", onComplete: callback });
+};
+
+window.shakeError = function(element) {
+    gsap.fromTo(element, { x: -10 }, { x: 10, duration: 0.1, repeat: 5, yoyo: true, ease: "none", onComplete: () => {
+        gsap.to(element, { x: 0, duration: 0.1 });
+    }});
+};
+
+// Nav Auth Stagger
+function initAuthEntrance() {
+    gsap.from('.auth-btn', {
+        y: 20, opacity: 0,
+        duration: 0.8, stagger: 0.2,
+        delay: 2.5, // After preloader
+        ease: "power2.out"
+    });
+}
+
+// Initial Call
+if (document.querySelector('.auth-btn')) {
+    initAuthEntrance();
+}
