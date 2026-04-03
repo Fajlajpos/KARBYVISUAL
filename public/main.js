@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const category = folder.getAttribute('data-category');
                 const titleCS = folder.querySelector('.folder-name').getAttribute('data-cs') || folder.querySelector('.folder-name').textContent;
                 const titleEN = folder.querySelector('.folder-name').getAttribute('data-en') || folder.querySelector('.folder-name').textContent;
-                openFolderModal(category, { cs: titleCS, en: titleEN });
+                openFolderModal(category, { cs: titleCS, en: titleEN }, folder);
             });
         });
     }
@@ -59,9 +59,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeFolderDot = document.getElementById('close-folder-modal-dot');
     
     const closeFolder = () => {
-        if (folderModal) {
-            folderModal.classList.remove('active');
-            document.body.style.overflow = '';
+        if (folderModal && folderModal.classList.contains('active')) {
+            const modalContent = folderModal.querySelector('.modal-content');
+            
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    folderModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                    // Reset to initial state for next open
+                    gsap.set(modalContent, { scale: 0.85, opacity: 0 });
+                    gsap.set(folderModal.querySelector('.modal-overlay'), { opacity: 0 });
+                }
+            });
+
+            // Smoothly fade out the items first for extra polish
+            tl.to("#folder-items-grid .reveal-fade", {
+                opacity: 0,
+                y: 10,
+                duration: 0.2,
+                stagger: 0.03,
+                ease: "power2.in"
+            })
+            .to(modalContent, {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.55,
+                ease: "back.in(1.2)"
+            }, "-=0.1")
+            .to(folderModal.querySelector('.modal-overlay'), {
+                opacity: 0,
+                duration: 0.4
+            }, "-=0.45");
         }
     };
 
@@ -159,36 +187,39 @@ async function loadPortfolio() {
     }
 }
 
-function openFolderModal(category, titles) {
+function openFolderModal(category, titles, originEl) {
     const modal = document.getElementById('folder-modal');
+    const modalContent = modal.querySelector('.modal-content');
     const grid = document.getElementById('folder-items-grid');
     const titleEl = document.getElementById('folder-modal-title');
 
     if (!modal || !grid) return;
 
+    // Save origin
+    if (originEl) {
+        modal.dataset.originId = originEl.getAttribute('data-id') || '';
+    }
+
     // Update Title
     const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
     titleEl.textContent = `[ ${displayTitle.toUpperCase()} ]`;
 
-    // Filter Items
+    // Filter Items (Existing logic...)
     let filtered = portfolioData.filter(item => {
-        // Broad mapping to handle user's categories vs DB categories
         const dbCat = item.category.toUpperCase();
         const targetCat = category.toUpperCase();
-
         if (targetCat === 'PHOTOGRAPHY' || targetCat === 'FOTKY') return dbCat === 'PHOTOGRAPHY';
         if (targetCat === 'VIDEOKLIPY') return dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
-        // For others, we might not have data yet, so let them be empty for placeholders
         return dbCat === targetCat;
     });
 
-    // Render Items
     grid.innerHTML = '';
 
     if (filtered.length > 0) {
         filtered.forEach(item => {
             const div = document.createElement('div');
             div.className = 'port-item reveal-fade active';
+            div.style.opacity = 0; // Prepare for stagger
             
             let adminHtml = '';
             if (window.isAdmin) {
@@ -200,7 +231,7 @@ function openFolderModal(category, titles) {
             div.innerHTML = `
                 ${adminHtml}
                 <div class="port-img-wrap">
-                    <img src="${item.thumbnail_url || '/assets/download_1774980242270.jpeg'}" alt="${item.title}" class="port-img" loading="lazy">
+                    <img src="${item.thumbnail_url || '/assets/portfolio-placeholder.png'}" alt="${item.title}" class="port-img" loading="lazy" onerror="this.src='/assets/portfolio-placeholder.png'">
                 </div>
                 <div class="port-info">
                     <h3>${item.title}</h3>
@@ -208,35 +239,44 @@ function openFolderModal(category, titles) {
                 </div>
             `;
             
-            div.querySelector('.port-img-wrap').addEventListener('click', () => {
-                openLightbox(item);
-            });
-            
+            div.querySelector('.port-img-wrap').addEventListener('click', () => openLightbox(item));
             grid.appendChild(div);
         });
     } else {
-        // Render 3 Placeholders as requested
         for (let i = 0; i < 3; i++) {
             const card = document.createElement('div');
             card.className = 'placeholder-card reveal-fade active';
-            card.innerHTML = `
-                <i class="ph ph-file-dashed"></i>
-                <span class="mono-label" data-cs="PRÁZDNÝ ZÁZNAM" data-en="EMPTY RECORD">PRÁZDNÝ ZÁZNAM</span>
-            `;
+            card.style.opacity = 0;
+            card.innerHTML = `<i class="ph ph-file-dashed"></i><span class="mono-label" data-cs="PRÁZDNÝ ZÁZNAM" data-en="EMPTY RECORD">PRÁZDNÝ ZÁZNAM</span>`;
             grid.appendChild(card);
         }
         updateLanguageUI(currentLang);
     }
 
-    // Open Modal
+    // macOS Opening Animation Logic
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // GSAP Animation for items
-    gsap.fromTo("#folder-items-grid .reveal-fade", 
-        { opacity: 0, y: 30 }, 
-        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out" }
-    );
+    // Start modal hidden and scaled down
+    gsap.set(modalContent, { scale: 0.88, opacity: 0 });
+    gsap.set(modal.querySelector('.modal-overlay'), { opacity: 0 });
+
+    const tl = gsap.timeline();
+    tl.to(modal.querySelector('.modal-overlay'), { opacity: 1, duration: 0.3 })
+      .to(modalContent, {
+          scale: 1,
+          opacity: 1,
+          duration: 0.45,
+          ease: "back.out(1.5)",
+          clearProps: "transform"
+      }, "-=0.15")
+      .to("#folder-items-grid .reveal-fade", {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: "power2.out"
+      }, "-=0.25");
 }
 
 function openLightbox(item) {
@@ -452,6 +492,10 @@ function initAuthUI() {
         // Closes
         if (e.target.classList.contains('auth-close') || e.target.closest('.auth-close') || e.target.classList.contains('modal-overlay') || e.target.closest('.close-btn')) {
             const modal = e.target.closest('.auth-modal') || e.target.closest('.modal');
+            
+            // Skip folder-modal as it uses custom GSAP logic
+            if (modal && modal.id === 'folder-modal') return;
+
             if (modal) {
                 modal.classList.remove('active');
                 document.body.style.overflow = '';

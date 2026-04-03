@@ -330,7 +330,7 @@ body.admin-mode .delete-btn { display: inline-block; }
      filter: drop-shadow(0 15px 30px rgba(255,255,255,0.05));
  }
  
- /* FOLDER CONTENT MODAL (PC WINDOW VERSION) */
+ /* FOLDER CONTENT MODAL (macOS GLASS VERSION) */
  .folder-content-modal {
      width: 95vw;
      height: 95vh;
@@ -339,72 +339,90 @@ body.admin-mode .delete-btn { display: inline-block; }
      flex-direction: column;
      overflow: hidden;
      padding: 0;
-     border: 1px solid #222;
-     background: #000;
-     box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+     border: 1px solid rgba(255,255,255,0.1);
+     background: rgba(10,10,10,0.65);
+     backdrop-filter: blur(25px) saturate(160%);
+     -webkit-backdrop-filter: blur(25px) saturate(160%);
+     border-radius: 14px;
+     box-shadow: 0 60px 120px rgba(0,0,0,0.7), 0 0 1px rgba(255,255,255,0.1) inset;
+     transform-origin: center;
+     will-change: transform, opacity;
  }
  
  .window-title-bar {
-     background: #111;
-     padding: 1rem 2rem;
+     background: rgba(20,20,20,0.4);
+     padding: 1.2rem 2.5rem;
      display: flex;
      justify-content: space-between;
      align-items: center;
-     border-bottom: 1px solid #222;
+     border-bottom: 1px solid rgba(255,255,255,0.05);
      cursor: default;
  }
  
  .window-controls-left {
      display: flex;
-     gap: 8px;
+     gap: 10px;
  }
  
  .win-dot {
-     width: 10px;
-     height: 10px;
+     width: 12px;
+     height: 12px;
      border-radius: 50%;
-     background: #333;
-     border: 1px solid #444;
+     position: relative;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
  }
- .win-dot.close { background: #5a1a1a; border-color: #7a2a2a; }
- .win-dot.minimize { background: #5a4a1a; border-color: #7a6a2a; }
- .win-dot.maximize { background: #1a5a1a; border-color: #2a7a2a; }
+ .win-dot i { 
+     font-size: 7px; 
+     opacity: 0; 
+     transition: opacity 0.2s; 
+     color: rgba(0,0,0,0.5); 
+     pointer-events: none; /* Make icons non-interactive for better dot hits */
+ }
+ 
+ /* Disable conflicting CSS transitions for GSAP-controlled folder modal */
+ #folder-modal, #folder-modal .modal-overlay {
+     transition: none !important;
+ }
+ .win-dot.minimize { background: #ffbd2e; border: 0.5px solid #e09e1b; }
+ .win-dot.maximize { background: #28c840; border: 0.5px solid #14ab2b; }
  
  .window-title {
      font-family: var(--font-mono);
-     font-size: 0.7rem;
-     letter-spacing: 3px;
-     color: var(--text-sec);
+     font-size: 0.75rem;
+     letter-spacing: 4px;
+     color: rgba(255,255,255,0.6);
      text-transform: uppercase;
+     font-weight: 600;
  }
  
  .window-controls-right {
      display: flex;
-     gap: 1.5rem;
+     gap: 1.8rem;
  }
  
  .win-btn {
-     color: #444;
+     color: rgba(255,255,255,0.3);
      cursor: pointer;
-     transition: color 0.3s;
-     font-size: 1rem;
+     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+     font-size: 1.1rem;
  }
- .win-btn:hover { color: #fff; }
+ .win-btn:hover { color: #fff; transform: scale(1.1); }
  
  .folder-content-modal #folder-items-grid {
      flex-grow: 1;
      overflow-y: auto;
      display: grid;
-     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-     gap: 2rem;
-     padding: 4rem;
+     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+     gap: 2.5rem;
+     padding: 5rem;
      margin-top: 0;
-     scrollbar-width: thin;
-     scrollbar-color: #222 transparent;
+     scrollbar-width: none; /* Hide scrollbar for macOS feel */
  }
  
- .folder-content-modal #folder-items-grid::-webkit-scrollbar { width: 4px; }
- .folder-content-modal #folder-items-grid::-webkit-scrollbar-thumb { background: #222; }
+ .folder-content-modal #folder-items-grid::-webkit-scrollbar { display: none; }
  
  .placeholder-card {
      aspect-ratio: 16/9;
