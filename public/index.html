@@ -209,7 +209,7 @@
             </div>
         </section>
 
-        <!-- 3. PORTFOLIO SECTION (Massive Impact) -->
+        <!-- 3. PORTFOLIO SECTION (Folders Grid) -->
         <section id="portfolio" class="portfolio-section bordered-section">
             <div class="container container-tight">
                 <div class="portfolio-header">
@@ -217,19 +217,73 @@
                         <span class="mono-label" data-cs="VÝSTAVA // 02" data-en="EXHIBITION // 02">VÝSTAVA // 02</span><br><br>
                         <h2 class="section-title reveal-text" data-cs="ARCHIV" data-en="ARCHIVE">ARCHIV</h2>
                     </div>
-                    <div class="ph-right portfolio-filters">
-                        <button class="filter-btn active" data-filter="all" data-cs="[ VŠE ]" data-en="[ ALL ]">[ VŠE ]</button>
-                        <button class="filter-btn" data-filter="CINEMATOGRAPHY" data-cs="[ KAMERA ]" data-en="[ CINEMA ]">[ KAMERA ]</button>
-                        <button class="filter-btn" data-filter="EDITING" data-cs="[ STŘIH ]" data-en="[ EDITING ]">[ STŘIH ]</button>
-                        <button class="filter-btn" data-filter="PHOTOGRAPHY" data-cs="[ FOTO ]" data-en="[ PHOTO ]">[ FOTO ]</button>
-                    </div>
                 </div>
 
-                <div class="portfolio-grid editorial-grid" id="portfolio-grid">
-                    <div class="db-loading mono-label" data-cs="NAČÍTÁNÍ DB_ARCHIVU..." data-en="FETCHING DB_ARCHIVE...">NAČÍTÁNÍ DB_ARCHIVU...</div>
+                <div class="archive-grid" id="archive-grid">
+                    <!-- 6 Folders (3 across, 2 rows) -->
+                    <div class="folder-item reveal-fade" data-category="PHOTOGRAPHY">
+                        <div class="folder-icon-wrap">
+                            <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
+                        </div>
+                        <span class="folder-name" data-cs="Fotky" data-en="Photos">Fotky</span>
+                    </div>
+                    <div class="folder-item reveal-fade" data-category="VIDEOKLIPY">
+                        <div class="folder-icon-wrap">
+                            <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
+                        </div>
+                        <span class="folder-name" data-cs="Videoklipy" data-en="Music Videos">Videoklipy</span>
+                    </div>
+                    <div class="folder-item reveal-fade" data-category="TIKTOK">
+                        <div class="folder-icon-wrap">
+                            <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
+                        </div>
+                        <span class="folder-name" data-cs="Tiktok videa" data-en="Tiktok Videos">Tiktok videa</span>
+                    </div>
+                    <div class="folder-item reveal-fade" data-category="INSTAGRAM">
+                        <div class="folder-icon-wrap">
+                            <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
+                        </div>
+                        <span class="folder-name" data-cs="Instagram videa" data-en="Instagram Videos">Instagram videa</span>
+                    </div>
+                    <div class="folder-item reveal-fade" data-category="YOUTUBE">
+                        <div class="folder-icon-wrap">
+                            <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
+                        </div>
+                        <span class="folder-name" data-cs="Youtube videa" data-en="Youtube Videos">Youtube videa</span>
+                    </div>
+                    <div class="folder-item reveal-fade" data-category="AKCE">
+                        <div class="folder-icon-wrap">
+                            <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
+                        </div>
+                        <span class="folder-name" data-cs="Akce" data-en="Events">Akce</span>
+                    </div>
                 </div>
             </div>
         </section>
+
+
+        <!-- Folder Content Modal -->
+        <div id="folder-modal" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content textured-bg folder-content-modal">
+                <div class="window-title-bar">
+                    <div class="window-controls-left">
+                        <div class="win-dot close" id="close-folder-modal-dot"></div>
+                        <div class="win-dot minimize"></div>
+                        <div class="win-dot maximize"></div>
+                    </div>
+                    <div class="window-title" id="folder-modal-title">SYSTEM_EXPLORER</div>
+                    <div class="window-controls-right">
+                        <i class="ph ph-minus win-btn"></i>
+                        <i class="ph ph-corners-out win-btn"></i>
+                        <i class="ph ph-x win-btn" id="close-folder-modal"></i>
+                    </div>
+                </div>
+                <div id="folder-items-grid" class="portfolio-grid editorial-grid">
+                    <!-- Items populated dynamically -->
+                </div>
+            </div>
+        </div>
 
 
         <!-- 5. SERVICES -->

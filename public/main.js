@@ -31,23 +31,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // 1. Loading Sequence & Remove Noise Preloader
+    // Navigation & Global Events
     if (yearEl) yearEl.textContent = new Date().getFullYear();
     
     initLocalization();
     loadPortfolio();
     loadTestimonials();
-    checkAuth(); // Check user status on boot
-    initAuthUI(); // Bind modal and form events
+    checkAuth(); 
+    initAuthUI(); 
     
-    // Filters Event
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            renderPortfolio(e.target.dataset.filter);
+    // Folder Grid Event
+    const archiveGrid = document.getElementById('archive-grid');
+    if (archiveGrid) {
+        archiveGrid.querySelectorAll('.folder-item').forEach(folder => {
+            folder.addEventListener('click', () => {
+                const category = folder.getAttribute('data-category');
+                const titleCS = folder.querySelector('.folder-name').getAttribute('data-cs') || folder.querySelector('.folder-name').textContent;
+                const titleEN = folder.querySelector('.folder-name').getAttribute('data-en') || folder.querySelector('.folder-name').textContent;
+                openFolderModal(category, { cs: titleCS, en: titleEN });
+            });
         });
-    });
+    }
+
+    // Folder Modal Close
+    const folderModal = document.getElementById('folder-modal');
+    const closeFolderBtn = document.getElementById('close-folder-modal');
+    const closeFolderDot = document.getElementById('close-folder-modal-dot');
+    
+    const closeFolder = () => {
+        if (folderModal) {
+            folderModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
+
+    if (closeFolderBtn) closeFolderBtn.addEventListener('click', closeFolder);
+    if (closeFolderDot) closeFolderDot.addEventListener('click', closeFolder);
+    
+    if (folderModal) {
+        folderModal.querySelector('.modal-overlay')?.addEventListener('click', closeFolder);
+    }
 
     // Contact Form Event
     if (contactForm) {
@@ -58,7 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if(lightboxModal) {
         lightboxModal.querySelector('.close-btn').addEventListener('click', () => {
             lightboxModal.classList.remove('active');
-            lightboxMedia.innerHTML = ''; // Stop video
+            lightboxMedia.innerHTML = '';
+            document.body.style.overflow = '';
+        });
+        lightboxModal.querySelector('.modal-overlay')?.addEventListener('click', () => {
+             lightboxModal.classList.remove('active');
+             lightboxMedia.innerHTML = '';
+             document.body.style.overflow = '';
         });
     }
 });
@@ -124,57 +153,90 @@ async function loadPortfolio() {
         const res = await fetch('/api/portfolio');
         if (!res.ok) throw new Error('Failed to load portfolio');
         portfolioData = await res.json();
-        renderPortfolio('all');
+        // We no longer render directly to a grid on home, we wait for folder clicks
     } catch (err) {
-        if(portfolioGrid) portfolioGrid.innerHTML = `<div class="error">Errors loading archive: ${err.message}</div>`;
+        console.error('Portfolio load error:', err);
     }
 }
 
-function renderPortfolio(filter) {
-    if (!portfolioGrid) return;
-    portfolioGrid.innerHTML = '';
-    
-    let filtered = portfolioData;
-    if (filter !== 'all') {
-        filtered = portfolioData.filter(item => item.category.toUpperCase() === filter.toUpperCase());
-    }
+function openFolderModal(category, titles) {
+    const modal = document.getElementById('folder-modal');
+    const grid = document.getElementById('folder-items-grid');
+    const titleEl = document.getElementById('folder-modal-title');
 
-    if (filtered.length === 0) {
-        const msg = currentLang === 'cs' ? 'ŽÁDNÝ ZÁZNAM NENALEZEN' : 'NO RECORDS FOUND.';
-        portfolioGrid.innerHTML = `<div class="empty-state mono-label" style="grid-column: span 2; padding:3rem; border:1px solid #333; text-align:center;">${msg}</div>`;
-        return;
-    }
+    if (!modal || !grid) return;
 
-    filtered.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'port-item reveal-fade';
-        div.setAttribute('data-id', item.id);
-        
-        let adminHtml = '';
-        if (window.isAdmin) {
-             adminHtml = `<div class="admin-badge">
-                 <button class="delete-btn" data-id="${item.id}"><i class="ph ph-trash"></i> DELETE</button>
-             </div>`;
-        }
+    // Update Title
+    const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
+    titleEl.textContent = `[ ${displayTitle.toUpperCase()} ]`;
 
-        div.innerHTML = `
-            ${adminHtml}
-            <div class="port-img-wrap">
-                <img src="${item.thumbnail_url || '/assets/download_1774980242270.jpeg'}" alt="${item.title}" class="port-img" loading="lazy">
-            </div>
-            <div class="port-info">
-                <h3>${item.title}</h3>
-                <span class="port-cat">[ ${item.category} ]</span>
-            </div>
-            <div class="port-line"></div>
-        `;
-        
-        div.querySelector('.port-img-wrap').addEventListener('click', () => {
-            openLightbox(item);
-        });
-        
-        portfolioGrid.appendChild(div);
+    // Filter Items
+    let filtered = portfolioData.filter(item => {
+        // Broad mapping to handle user's categories vs DB categories
+        const dbCat = item.category.toUpperCase();
+        const targetCat = category.toUpperCase();
+
+        if (targetCat === 'PHOTOGRAPHY' || targetCat === 'FOTKY') return dbCat === 'PHOTOGRAPHY';
+        if (targetCat === 'VIDEOKLIPY') return dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
+        // For others, we might not have data yet, so let them be empty for placeholders
+        return dbCat === targetCat;
     });
+
+    // Render Items
+    grid.innerHTML = '';
+
+    if (filtered.length > 0) {
+        filtered.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'port-item reveal-fade active';
+            
+            let adminHtml = '';
+            if (window.isAdmin) {
+                 adminHtml = `<div class="admin-badge" style="position:absolute; top:1rem; right:1rem; z-index:10;">
+                     <button class="delete-btn" style="display:block;" data-id="${item.id}"><i class="ph ph-trash"></i></button>
+                 </div>`;
+            }
+
+            div.innerHTML = `
+                ${adminHtml}
+                <div class="port-img-wrap">
+                    <img src="${item.thumbnail_url || '/assets/download_1774980242270.jpeg'}" alt="${item.title}" class="port-img" loading="lazy">
+                </div>
+                <div class="port-info">
+                    <h3>${item.title}</h3>
+                    <span class="port-cat">[ ${item.category} ]</span>
+                </div>
+            `;
+            
+            div.querySelector('.port-img-wrap').addEventListener('click', () => {
+                openLightbox(item);
+            });
+            
+            grid.appendChild(div);
+        });
+    } else {
+        // Render 3 Placeholders as requested
+        for (let i = 0; i < 3; i++) {
+            const card = document.createElement('div');
+            card.className = 'placeholder-card reveal-fade active';
+            card.innerHTML = `
+                <i class="ph ph-file-dashed"></i>
+                <span class="mono-label" data-cs="PRÁZDNÝ ZÁZNAM" data-en="EMPTY RECORD">PRÁZDNÝ ZÁZNAM</span>
+            `;
+            grid.appendChild(card);
+        }
+        updateLanguageUI(currentLang);
+    }
+
+    // Open Modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // GSAP Animation for items
+    gsap.fromTo("#folder-items-grid .reveal-fade", 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out" }
+    );
 }
 
 function openLightbox(item) {

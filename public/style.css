@@ -258,8 +258,200 @@ h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); text-transform
 .port-info h3 { font-size: 1.2rem; text-transform: uppercase; }
 .port-cat { font-family: var(--font-mono); color: var(--accent); font-size: 0.75rem; }
 .port-line { width: 100%; height: 1px; background: var(--border-color); }
-.delete-btn { background:#000; border:1px solid #333; color:red; padding: 5px; cursor: pointer; display: none; }
 body.admin-mode .delete-btn { display: inline-block; }
+ 
+ /* ARCHIVE GRID & FOLDERS (Refined) */
+ .archive-grid {
+     display: grid;
+     grid-template-columns: repeat(3, 1fr);
+     gap: 3rem 4vw;
+     margin-top: 5rem;
+     max-width: 1000px;
+     margin-left: auto;
+     margin-right: auto;
+ }
+ 
+ .folder-item {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     cursor: pointer;
+     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+ }
+ 
+ .folder-icon-wrap {
+     width: clamp(100px, 10vw, 150px);
+     margin-bottom: 1.5rem;
+     position: relative;
+     padding: 0.8rem;
+     border: 1px solid transparent;
+     border-radius: 4px;
+     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+ }
+ 
+ .folder-icon {
+     width: 100%;
+     height: auto;
+     display: block;
+     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4));
+     transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+ }
+ 
+ .folder-name {
+     font-family: var(--font-mono);
+     font-size: 0.75rem;
+     color: var(--text-sec);
+     text-transform: uppercase;
+     letter-spacing: 0.12em;
+     transition: color 0.3s;
+ }
+ 
+ .folder-item:hover {
+     transform: translateY(-8px);
+ }
+ 
+ .folder-item:hover .folder-icon-wrap {
+     background: none;
+     border-color: transparent;
+     box-shadow: none;
+ }
+ 
+ .folder-item:hover .folder-icon {
+     transform: scale(1.05);
+     filter: drop-shadow(0 0 2px white) drop-shadow(0 0 5px rgba(255,255,255,0.3));
+ }
+ 
+ .folder-item:hover .folder-name {
+     color: var(--text-primary);
+ }
+ 
+ .folder-item:hover .folder-icon {
+     transform: scale(1.05);
+     filter: drop-shadow(0 15px 30px rgba(255,255,255,0.05));
+ }
+ 
+ /* FOLDER CONTENT MODAL (PC WINDOW VERSION) */
+ .folder-content-modal {
+     width: 95vw;
+     height: 95vh;
+     max-width: none;
+     display: flex;
+     flex-direction: column;
+     overflow: hidden;
+     padding: 0;
+     border: 1px solid #222;
+     background: #000;
+     box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+ }
+ 
+ .window-title-bar {
+     background: #111;
+     padding: 1rem 2rem;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     border-bottom: 1px solid #222;
+     cursor: default;
+ }
+ 
+ .window-controls-left {
+     display: flex;
+     gap: 8px;
+ }
+ 
+ .win-dot {
+     width: 10px;
+     height: 10px;
+     border-radius: 50%;
+     background: #333;
+     border: 1px solid #444;
+ }
+ .win-dot.close { background: #5a1a1a; border-color: #7a2a2a; }
+ .win-dot.minimize { background: #5a4a1a; border-color: #7a6a2a; }
+ .win-dot.maximize { background: #1a5a1a; border-color: #2a7a2a; }
+ 
+ .window-title {
+     font-family: var(--font-mono);
+     font-size: 0.7rem;
+     letter-spacing: 3px;
+     color: var(--text-sec);
+     text-transform: uppercase;
+ }
+ 
+ .window-controls-right {
+     display: flex;
+     gap: 1.5rem;
+ }
+ 
+ .win-btn {
+     color: #444;
+     cursor: pointer;
+     transition: color 0.3s;
+     font-size: 1rem;
+ }
+ .win-btn:hover { color: #fff; }
+ 
+ .folder-content-modal #folder-items-grid {
+     flex-grow: 1;
+     overflow-y: auto;
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+     gap: 2rem;
+     padding: 4rem;
+     margin-top: 0;
+     scrollbar-width: thin;
+     scrollbar-color: #222 transparent;
+ }
+ 
+ .folder-content-modal #folder-items-grid::-webkit-scrollbar { width: 4px; }
+ .folder-content-modal #folder-items-grid::-webkit-scrollbar-thumb { background: #222; }
+ 
+ .placeholder-card {
+     aspect-ratio: 16/9;
+     background: #080808;
+     border: 1px solid #151515;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     gap: 1.5rem;
+     color: #333;
+     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+     cursor: pointer;
+ }
+ 
+ .placeholder-card i {
+     font-size: 2.5rem;
+     opacity: 0.3;
+ }
+ 
+ .placeholder-card span {
+     font-family: var(--font-mono);
+     font-size: 0.7rem;
+     letter-spacing: 2px;
+ }
+ 
+ .placeholder-card:hover {
+     border-color: #444;
+     color: #fff;
+     background: #0c0c0c;
+     transform: scale(1.02);
+ }
+ 
+ .placeholder-card:hover i { opacity: 1; color: var(--accent); }
+ 
+ @media (max-width: 768px) {
+     .archive-grid {
+         grid-template-columns: repeat(2, 1fr);
+         gap: 3rem 2rem;
+     }
+     .folder-icon-wrap {
+         width: 130px;
+     }
+     .folder-content-modal #folder-items-grid {
+         grid-template-columns: 1fr;
+     }
+ }
 
 
 /* ABOUT ME SECTION */
