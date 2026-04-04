@@ -161,7 +161,37 @@ h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); text-transform
 
 /* HERO BRANDING */
 /* HERO BRANDING REDESIGN (V5) - Minimalist / Ordinary */
-.hero-brand-section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; }
+ .hero-brand-section { 
+     min-height: 100vh; 
+     display: flex; 
+     flex-direction: column; 
+     justify-content: center; 
+     position: relative; 
+     overflow: visible; /* Allow background image to spill out if needed */
+     background: transparent; /* Show the intro-bg through */
+ }
+ 
+ .site-intro-bg {
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     aspect-ratio: 601 / 902; /* Match the exact image dimensions: 601x902 */
+     z-index: -2;
+     background: url('/assets/pozadi.jpg') no-repeat top center / 100% auto;
+     opacity: 0.42;
+     pointer-events: none;
+     filter: brightness(0.85);
+     overflow: hidden;
+ }
+ 
+ .site-intro-bg::after {
+     content: '';
+     position: absolute;
+     inset: 0;
+     background: radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+     pointer-events: none;
+ }
 .giant-branding-wrapper { width: 100%; text-align: center; margin-bottom: 2rem; }
 
 .giant-branding {
