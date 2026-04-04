@@ -208,11 +208,36 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
+// 6. Admin Database Views (Protected)
+app.get('/api/admin/users', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const users = await dbAsync.all('SELECT id, email, full_name, role, created_at FROM users ORDER BY created_at DESC');
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/admin/messages', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const messages = await dbAsync.all('SELECT * FROM messages ORDER BY created_at DESC');
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 // SPA Catch-all
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// STARTUP DB CHECK: Ensure admin role for the main email
+dbAsync.run(
+    "UPDATE users SET role = 'admin', full_name = 'KARBY ADMIN' WHERE email = ?",
+    [process.env.ADMIN_EMAIL]
+).then(() => console.log('Admin role check completed.')).catch(err => console.error('Admin role check failed:', err));
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

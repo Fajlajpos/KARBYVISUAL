@@ -90,6 +90,7 @@
 
             <!-- Auth Buttons -->
             <div class="nav-auth" id="nav-auth">
+                <button class="auth-btn btn-admin-db" id="db-view-trigger" style="display:none;" data-cs="DATABÁZE" data-en="DATABASE"><i class="ph ph-database"></i> DATABASE</button>
                 <button class="auth-btn btn-login" id="login-trigger" data-cs="PŘIHLÁSIT" data-en="LOGIN">LOGIN</button>
                 <button class="auth-btn btn-register btn-filled" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
             </div>
@@ -546,6 +547,39 @@
                 <textarea id="p-desc-en" name="descriptionEN" placeholder="POPIS (EN)" rows="2" required></textarea>
                 <button type="submit" class="btn-primary" style="width:100%; margin-top:1rem;">NAHRÁT</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Admin Database Modal -->
+    <div id="admin-db-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content textured-bg admin-db-modal">
+            <div class="window-title-bar">
+                <div class="window-controls-left">
+                    <div class="win-dot close" id="close-db-modal-dot"><i class="ph ph-x"></i></div>
+                    <div class="win-dot minimize"><i class="ph ph-minus"></i></div>
+                    <div class="win-dot maximize"><i class="ph ph-plus"></i></div>
+                </div>
+                <div class="window-title">SYS.DATABASE_VIEWER</div>
+                <div class="window-controls-right">
+                    <i class="ph ph-x win-btn" id="close-db-modal-btn"></i>
+                </div>
+            </div>
+            
+            <div class="db-modal-body">
+                <div class="db-tabs">
+                    <button class="db-tab-btn active" data-tab="messages" data-cs="POPTÁVKY" data-en="SUBMISSIONS">SUBMISSIONS</button>
+                    <button class="db-tab-btn" data-tab="users" data-cs="UŽIVATELÉ" data-en="USERS">USERS</button>
+                    <div class="db-stats mono-label">TOTAL: <span id="db-total-count">0</span></div>
+                </div>
+                
+                <div class="db-view-area scrollbar-minimal">
+                    <div id="db-table-wrapper">
+                        <!-- Content injected via JS -->
+                        <div class="loading-state mono-label">SYNCHRONIZING DATA...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

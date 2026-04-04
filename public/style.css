@@ -811,3 +811,154 @@ body.admin-mode .delete-btn { display: inline-block; }
     0% { transform: translateY(-5%); }
     100% { transform: translateY(-95%); }
 }
+
+/* ADMIN DATABASE MODAL */
+.admin-db-modal {
+    max-width: 95vw;
+    width: 1200px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.db-modal-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    overflow: hidden;
+}
+
+.db-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+    align-items: flex-end;
+}
+
+.db-tab-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-muted);
+    padding: 0.6rem 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.db-tab-btn.active {
+    background: var(--text-color);
+    color: var(--bg-color);
+    border-color: var(--text-color);
+}
+
+.db-tab-btn:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--text-color);
+}
+
+.db-stats {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+.db-view-area {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
+    position: relative;
+    max-height: 100%;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.admin-table th {
+    position: sticky;
+    top: 0;
+    background: #111;
+    padding: 1rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+    z-index: 2;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+    opacity: 0.9;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+    opacity: 1;
+}
+
+.btn-admin-db {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    margin-right: 1.5rem;
+    transition: all 0.3s;
+}
+
+.btn-admin-db:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.loading-state, .error-state {
+    padding: 4rem;
+    text-align: center;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    font-family: var(--font-mono);
+}
+
+.error-state { color: #f44336; }
+
+/* Scrollbar for DB Area */
+.scrollbar-minimal::-webkit-scrollbar { width: 6px; }
+.scrollbar-minimal::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-minimal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+.scrollbar-minimal::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+@media (max-width: 768px) {
+    .btn-admin-db { margin-right: 0.5rem; padding: 0.3rem 0.5rem; font-size: 0.65rem; }
+    .db-modal-body { padding: 1rem; }
+    .admin-table { font-size: 0.7rem; }
+    .db-tabs { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+    .db-stats { margin-left: 0; margin-top: 0.5rem; }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+.loading-state {
+    animation: pulse 1.5s infinite;
+}
+
