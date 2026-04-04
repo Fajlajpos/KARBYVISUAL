@@ -176,9 +176,9 @@ h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); text-transform
      top: 0;
      left: 0;
      width: 100%;
-     aspect-ratio: 601 / 902; /* Match the exact image dimensions: 601x902 */
+     aspect-ratio: 601 / 902; /* Match the previous dimensions: 601x902 */
      z-index: -2;
-     background: url('/assets/pozadi.jpg') no-repeat top center / 100% auto;
+     background: url('/assets/kolaz_v5.jpg') no-repeat top center / 100% auto;
      opacity: 0.42;
      pointer-events: none;
      filter: brightness(0.85);
