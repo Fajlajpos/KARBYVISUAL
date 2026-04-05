@@ -176,7 +176,7 @@ h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); text-transform
      top: 0;
      left: 0;
      width: 100%;
-     aspect-ratio: 601 / 902; /* Match the previous dimensions: 601x902 */
+      height: 100%; /* Fill the entire main-content area */
      z-index: -2;
      background: url('/assets/kolaz_v5.jpg') no-repeat top center / 100% auto;
      opacity: 0.42;
@@ -609,6 +609,49 @@ body.admin-mode .delete-btn { display: inline-block; }
 .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
 .submit-btn { background: var(--metallic); color: #000; border: none; padding: 1rem; font-family: var(--font-mono); font-weight: 700; cursor: pointer; transition: background 0.3s; }
 .submit-btn:hover { background: var(--accent); color: #fff; }
+
+/* REVIEWS SECTION */
+.reviews-section {
+    overflow: hidden;
+    padding: 15vh 0;
+}
+
+.reviews-ticker-container {
+    margin-top: 5rem;
+    position: relative;
+    width: 100%;
+}
+
+.reviews-ticker {
+    display: flex;
+    gap: 8vw;
+    width: max-content;
+    padding-left: 2vw;
+}
+
+.review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+}
+
+.review-text {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    font-weight: 500;
+}
+
+.review-author {
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    opacity: 0.4;
+    font-family: var(--font-mono);
+}
 
 /* FOOTER & MODALS */
 .footer { border-top: var(--border-thin); padding-top: 4rem; z-index: 10; position:relative; background: #000;}

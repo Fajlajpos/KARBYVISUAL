@@ -51,8 +51,7 @@
     <!-- Auth Modals moved to bottom -->
 
     <div class="bg-pattern"></div>
-    <!-- Simple Scrolling Background (Full Image) -->
-    <div class="site-intro-bg"></div>
+    <!-- Simple Scrolling Background (Full Image) moved inside main for containment -->
     
     <!-- Micro-details and Data Frame -->
     <div class="ui-frame">
@@ -108,7 +107,9 @@
         </div>
     </nav>
 
-    <main id="main-content">
+    <main id="main-content" style="position: relative;">
+        <!-- Simple Scrolling Background (Full Image) -->
+        <div class="site-intro-bg"></div>
         <section id="hero" class="hero-brand-section hero-section">
             <div class="giant-branding-wrapper">
                 <h1 class="giant-branding reveal-fade" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">KARBYVISUALS</h1>
@@ -258,6 +259,33 @@
                             <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
                         </div>
                         <span class="folder-name" data-cs="Akce" data-en="Events">Akce</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 4. REVIEWS SECTION -->
+        <section id="reviews" class="reviews-section bordered-section">
+            <div class="container">
+                <div class="section-top-label">
+                    <span class="mono-label" data-cs="RECENZE // 03" data-en="REVIEWS // 03">RECENZE // 03</span>
+                </div>
+                
+                <div class="reviews-ticker-container">
+                    <div class="reviews-ticker" id="reviews-ticker">
+                        <div class="review-item">
+                            <span class="review-text" data-cs="&quot;NAPROSTÁ VIZUÁLNÍ DOKONALOST. KARBY ROZUMÍ SVĚTLU A STŘIHU JAKO MÁLOKDO.&quot;" data-en="&quot;ABSOLUTE VISUAL PERFECTION. KARBY UNDERSTANDS LIGHT AND EDITING LIKE FEW OTHERS.&quot;">"NAPROSTÁ VIZUÁLNÍ DOKONALOST. KARBY ROZUMÍ SVĚTLU A STŘIHU JAKO MÁLOKDO."</span>
+                            <span class="review-author mono-label">— JAKUB V. / REŽISÉR</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-text" data-cs="&quot;SYROVÁ EMOCE V KAŽDÉM ZÁBĚRU. BRUTÁLNÍ ESTETIKA, KTERÁ FUNGUJE.&quot;" data-en="&quot;RAW EMOTION IN EVERY SHOT. BRUTAL AESTHETICS THAT ACTUALLY WORKS.&quot;">"SYROVÁ EMOCE V KAŽDÉM ZÁBĚRU. BRUTÁLNÍ ESTETIKA, KTERÁ FUNGUJE."</span>
+                            <span class="review-author mono-label">— ELIŠKA K. / FASHION DESIGNER</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-text" data-cs="&quot;PROFESIONÁLNÍ PŘÍSTUP A UNIKÁTNÍ VIZUÁLNÍ JAZYK. DOPORUČUJI.&quot;" data-en="&quot;PROFESSIONAL APPROACH AND UNIQUE VISUAL LANGUAGE. HIGHLY RECOMMENDED.&quot;">"PROFESIONÁLNÍ PŘÍSTUP A UNIKÁTNÍ VIZUÁLNÍ JAZYK. DOPORUČUJI."</span>
+                            <span class="review-author mono-label">— MAREK S. / PRODUCER</span>
+                        </div>
                     </div>
                 </div>
             </div>

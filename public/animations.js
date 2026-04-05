@@ -138,6 +138,35 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 1, ease: 'power3.out'
     }, "-=0.5");
 
+    // Reviews Ticker Animation (Brutal Ticker)
+    const ticker = document.querySelector('.reviews-ticker');
+    if (ticker) {
+        // Double the content for seamless looping
+        const content = ticker.innerHTML;
+        ticker.innerHTML = content + content;
+        
+        const tickerItems = ticker.querySelectorAll('.review-item');
+        let totalWidth = 0;
+        // Calculate the width of one set of items
+        const halfItems = tickerItems.length / 2;
+        for(let i = 0; i < halfItems; i++) {
+            totalWidth += tickerItems[i].offsetWidth + parseFloat(getComputedStyle(ticker).gap);
+        }
+
+        const tickerAnim = gsap.to(ticker, {
+            x: -totalWidth,
+            duration: 35,
+            ease: "none",
+            repeat: -1,
+            onReverseComplete: () => {
+                tickerAnim.totalTime(tickerAnim.rawTime() + tickerAnim.duration() * 10);
+            }
+        });
+
+        ticker.addEventListener('mouseenter', () => gsap.to(tickerAnim, { timeScale: 0, duration: 0.5 }));
+        ticker.addEventListener('mouseleave', () => gsap.to(tickerAnim, { timeScale: 1, duration: 0.5 }));
+    }
+
 });
 
 // ==========================================================================
