@@ -179,16 +179,15 @@ window.animateModalOpen = function(modalId) {
     gsap.set(modal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
     gsap.set(overlay, { opacity: 0 });
     
-    const isMobile = window.innerWidth <= 768;
     gsap.set(panel, { 
-        x: isMobile ? '0%' : '100%', 
-        y: isMobile ? '100%' : '0%',
-        opacity: 1
+        scale: 0.95,
+        y: 20,
+        opacity: 0
     });
 
     const tl = gsap.timeline();
-    tl.to(overlay, { opacity: 1, duration: 0.5, ease: "power2.out" })
-      .to(panel, { x: '0%', y: '0%', duration: 0.8, ease: "expo.out" }, "-=0.3");
+    tl.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" })
+      .to(panel, { scale: 1, y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.2)" }, "-=0.2");
 };
 
 window.animateModalClose = function(modalId, callback) {
@@ -204,19 +203,19 @@ window.animateModalClose = function(modalId, callback) {
         return;
     }
 
-    const isMobile = window.innerWidth <= 768;
     const tl = gsap.timeline({ onComplete: () => {
         gsap.set(modal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 });
         if (callback) callback();
     }});
 
     tl.to(panel, { 
-        x: isMobile ? '0%' : '100%', 
-        y: isMobile ? '100%' : '0%', 
-        duration: 0.6, 
-        ease: "expo.in" 
+        scale: 0.95, 
+        opacity: 0, 
+        y: 10,
+        duration: 0.4, 
+        ease: "power2.in" 
     })
-    .to(overlay, { opacity: 0, duration: 0.4, ease: "power2.in" }, "-=0.2");
+    .to(overlay, { opacity: 0, duration: 0.3, ease: "power2.in" }, "-=0.2");
 };
 
 window.transitionAuthPanels = function(fromId, toId) {
@@ -234,21 +233,20 @@ window.transitionAuthPanels = function(fromId, toId) {
         return;
     }
 
-    const isMobile = window.innerWidth <= 768;
     const tl = gsap.timeline();
     
-    // Slide out current
+    // Fade out current
     tl.to(fromPanel, { 
-        x: isMobile ? '0%' : '100%', 
-        y: isMobile ? '100%' : '0%', 
-        duration: 0.5, 
-        ease: "expo.in" 
+        scale: 0.98,
+        opacity: 0, 
+        duration: 0.3, 
+        ease: "power2.inOut" 
       })
       .set(fromModal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 })
       .set(toModal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 })
       .set(toOverlay, { opacity: 1 })
-      .set(toPanel, { x: isMobile ? '0%' : '100%', y: isMobile ? '100%' : '0%', opacity: 1 })
-      .to(toPanel, { x: '0%', y: '0%', duration: 0.8, ease: "expo.out" });
+      .set(toPanel, { scale: 1.02, opacity: 0 })
+      .to(toPanel, { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" });
     
     fromModal.classList.remove('active');
     toModal.classList.add('active');

@@ -503,13 +503,17 @@ function initAuthUI() {
             if (modal && modal.id === 'folder-modal') return;
 
             if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
+                if (modal.classList.contains('auth-modal')) {
+                    closeAuthModal(modal.id);
+                } else {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
             }
         }
         
         // Switches
-        if (e.target.classList.contains('switch-btn')) {
+        if (e.target.classList.contains('switch-btn') || e.target.classList.contains('switch-btn-full')) {
             const current = e.target.closest('.auth-modal').id;
             const target = e.target.dataset.target;
             switchModals(current, target);
