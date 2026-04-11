@@ -151,11 +151,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     item.classList.remove('active');
                 }
-            },
-            // Scrub-like feel for the opacity/scale can be handled by CSS transitions
-            // or GSAP for even more smoothness. Here we use class toggle for CSS transitions.
+            }
         });
     });
+
+    // ==========================================================================
+    // Engaging Micro-Interactions (Hero Section)
+    // ==========================================================================
+    const heroSection = document.querySelector('.hero-section');
+    const magneticBtn = document.querySelector('.btn-primary');
+
+    // 1. Magnetic Button Effect
+    if (magneticBtn && window.innerWidth > 768) {
+        magneticBtn.addEventListener('mousemove', (e) => {
+            const rect = magneticBtn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            magneticBtn.classList.add('magnetic-active');
+            // Pull the button slightly towards the cursor (reduced scale for subtlety)
+            magneticBtn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+        });
+
+        magneticBtn.addEventListener('mouseleave', () => {
+            magneticBtn.classList.remove('magnetic-active');
+            magneticBtn.style.transform = 'translate(0px, 0px)';
+        });
+    }
 
 });
 
