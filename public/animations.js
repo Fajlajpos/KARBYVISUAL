@@ -233,23 +233,35 @@ window.transitionAuthPanels = function(fromId, toId) {
         return;
     }
 
-    const tl = gsap.timeline();
-    
-    // Fade out current
-    tl.to(fromPanel, { 
-        scale: 0.98,
-        opacity: 0, 
-        duration: 0.3, 
-        ease: "power2.inOut" 
-      })
-      .set(fromModal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 })
-      .set(toModal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 })
-      .set(toOverlay, { opacity: 1 })
-      .set(toPanel, { scale: 1.02, opacity: 0 })
-      .to(toPanel, { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" });
-    
-    fromModal.classList.remove('active');
+    // Make the target modal visible globally without removing the fromModal yet
     toModal.classList.add('active');
+    gsap.set(toModal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
+    gsap.set(toOverlay, { opacity: 1 });
+    gsap.set(toPanel, { scale: 1.04, opacity: 0, y: 15 });
+
+    const tl = gsap.timeline({
+        onComplete: () => {
+            fromModal.classList.remove('active');
+            gsap.set(fromModal, { visibility: 'hidden', pointerEvents: 'none', opacity: 0 });
+            gsap.set(fromPanel, { scale: 1, opacity: 1, y: 0 }); // reset for future
+        }
+    });
+    
+    // Cross-fade both panels for a seamless "plynulejsi" transition
+    tl.to(fromPanel, { 
+        scale: 0.96,
+        opacity: 0, 
+        y: -15,
+        duration: 0.5, 
+        ease: "power3.inOut" 
+    }, 0)
+    .to(toPanel, { 
+        scale: 1, 
+        opacity: 1, 
+        y: 0,
+        duration: 0.5, 
+        ease: "power3.out" 
+    }, 0.1);
 };
 
 window.animateToastIn = function(toast) {

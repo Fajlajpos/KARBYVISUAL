@@ -513,9 +513,10 @@ function initAuthUI() {
         }
         
         // Switches
-        if (e.target.classList.contains('switch-btn') || e.target.classList.contains('switch-btn-full')) {
-            const current = e.target.closest('.auth-modal').id;
-            const target = e.target.dataset.target;
+        const switchBtn = e.target.closest('.switch-btn') || e.target.closest('.switch-btn-full');
+        if (switchBtn) {
+            const current = switchBtn.closest('.auth-modal').id;
+            const target = switchBtn.dataset.target;
             switchModals(current, target);
         }
 
