@@ -42,14 +42,14 @@ body.modal-open {
 .tv-noise {
     position: fixed; inset: 0; z-index: 9987; pointer-events: none;
     background: var(--noise-bg);
-    opacity: 0.12; mix-blend-mode: screen; 
+    opacity: 0.05; mix-blend-mode: screen; 
 }
 /* WOW Effect: Scanlines - redefined for premium feel */
 .scanlines {
     position: fixed; inset: 0; z-index: 9988; pointer-events: none;
     background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 50%);
     background-size: 100% 4px;
-    opacity: 0.3;
+    opacity: 0.15;
 }
 /* Blur Background Aesthetic */
 .blur-container {
