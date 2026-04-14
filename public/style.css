@@ -23,7 +23,10 @@ body {
     min-height: 100vh;
 }
 
-body.modal-open { overflow: hidden !important; height: 100vh !important; }
+body.modal-open { 
+    overflow: hidden !important; 
+    height: 100vh !important;
+}
 
 /* Background Grid Pattern - Acid Style */
 .bg-pattern {
@@ -532,7 +535,7 @@ body.admin-enabled .delete-btn { display: flex; }
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
-    padding: 3rem;
+    padding: 3rem; /* Symmetrical padding matched with left */
     margin-top: 0;
 }
 .folder-content-modal .port-item { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); }
@@ -897,11 +900,12 @@ body.admin-enabled .delete-btn { display: flex; }
 }
 
 .dashboard-sidebar {
-    background: rgba(0,0,0,0.3);
+    width: 280px;
+    background: rgba(255,255,255,0.02);
     border-right: 1px solid rgba(255,255,255,0.05);
-    padding: 2rem 1rem;
     display: flex;
     flex-direction: column;
+    padding: 2rem 1rem;
     gap: 0.5rem;
 }
 
@@ -931,12 +935,13 @@ body.admin-enabled .delete-btn { display: flex; }
 }
 
 .dashboard-main {
-    padding: 2.5rem;
+    padding: 3rem; /* Symmetrical padding */
     overflow-y: auto;
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    flex-grow: 1;
+    min-height: 0;
 }
 
 #portfolio-form {
@@ -1300,6 +1305,8 @@ body.admin-enabled .delete-btn { display: flex; }
     background: rgba(0, 0, 0, 0.2);
     position: relative;
     max-height: 100%;
+    padding: 2.5rem; /* Symmetry with external containers */
+    overscroll-behavior: contain;
 }
 
 .admin-table {
@@ -1364,11 +1371,35 @@ body.admin-enabled .delete-btn { display: flex; }
 
 .error-state { color: #f44336; }
 
-/* GLOBAL BRUTALIST SCROLLBAR */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #fff; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #ccc; }
+/* GLOBAL BRUTALIST SCROLLBAR - Simple & Discrete for main page */
+::-webkit-scrollbar { 
+    width: 5px; 
+    height: 5px; 
+}
+::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb { 
+    background: #fff; 
+    border-radius: 0; 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: #ccc; 
+}
+
+/* INTERNAL MENU SCROLLBAR - Premium with Visual Gap (User Choice) */
+.dashboard-main::-webkit-scrollbar,
+#folder-items-grid::-webkit-scrollbar,
+.db-view-area::-webkit-scrollbar { 
+    width: 20px;
+}
+.dashboard-main::-webkit-scrollbar-thumb,
+#folder-items-grid::-webkit-scrollbar-thumb,
+.db-view-area::-webkit-scrollbar-thumb { 
+    background-color: #fff; 
+    border: 7px solid rgba(0, 0, 0, 0); 
+    background-clip: padding-box; 
+}
 
 /* Remove old scrollbar helpers */
 .scrollbar-minimal::-webkit-scrollbar { display: none; }

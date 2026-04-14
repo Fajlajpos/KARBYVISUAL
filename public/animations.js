@@ -15,6 +15,8 @@ const lenis = new Lenis({
     infinite: false,
 })
 
+window.lenis = lenis; // Expose for main.js control
+
 function raf(time) {
     lenis.raf(time)
     requestAnimationFrame(raf)

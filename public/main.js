@@ -132,6 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Body Scroll Lock Helper
     window.toggleBodyLock = function(lock) {
         document.body.classList.toggle('modal-open', lock);
+        if (window.lenis) {
+            if (lock) window.lenis.stop();
+            else window.lenis.start();
+        }
     };
 
     // Keyboard Shortcuts

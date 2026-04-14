@@ -35,14 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function openDashboard() {
         if (!dashboardModal) return;
         dashboardModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        if (window.toggleBodyLock) window.toggleBodyLock(true);
         fetchCurrentSettings();
     }
 
     function closeDashboard() {
         if (!dashboardModal) return;
         dashboardModal.classList.remove('active');
-        document.body.style.overflow = '';
+        if (window.toggleBodyLock) window.toggleBodyLock(false);
     }
 
     // TAB SWITCHING
