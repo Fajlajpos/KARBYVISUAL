@@ -139,29 +139,38 @@ app.get('/api/portfolio', async (req, res) => {
 });
 
 // 3. Admin Portfolio Actions (Protected)
-app.post('/api/portfolio', verifyToken, requireAdmin, upload.single('media'), async (req, res) => {
+app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20), async (req, res) => {
     try {
         const { title, category, mediaType, vimeoUrl, descriptionCS, descriptionEN, tags } = req.body;
         
-        // Handle media: if file uploaded take file route, else take vimeo string
-        let finalMediaUrl = '';
+        // Handle Video/Vimeo Link (Single item as it's a link)
         if (mediaType === 'vimeo' && vimeoUrl) {
-            finalMediaUrl = vimeoUrl;
-        } else if (req.file) {
-            finalMediaUrl = '/uploads/' + req.file.filename;
+            const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
+            await dbAsync.run(
+                `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
+                [title, category, description, vimeoUrl, '/assets/download_1774980242270.jpeg', tags]
+            );
+            return res.json({ message: 'Portfolio item created' });
         }
 
-        // Combine descriptions into JSON
+        // Handle Multiple Files
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: 'No media files uploaded' });
+        }
+
         const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
 
-        // Note: keeping thumbnail_url mapping to same media or ignoring for now as they haven't explicitly asked for separate thumbs in the new modal. Let's use finalMediaUrl as both.
-        const thumbnail_url = req.file && req.file.mimetype.startsWith('image') ? finalMediaUrl : '/assets/download_1774980242270.jpeg'; // use base texture if video
+        for (const file of req.files) {
+            const finalMediaUrl = '/uploads/' + file.filename;
+            const thumbnail_url = file.mimetype.startsWith('image') ? finalMediaUrl : '/assets/download_1774980242270.jpeg';
 
-        const result = await dbAsync.run(
-            `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
-            [title, category, description, finalMediaUrl, thumbnail_url, tags]
-        );
-        res.json({ message: 'Portoflio item created', id: result.lastID });
+            await dbAsync.run(
+                `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
+                [title, category, description, finalMediaUrl, thumbnail_url, tags]
+            );
+        }
+
+        res.json({ message: `${req.files.length} items created successfully` });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

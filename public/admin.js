@@ -208,6 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContainer = document.getElementById('p-preview-container');
     const previewImg = document.getElementById('p-preview-img');
 
+    const metaInfo = document.getElementById('p-meta-info');
+
     if (dropzone && mediaInput) {
         // Drag feedback
         mediaInput.addEventListener('dragenter', () => dropzone.classList.add('drag-over'));
@@ -215,14 +217,52 @@ document.addEventListener('DOMContentLoaded', () => {
         mediaInput.addEventListener('drop', () => dropzone.classList.remove('drag-over'));
 
         mediaInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImg.src = e.target.result;
-                    previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                // Metadata
+                let totalSize = 0;
+                let imageCount = 0;
+                let videoCount = 0;
+                
+                previewContainer.innerHTML = '<div class="scanner-line"></div>'; // Reset
+                const galleryWrapper = document.createElement('div');
+                galleryWrapper.className = 'preview-gallery';
+                previewContainer.appendChild(galleryWrapper);
+
+                Array.from(files).forEach((file, index) => {
+                    totalSize += file.size;
+                    if (file.type.startsWith('image/')) imageCount++;
+                    else videoCount++;
+
+                    // Create Small Preview
+                    const thumb = document.createElement('div');
+                    thumb.className = 'preview-thumb';
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (re) => { thumb.innerHTML = `<img src="${re.target.result}">`; };
+                        reader.readAsDataURL(file);
+                    } else {
+                        thumb.innerHTML = `<div class="video-placeholder"><i class="ph ph-video-camera"></i></div>`;
+                    }
+                    galleryWrapper.appendChild(thumb);
+                });
+
+                const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
+                if (metaInfo) {
+                    metaInfo.innerHTML = `<span>BATCH: ${files.length} ITEMS</span><span>TOTAL: ${totalSizeMB} MB</span>`;
+                }
+
+                previewContainer.classList.remove('hidden');
+                
+                // Re-add status overlay
+                const statusOverlay = document.createElement('div');
+                statusOverlay.className = 'preview-overlay';
+                statusOverlay.innerHTML = `
+                    <div class="meta-info">${metaInfo.innerHTML}</div>
+                    <div class="status-ready"><i class="ph ph-check-circle"></i> DATA_ARRAY_READY</div>
+                `;
+                previewContainer.appendChild(statusOverlay);
+
             } else {
                 clearPreview();
             }
@@ -230,8 +270,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearPreview() {
-        if (previewImg) previewImg.src = '';
-        if (previewContainer) previewContainer.classList.add('hidden');
+        if (previewContainer) {
+            previewContainer.innerHTML = '<div class="scanner-line"></div>';
+            previewContainer.classList.add('hidden');
+        }
     }
 
     // SUCCESS ANIMATION logic

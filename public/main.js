@@ -15,6 +15,7 @@ let currentLang = localStorage.getItem('karbyLang') || 'cs';
 
 // State
 let currentUser = null;
+let portfolioData = [];
 let currentFolderItems = [];
 let currentLightboxIndex = -1;
 
@@ -125,8 +126,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeLightbox() {
         lightboxModal.classList.remove('active');
         lightboxMedia.innerHTML = '';
-        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
     }
+
+    // Body Scroll Lock Helper
+    window.toggleBodyLock = function(lock) {
+        document.body.classList.toggle('modal-open', lock);
+    };
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+        const activeModal = document.querySelector('.modal.active, .auth-modal.active');
+        if (!activeModal) return;
+
+        if (e.key === 'Escape') {
+            if (activeModal.id === 'lightbox-modal') closeLightbox();
+            else if (activeModal.classList.contains('auth-modal')) closeAuthModal(activeModal.id);
+            else if (activeModal.id === 'folder-modal') closeFolder();
+            else if (activeModal.id === 'admin-dashboard-modal') document.getElementById('close-dashboard-btn').click();
+        }
+
+        if (activeModal.id === 'lightbox-modal') {
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+        }
+    });
+
+    // Modified Close logic to use window helper
 });
 
 // ==========================================
@@ -270,7 +296,7 @@ function openFolderModal(category, titles, originEl) {
         filtered.forEach(item => {
             const div = document.createElement('div');
             div.className = 'port-item reveal-fade active';
-            div.style.opacity = 0; // Prepare for stagger
+            div.style.opacity = 0;
             
             let adminHtml = '';
             if (window.isAdmin) {
@@ -279,18 +305,54 @@ function openFolderModal(category, titles, originEl) {
                  </div>`;
             }
 
+            let mediaHtml = '';
+            const url = (item.media_url || '').toLowerCase();
+            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube');
+
+            if (isVideo && !url.includes('vimeo') && !url.includes('youtube')) {
+                mediaHtml = `
+                    <div class="port-video-wrap">
+                        <video src="${item.media_url}" muted loop playsinline class="port-video-preview"></video>
+                        <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
+                    </div>
+                `;
+            } else {
+                mediaHtml = `
+                    <div class="port-img-wrap">
+                        <img src="${item.thumbnail_url || '/assets/portfolio-placeholder.png'}" alt="${item.title}" class="port-img" loading="lazy" onerror="this.src='/assets/portfolio-placeholder.png'">
+                        ${isVideo ? '<div class="video-grid-overlay"><i class="ph ph-video-camera"></i></div>' : ''}
+                    </div>
+                `;
+            }
+
             div.innerHTML = `
                 ${adminHtml}
-                <div class="port-img-wrap">
-                    <img src="${item.thumbnail_url || '/assets/portfolio-placeholder.png'}" alt="${item.title}" class="port-img" loading="lazy" onerror="this.src='/assets/portfolio-placeholder.png'">
-                </div>
+                ${mediaHtml}
                 <div class="port-info">
                     <h3>${item.title}</h3>
                     <span class="port-cat">[ ${item.category} ]</span>
                 </div>
             `;
             
-            div.querySelector('.port-img-wrap').addEventListener('click', () => {
+            // Add delete listener if admin
+            if (window.isAdmin) {
+                div.querySelector('.delete-btn').addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!confirm('DELETE THIS ITEM PERMANENTLY?')) return;
+                    
+                    try {
+                        const res = await fetch(`/api/portfolio/${item.id}`, { method: 'DELETE' });
+                        if (res.ok) {
+                            showToast('ITEM DELETED', 'success');
+                            loadPortfolio().then(() => openFolderModal(category, titles, originEl));
+                        }
+                    } catch (err) {
+                        showToast('DELETE FAILED', 'error');
+                    }
+                });
+            }
+
+            div.querySelector('.port-img-wrap, .port-video-wrap').addEventListener('click', () => {
                 currentLightboxIndex = filtered.indexOf(item);
                 openLightbox(item);
             });
@@ -309,7 +371,7 @@ function openFolderModal(category, titles, originEl) {
 
     // macOS Opening Animation Logic
     modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    window.toggleBodyLock(true);
 
     // Start modal hidden and scaled down
     gsap.set(modalContent, { scale: 0.88, opacity: 0 });
@@ -386,6 +448,7 @@ function openLightbox(item) {
     }
     
     lightboxModal.classList.add('active');
+    window.toggleBodyLock(true);
 }
 
 function navigateLightbox(direction) {
@@ -750,7 +813,7 @@ function renderDbTable(data, type) {
 function openAuthModal(id) {
     const modal = document.getElementById(id);
     modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    window.toggleBodyLock(true);
     if (window.animateModalOpen) window.animateModalOpen(id);
 }
 
@@ -758,11 +821,11 @@ function closeAuthModal(id) {
     if (window.animateModalClose) {
         window.animateModalClose(id, () => {
             document.getElementById(id).classList.remove('active');
-            document.body.style.overflow = '';
+            window.toggleBodyLock(false);
         });
     } else {
         document.getElementById(id).classList.remove('active');
-        document.body.style.overflow = '';
+        window.toggleBodyLock(false);
     }
 }
 

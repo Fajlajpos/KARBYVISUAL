@@ -650,14 +650,21 @@
                                 <div id="file-upload-section">
                                     <label class="mono-label" data-cs="VLOŽIT SOUBOR" data-en="UPLOAD FILE">UPLOAD FILE</label>
                                     <div class="upload-dropzone" id="p-dropzone">
-                                        <input type="file" id="p-media" name="media" accept="image/*,video/*">
+                                        <input type="file" id="p-media" name="media" accept="image/*,video/*" multiple>
                                         <div class="dropzone-content">
                                             <i class="ph ph-upload-simple"></i>
                                             <span data-cs="KLIKNĚTE NEBO PŘETÁHNĚTE SOUBOR" data-en="CLICK OR DRAG FILE HERE">KLIKNĚTE NEBO PŘETÁHNĚTE SOUBOR</span>
                                         </div>
                                         <div id="p-preview-container" class="preview-container hidden">
+                                            <div class="scanner-line"></div>
                                             <img id="p-preview-img" src="" alt="Preview">
-                                            <div class="preview-overlay"><i class="ph ph-check-circle"></i> DATA_READY</div>
+                                            <div class="preview-overlay">
+                                                <div class="meta-info" id="p-meta-info">
+                                                    <span>SIZE: ---</span>
+                                                    <span>TYPE: ---</span>
+                                                </div>
+                                                <div class="status-ready"><i class="ph ph-check-circle"></i> DATA_READY</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
