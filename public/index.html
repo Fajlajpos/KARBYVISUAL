@@ -281,27 +281,62 @@
                     <span class="mono-label" data-cs="SYSTÉMOVÝ MONITOR // 03" data-en="SYSTEM MONITOR // 03">SYSTÉMOVÝ MONITOR // 03</span>
                 </div>
                 
-                <div class="reviews-focus-list" id="reviews-focus-list">
-                    <div class="focus-item" data-index="01">
-                        <div class="focus-content">
-                            <h3 class="focus-text" data-cs="&quot;NAPROSTÁ VIZUÁLNÍ DOKONALOST. KARBY ROZUMÍ SVĚTLU A STŘIHU JAKO MÁLOKDO.&quot;" data-en="&quot;ABSOLUTE VISUAL PERFECTION. KARBY UNDERSTANDS LIGHT AND EDITING LIKE FEW OTHERS.&quot;">"NAPROSTÁ VIZUÁLNÍ DOKONALOST. KARBY ROZUMÍ SVĚTLU A STŘIHU JAKO MÁLOKDO."</h3>
-                            <span class="focus-author mono-label">— JAKUB V. / REŽISÉR</span>
+                <div class="reviews-grid" id="reviews-grid">
+                    <div class="review-card reveal-fade" data-index="01">
+                        <div class="card-header">
+                            <span class="mono-label">REC_DATA_LNK_01</span>
+                            <span class="mono-label alert-label">VERIFIED</span>
                         </div>
-                        <div class="focus-scanner"></div>
+                        <div class="card-content">
+                            <i class="ph ph-quotes-fill quote-icon"></i>
+                            <h3 class="review-text" data-cs="&quot;NAPROSTÁ VIZUÁLNÍ DOKONALOST. KARBY ROZUMÍ SVĚTLU A STŘIHU JAKO MÁLOKDO.&quot;" data-en="&quot;ABSOLUTE VISUAL PERFECTION. KARBY UNDERSTANDS LIGHT AND EDITING LIKE FEW OTHERS.&quot;">"NAPROSTÁ VIZUÁLNÍ DOKONALOST. KARBY ROZUMÍ SVĚTLU A STŘIHU JAKO MÁLOKDO."</h3>
+                        </div>
+                        <div class="card-footer">
+                            <div class="author-info">
+                                <span class="author-name">— JAKUB V.</span>
+                                <span class="author-role mono-label">REŽISÉR</span>
+                            </div>
+                            <div class="card-corner-icon"><i class="ph ph-bounding-box"></i></div>
+                        </div>
+                        <div class="card-scanner"></div>
                     </div>
-                    <div class="focus-item" data-index="02">
-                        <div class="focus-content">
-                            <h3 class="focus-text" data-cs="&quot;SYROVÁ EMOCE V KAŽDÉM ZÁBĚRU. BRUTÁLNÍ ESTETIKA, KTERÁ FUNGUJE.&quot;" data-en="&quot;RAW EMOTION IN EVERY SHOT. BRUTAL AESTHETICS THAT ACTUALLY WORKS.&quot;">"SYROVÁ EMOCE V KAŽDÉM ZÁBĚRU. BRUTÁLNÍ ESTETIKA, KTERÁ FUNGUJE."</h3>
-                            <span class="focus-author mono-label">— ELIŠKA K. / FASHION DESIGNER</span>
+
+                    <div class="review-card reveal-fade" data-index="02">
+                        <div class="card-header">
+                            <span class="mono-label">REC_DATA_LNK_02</span>
+                            <span class="mono-label alert-label">VERIFIED</span>
                         </div>
-                        <div class="focus-scanner"></div>
+                        <div class="card-content">
+                            <i class="ph ph-quotes-fill quote-icon"></i>
+                            <h3 class="review-text" data-cs="&quot;SYROVÁ EMOCE V KAŽDÉM ZÁBĚRU. BRUTÁLNÍ ESTETIKA, KTERÁ FUNGUJE.&quot;" data-en="&quot;RAW EMOTION IN EVERY SHOT. BRUTAL AESTHETICS THAT ACTUALLY WORKS.&quot;">"SYROVÁ EMOCE V KAŽDÉM ZÁBĚRU. BRUTÁLNÍ ESTETIKA, KTERÁ FUNGUJE."</h3>
+                        </div>
+                        <div class="card-footer">
+                            <div class="author-info">
+                                <span class="author-name">— ELIŠKA K.</span>
+                                <span class="author-role mono-label">FASHION DESIGNER</span>
+                            </div>
+                            <div class="card-corner-icon"><i class="ph ph-bounding-box"></i></div>
+                        </div>
+                        <div class="card-scanner"></div>
                     </div>
-                    <div class="focus-item" data-index="03">
-                        <div class="focus-content">
-                            <h3 class="focus-text" data-cs="&quot;PROFESIONÁLNÍ PŘÍSTUP A UNIKÁTNÍ VIZUÁLNÍ JAZYK. DOPORUČUJI.&quot;" data-en="&quot;PROFESSIONAL APPROACH AND UNIQUE VISUAL LANGUAGE. HIGHLY RECOMMENDED.&quot;">"PROFESIONÁLNÍ PŘÍSTUP A UNIKÁTNÍ VIZUÁLNÍ JAZYK. DOPORUČUJI."</h3>
-                            <span class="focus-author mono-label">— MAREK S. / PRODUCER</span>
+
+                    <div class="review-card reveal-fade" data-index="03">
+                        <div class="card-header">
+                            <span class="mono-label">REC_DATA_LNK_03</span>
+                            <span class="mono-label alert-label">VERIFIED</span>
                         </div>
-                        <div class="focus-scanner"></div>
+                        <div class="card-content">
+                            <i class="ph ph-quotes-fill quote-icon"></i>
+                            <h3 class="review-text" data-cs="&quot;PROFESIONÁLNÍ PŘÍSTUP A UNIKÁTNÍ VIZUÁLNÍ JAZYK. DOPORUČUJI.&quot;" data-en="&quot;PROFESSIONAL APPROACH AND UNIQUE VISUAL LANGUAGE. HIGHLY RECOMMENDED.&quot;">"PROFESIONÁLNÍ PŘÍSTUP A UNIKÁTNÍ VIZUÁLNÍ JAZYK. DOPORUČUJI."</h3>
+                        </div>
+                        <div class="card-footer">
+                            <div class="author-info">
+                                <span class="author-name">— MAREK S.</span>
+                                <span class="author-role mono-label">PRODUCER</span>
+                            </div>
+                            <div class="card-corner-icon"><i class="ph ph-bounding-box"></i></div>
+                        </div>
+                        <div class="card-scanner"></div>
                     </div>
                 </div>
             </div>
@@ -436,6 +471,10 @@
                 <span class="close-btn"><i class="ph ph-x"></i></span>
             </div>
             <div id="lightbox-media-container"></div>
+            <div class="lightbox-nav-btns">
+                <button class="lb-nav-btn prev" id="lb-prev"><i class="ph ph-caret-left"></i></button>
+                <button class="lb-nav-btn next" id="lb-next"><i class="ph ph-caret-right"></i></button>
+            </div>
             <div class="lightbox-info">
                 <h3 id="lightbox-title">RECORD_NAME</h3>
                 <span id="lightbox-category" class="mono-label cat-tag">TYPE</span>
@@ -554,37 +593,145 @@
         </div>
     </div>
 
-    <!-- Admin Upload Modal -->
-    <div id="admin-upload-modal" class="modal">
-        <div class="modal-content bento-modal textured-bg" style="width:500px;">
+    <!-- NEW ADMIN DASHBOARD MODAL -->
+    <div id="admin-dashboard-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content bento-modal dashboard-modal textured-bg">
             <div class="modal-header">
-                <span class="mono-label" data-cs="[ UPLOAD NOVÉ PRÁCE ]" data-en="[ UPLOAD NEW WORK ]">[ UPLOAD NOVÉ PRÁCE ]</span>
-                <span class="close-btn" id="close-upload-btn"><i class="ph ph-x"></i></span>
+                <div class="header-main">
+                    <span class="mono-label" data-cs="[ SYSTÉMOVÝ DASHBOARD ]" data-en="[ SYSTEM DASHBOARD ]">[ SYSTÉMOVÝ DASHBOARD ]</span>
+                    <h2 data-cs="ADMIN_KONZOLE" data-en="ADMIN_CONSOLE">ADMIN_KONZOLE</h2>
+                </div>
+                <div class="header-status">
+                    <span class="live-indicator"><span class="dot"></span> LIVE_STATUS: SYNC_ENABLED</span>
+                    <span class="close-btn" id="close-dashboard-btn"><i class="ph ph-x"></i></span>
+                </div>
             </div>
-            <form id="portfolio-form" enctype="multipart/form-data">
-                <input type="text" id="p-title" name="title" placeholder="NÁZEV ZÁZNAMU" required>
-                <div class="form-row" style="margin-bottom:1rem; display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-                    <select id="p-category" name="category" required>
-                        <option value="CINEMATOGRAPHY" data-cs="KAMERA" data-en="CINEMA">KAMERA</option>
-                        <option value="EDITING" data-cs="STŘIH" data-en="EDITING">STŘIH</option>
-                        <option value="PHOTOGRAPHY" data-cs="FOTO" data-en="PHOTO">FOTO</option>
-                    </select>
-                    <select id="p-media-type" name="mediaType" required>
-                        <option value="image">OBRÁZEK</option>
-                        <option value="video">VIDEO (MP4)</option>
-                        <option value="vimeo">VIMEO</option>
-                    </select>
+
+            <div class="dashboard-layout">
+                <aside class="dashboard-sidebar">
+                    <button class="db-nav-btn active" data-tab="upload"><i class="ph ph-plus-circle"></i> <span data-cs="PŘIDAT PRÁCI" data-en="ADD WORK">ADD WORK</span></button>
+                    <button class="db-nav-btn" data-tab="settings"><i class="ph ph-gear"></i> <span data-cs="NASTAVENÍ" data-en="SETTINGS">SETTINGS</span></button>
+                    <button class="db-nav-btn" data-tab="db-view"><i class="ph ph-database"></i> <span data-cs="DATABÁZE" data-en="DATABASE">DATABASE</span></button>
+                </aside>
+
+                <main class="dashboard-main scrollbar-minimal">
+                    <!-- Tab Content: Upload -->
+                    <div class="db-tab-content active" id="tab-upload">
+                        <form id="portfolio-form" enctype="multipart/form-data">
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label class="mono-label" data-cs="NÁZEV ZÁZNAMU" data-en="RECORD TITLE">RECORD TITLE</label>
+                                    <input type="text" id="p-title" name="title" placeholder="ENTER TITLE" required>
+                                </div>
+
+                                <div class="form-row duo">
+                                    <div class="form-group">
+                                        <label class="mono-label" data-cs="SLOŽKA (KATEGORIE)" data-en="FOLDER (CATEGORY)">FOLDER (CATEGORY)</label>
+                                        <select id="p-category" name="category" required>
+                                            <option value="PHOTOGRAPHY" data-cs="FOTKY" data-en="PHOTOS">FOTKY</option>
+                                            <option value="VIDEOKLIPY" data-cs="VIDEOKLIPY" data-en="MUSIC VIDEOS">VIDEOKLIPY</option>
+                                            <option value="TIKTOK" data-cs="TIKTOK" data-en="TIKTOK">TIKTOK</option>
+                                            <option value="INSTAGRAM" data-cs="INSTAGRAM" data-en="INSTAGRAM">INSTAGRAM</option>
+                                            <option value="YOUTUBE" data-cs="YOUTUBE" data-en="YOUTUBE">YOUTUBE</option>
+                                            <option value="AKCE" data-cs="AKCE" data-en="EVENTS">AKCE</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="mono-label" data-cs="TYP MÉDIA" data-en="MEDIA TYPE">MEDIA TYPE</label>
+                                        <select id="p-media-type" name="mediaType" required>
+                                            <option value="image" data-cs="OBRÁZEK" data-en="IMAGE">OBRÁZEK</option>
+                                            <option value="video" data-cs="VIDEO (SOUBOR)" data-en="VIDEO (FILE)">VIDEO (SOUBOR)</option>
+                                            <option value="vimeo" data-cs="VIMEO / YOUTUBE (LINK)" data-en="VIMEO / YT (LINK)">VIMEO / YOUTUBE (LINK)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="file-upload-section">
+                                    <label class="mono-label" data-cs="VLOŽIT SOUBOR" data-en="UPLOAD FILE">UPLOAD FILE</label>
+                                    <div class="upload-dropzone" id="p-dropzone">
+                                        <input type="file" id="p-media" name="media" accept="image/*,video/*">
+                                        <div class="dropzone-content">
+                                            <i class="ph ph-upload-simple"></i>
+                                            <span data-cs="KLIKNĚTE NEBO PŘETÁHNĚTE SOUBOR" data-en="CLICK OR DRAG FILE HERE">KLIKNĚTE NEBO PŘETÁHNĚTE SOUBOR</span>
+                                        </div>
+                                        <div id="p-preview-container" class="preview-container hidden">
+                                            <img id="p-preview-img" src="" alt="Preview">
+                                            <div class="preview-overlay"><i class="ph ph-check-circle"></i> DATA_READY</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="vimeo-upload-section" class="hidden">
+                                    <label class="mono-label" data-cs="EXTERNÍ LINK (YT / VIMEO)" data-en="EXTERNAL LINK (YT / VIMEO)">EXTERNAL LINK (YT / VIMEO)</label>
+                                    <input type="url" id="p-vimeo" name="vimeoUrl" placeholder="https://youtube.com/watch?v=...">
+                                </div>
+
+                                <div class="form-row duo" style="margin-top: 1rem;">
+                                    <div class="form-group">
+                                        <label class="mono-label" data-cs="POPIS (CS)" data-en="DESC (CS)">POPIS (CS)</label>
+                                        <textarea id="p-desc-cs" name="descriptionCS" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="mono-label" data-cs="POPIS (EN)" data-en="DESC (EN)">POPIS (EN)</label>
+                                        <textarea id="p-desc-en" name="descriptionEN" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top: 1rem;">
+                                    <label class="mono-label" data-cs="TAGY (ODDĚLENÉ ČÁRKOU)" data-en="TAGS (COMMA SEPARATED)">TAGS (COMMA SEPARATED)</label>
+                                    <input type="text" id="p-tags" name="tags" placeholder="e.g. fashion, street, cinematic">
+                                </div>
+                            </div>
+
+                            <div class="form-footer">
+                                <button type="submit" class="submit-btn publish-btn" style="width: 100%;">
+                                    <span class="btn-text" data-cs="[ PUBLIKOVAT PŘÍSPĚVEK ]" data-en="[ PUBLISH POST ]">[ PUBLIKOVAT PŘÍSPĚVEK ]</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tab Content: Settings -->
+                    <div class="db-tab-content" id="tab-settings">
+                        <form id="admin-settings-form">
+                            <div class="settings-group">
+                                <label class="mono-label" data-cs="HERO VIDEO LINK (YT / VIMEO)" data-en="HERO VIDEO LINK (YT / VIMEO)">HERO VIDEO LINK (YT / VIMEO)</label>
+                                <p class="cell-desc" style="font-size: 0.7rem; margin-bottom: 0.5rem; opacity: 0.6;">Změňte hlavní video v úvodní sekci webu.</p>
+                                <div class="input-with-action">
+                                    <input type="url" id="hero-vid-url" placeholder="https://www.youtube.com/embed/...">
+                                    <button type="button" class="action-btn" id="save-hero-vid-btn" data-cs="ULOŽIT" data-en="SAVE">SAVE</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tab Content: DB View (Integrated) -->
+                    <div class="db-tab-content" id="tab-db-view">
+                         <div class="db-modal-body" style="padding: 0;">
+                            <div class="db-tabs" style="margin-bottom: 1rem;">
+                                <button class="db-tab-btn active" data-tab="messages" data-cs="POPTÁVKY" data-en="SUBMISSIONS">SUBMISSIONS</button>
+                                <button class="db-tab-btn" data-tab="users" data-cs="UŽIVATELÉ" data-en="USERS">USERS</button>
+                            </div>
+                            <div class="db-view-area scrollbar-minimal" style="border: 1px solid rgba(255,255,255,0.05); padding: 1rem;">
+                                <div id="dashboard-db-wrapper">
+                                    <!-- Content injected via JS -->
+                                    <div class="loading-state mono-label">WAITING FOR COMMAND...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            
+            <!-- Success Overlay -->
+            <div id="admin-success-overlay" class="admin-success-overlay">
+                <div class="success-content">
+                    <div class="glitch-title" data-text="TRANSMISSION_COMPLETE">TRANSMISSION_COMPLETE</div>
+                    <div class="success-icon"><i class="ph ph-check-circle"></i></div>
+                    <div class="mono-label">PŘÍSPĚVEK BYL ÚSPĚŠNĚ PUBLIKOVÁN</div>
                 </div>
-                <div id="file-upload-section">
-                    <input type="file" id="p-media" name="media" accept="image/*,video/*" required>
-                </div>
-                <div id="vimeo-upload-section" class="hidden">
-                    <input type="url" id="p-vimeo" name="vimeoUrl" placeholder="VIMEO URL">
-                </div>
-                <textarea id="p-desc-cs" name="descriptionCS" placeholder="POPIS (CS)" rows="2" required></textarea>
-                <textarea id="p-desc-en" name="descriptionEN" placeholder="POPIS (EN)" rows="2" required></textarea>
-                <button type="submit" class="btn-primary" style="width:100%; margin-top:1rem;">NAHRÁT</button>
-            </form>
+            </div>
         </div>
     </div>
 

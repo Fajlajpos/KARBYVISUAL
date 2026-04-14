@@ -138,22 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 1, ease: 'power3.out'
     }, "-=0.5");
 
-    // Reviews Focus Transition (Scroll Control)
-    const focusItems = document.querySelectorAll('.focus-item');
-    focusItems.forEach(item => {
-        ScrollTrigger.create({
-            trigger: item,
-            start: "top 70%",
-            end: "bottom 30%",
-            onToggle: self => {
-                if (self.isActive) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            }
-        });
-    });
+    // Reviews logic is now handled by the general .reveal-fade transition
+    // No mutual-exclusion scroll focus required for the new Grid layout.
 
     // ==========================================================================
     // Engaging Micro-Interactions (Hero Section)

@@ -14,9 +14,9 @@ const btnEN = document.getElementById('lang-en');
 let currentLang = localStorage.getItem('karbyLang') || 'cs';
 
 // State
-let portfolioData = [];
-let slideIndex = 0;
 let currentUser = null;
+let currentFolderItems = [];
+let currentLightboxIndex = -1;
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (yearEl) yearEl.textContent = new Date().getFullYear();
     
     initLocalization();
+    loadSettings(); // Load site settings (Hero Video etc)
     loadPortfolio();
     loadTestimonials();
     checkAuth(); 
@@ -107,18 +108,54 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Lightbox Close
     if(lightboxModal) {
-        lightboxModal.querySelector('.close-btn').addEventListener('click', () => {
-            lightboxModal.classList.remove('active');
-            lightboxMedia.innerHTML = '';
-            document.body.style.overflow = '';
+        lightboxModal.querySelector('.close-btn').addEventListener('click', closeLightbox);
+        lightboxModal.querySelector('.modal-overlay')?.addEventListener('click', closeLightbox);
+        
+        // Navigation
+        document.getElementById('lb-prev')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateLightbox(-1);
         });
-        lightboxModal.querySelector('.modal-overlay')?.addEventListener('click', () => {
-             lightboxModal.classList.remove('active');
-             lightboxMedia.innerHTML = '';
-             document.body.style.overflow = '';
+        document.getElementById('lb-next')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateLightbox(1);
         });
     }
+
+    function closeLightbox() {
+        lightboxModal.classList.remove('active');
+        lightboxMedia.innerHTML = '';
+        document.body.style.overflow = '';
+    }
 });
+
+// ==========================================
+// SETTINGS
+// ==========================================
+async function loadSettings() {
+    try {
+        const res = await fetch('/api/settings');
+        if (!res.ok) return;
+        const settings = await res.json();
+        
+        // Update Hero Video
+        if (settings.hero_video_url) {
+            const heroIframe = document.querySelector('.hero-video');
+            if (heroIframe) {
+                // Ensure it's an embed URL if it's a direct YouTube link
+                let url = settings.hero_video_url;
+                if (url.includes('watch?v=')) {
+                    url = url.replace('watch?v=', 'embed/');
+                } else if (url.includes('youtu.be/')) {
+                    url = url.replace('youtu.be/', 'youtube.com/embed/');
+                }
+                heroIframe.src = url;
+            }
+        }
+    } catch (err) {
+        console.error('Settings load error:', err);
+    }
+}
 
 // ==========================================
 // LOCALIZATION
@@ -204,15 +241,29 @@ function openFolderModal(category, titles, originEl) {
     const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
     titleEl.textContent = `[ ${displayTitle.toUpperCase()} ]`;
 
-    // Filter Items (Existing logic...)
+    // Filter Items (Standardized Categories)
     let filtered = portfolioData.filter(item => {
         const dbCat = item.category.toUpperCase();
         const targetCat = category.toUpperCase();
+        
+        // Photography mapping
         if (targetCat === 'PHOTOGRAPHY' || targetCat === 'FOTKY') return dbCat === 'PHOTOGRAPHY';
-        if (targetCat === 'VIDEOKLIPY') return dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
+        
+        // Video folder mapping (includes legacy Editing/Cinematography if needed)
+        if (targetCat === 'VIDEOKLIPY') {
+            return dbCat === 'VIDEOKLIPY' || dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
+        }
+        
+        // Social / Specific platforms
+        if (targetCat === 'TIKTOK') return dbCat === 'TIKTOK';
+        if (targetCat === 'INSTAGRAM') return dbCat === 'INSTAGRAM';
+        if (targetCat === 'YOUTUBE') return dbCat === 'YOUTUBE';
+        if (targetCat === 'AKCE') return dbCat === 'AKCE';
+
         return dbCat === targetCat;
     });
 
+    currentFolderItems = filtered;
     grid.innerHTML = '';
 
     if (filtered.length > 0) {
@@ -223,8 +274,8 @@ function openFolderModal(category, titles, originEl) {
             
             let adminHtml = '';
             if (window.isAdmin) {
-                 adminHtml = `<div class="admin-badge" style="position:absolute; top:1rem; right:1rem; z-index:10;">
-                     <button class="delete-btn" style="display:block;" data-id="${item.id}"><i class="ph ph-trash"></i></button>
+                 adminHtml = `<div class="admin-badge-container">
+                     <button class="delete-btn" title="Delete Item" data-id="${item.id}"><i class="ph ph-trash"></i></button>
                  </div>`;
             }
 
@@ -239,7 +290,10 @@ function openFolderModal(category, titles, originEl) {
                 </div>
             `;
             
-            div.querySelector('.port-img-wrap').addEventListener('click', () => openLightbox(item));
+            div.querySelector('.port-img-wrap').addEventListener('click', () => {
+                currentLightboxIndex = filtered.indexOf(item);
+                openLightbox(item);
+            });
             grid.appendChild(div);
         });
     } else {
@@ -306,19 +360,43 @@ function openLightbox(item) {
     lightboxMedia.innerHTML = '';
     
     if (item.media_url) {
-        if (item.media_url.includes('vimeo') || item.media_url.includes('youtube')) {
-            const embedUrl = item.media_url.replace('vimeo.com', 'player.vimeo.com/video');
+        const url = item.media_url.toLowerCase();
+        if (url.includes('vimeo.com') || url.includes('player.vimeo.com')) {
+            // Extract Vimeo ID
+            let vimeoId = url.split('/').pop().split('?')[0];
+            if (url.includes('video/')) vimeoId = url.split('video/')[1].split('?')[0];
+            const embedUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1`;
             lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="width:100%; height:100%;"></iframe>`;
-        } else if (item.media_url.endsWith('.mp4') || item.media_url.endsWith('.webm')) {
-            lightboxMedia.innerHTML = `<video controls autoplay name="media" style="max-height:100%;"><source src="${item.media_url}" type="video/mp4"></video>`;
+        } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            // Extract YouTube ID
+            let ytId = '';
+            if (url.includes('watch?v=')) ytId = url.split('watch?v=')[1].split('&')[0];
+            else if (url.includes('youtu.be/')) ytId = url.split('youtu.be/')[1].split('?')[0];
+            else if (url.includes('embed/')) ytId = url.split('embed/')[1].split('?')[0];
+            
+            const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1`;
+            lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>`;
+        } else if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) {
+            lightboxMedia.innerHTML = `<video controls autoplay name="media" style="max-height:100%; width:100%;"><source src="${item.media_url}" type="video/mp4"></video>`;
         } else {
-             lightboxMedia.innerHTML = `<img src="${item.media_url}" alt="${item.title}" style="max-height:100%;">`;
+             lightboxMedia.innerHTML = `<img src="${item.media_url}" alt="${item.title}" style="max-height:100%; object-fit: contain;">`;
         }
     } else {
-        lightboxMedia.innerHTML = `<img src="${item.thumbnail_url || '/assets/download_1774980242270.jpeg'}" alt="${item.title}" style="max-height:100%;">`;
+        lightboxMedia.innerHTML = `<img src="${item.thumbnail_url || '/assets/download_1774980242270.jpeg'}" alt="${item.title}" style="max-height:100%; object-fit: contain;">`;
     }
     
     lightboxModal.classList.add('active');
+}
+
+function navigateLightbox(direction) {
+    if (currentFolderItems.length === 0) return;
+    
+    currentLightboxIndex += direction;
+    
+    if (currentLightboxIndex < 0) currentLightboxIndex = currentFolderItems.length - 1;
+    if (currentLightboxIndex >= currentFolderItems.length) currentLightboxIndex = 0;
+    
+    openLightbox(currentFolderItems[currentLightboxIndex]);
 }
 
 // ==========================================
@@ -431,6 +509,7 @@ function updateNavAuth(authenticated) {
         const firstName = currentUser.full_name.split(' ')[0];
         const isAdmin = currentUser.role === 'admin';
         window.isAdmin = isAdmin;
+        document.body.classList.toggle('admin-enabled', isAdmin);
         
         let adminBtns = '';
         if (isAdmin) {
@@ -457,6 +536,7 @@ function updateNavAuth(authenticated) {
             <button class="auth-btn btn-register btn-filled" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
         `;
         window.isAdmin = false;
+        document.body.classList.remove('admin-enabled');
     }
     
     updateLanguageUI(currentLang);
@@ -486,14 +566,6 @@ function initAuthUI() {
         }
         if (id === 'register-trigger') openAuthModal('reg-modal');
         if (id === 'main-logout-btn') handleLogout();
-        
-        if (id === 'nav-admin-btn') {
-            const modal = document.getElementById('admin-upload-modal');
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
         
         // Closes
         if (e.target.classList.contains('auth-close') || e.target.closest('.auth-close') || e.target.classList.contains('modal-overlay') || e.target.closest('.close-btn')) {
@@ -550,6 +622,16 @@ function initAuthUI() {
             if (modal && modal.classList.contains('active')) {
                 modal.classList.remove('active');
                 document.body.style.overflow = '';
+            }
+        }
+
+        // DELETE PORTFOLIO ITEM
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn && window.isAdmin) {
+            const id = deleteBtn.dataset.id;
+            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'PERMANENTLY DELETE THIS RECORD?';
+            if (confirm(confirmMsg)) {
+                deletePortfolioItem(id, deleteBtn.closest('.port-item'));
             }
         }
     });
@@ -797,5 +879,38 @@ async function handleRegister(e) {
 function toggleBtnLoading(btn, loading) {
     // Keeping simple for now
     if (btn) btn.disabled = loading;
+}
+
+async function deletePortfolioItem(id, element) {
+    try {
+        const res = await fetch(`/api/portfolio/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (res.ok) {
+            showToast(currentLang === 'cs' ? 'ZÁZNAM BYL SMAZÁN' : 'RECORD DELETED', 'success');
+            
+            // Animate removal
+            if (element) {
+                gsap.to(element, {
+                    opacity: 0,
+                    scale: 0.8,
+                    duration: 0.4,
+                    onComplete: () => {
+                        element.remove();
+                        // Reload portfolio data in memory
+                        loadPortfolio();
+                    }
+                });
+            } else {
+                loadPortfolio();
+            }
+        } else {
+            const data = await res.json();
+            showToast('ERROR: ' + data.error, 'error');
+        }
+    } catch (err) {
+        showToast('DELETE FAILED', 'error');
+    }
 }
 

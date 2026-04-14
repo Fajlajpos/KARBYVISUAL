@@ -209,6 +209,32 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // 6. Admin Database Views (Protected)
+app.get('/api/settings', async (req, res) => {
+    try {
+        const rows = await dbAsync.all('SELECT key, value FROM settings');
+        const settings = {};
+        rows.forEach(r => settings[r.key] = r.value);
+        res.json(settings);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/settings', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { key, value } = req.body;
+        if (!key) return res.status(400).json({ error: 'Key required' });
+        
+        await dbAsync.run(
+            'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP',
+            [key, value]
+        );
+        res.json({ message: `Setting ${key} updated` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/api/admin/users', verifyToken, requireAdmin, async (req, res) => {
     try {
         const users = await dbAsync.all('SELECT id, email, full_name, role, created_at FROM users ORDER BY created_at DESC');

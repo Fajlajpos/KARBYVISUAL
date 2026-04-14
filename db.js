@@ -67,6 +67,21 @@ function initDb() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
+        // Create Settings table
+        db.run(`CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        // Seed Hero Video URL if not exists
+        db.get(`SELECT * FROM settings WHERE key = 'hero_video_url'`, (err, row) => {
+            if (!row) {
+                db.run(`INSERT INTO settings (key, value) VALUES (?, ?)`, 
+                    ['hero_video_url', 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=0&modestbranding=1&rel=0']);
+            }
+        });
+
         // Seed Admin User
         db.get(`SELECT * FROM users WHERE email = ?`, [process.env.ADMIN_EMAIL], async (err, row) => {
             if (!row && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
