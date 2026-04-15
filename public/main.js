@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const tl = gsap.timeline({
                 onComplete: () => {
                     folderModal.classList.remove('active');
-                    document.body.style.overflow = '';
+                    if (window.toggleBodyLock) window.toggleBodyLock(false);
                     // Reset to initial state for next open
                     gsap.set(modalContent, { scale: 0.85, opacity: 0 });
                     gsap.set(folderModal.querySelector('.modal-overlay'), { opacity: 0 });
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeLightbox() {
         lightboxModal.classList.remove('active');
         lightboxMedia.innerHTML = '';
-        document.body.classList.remove('modal-open');
+        if (window.toggleBodyLock) window.toggleBodyLock(false);
     }
 
     // Body Scroll Lock Helper
