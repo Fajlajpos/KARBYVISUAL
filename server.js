@@ -13,7 +13,7 @@ const { createToken, verifyToken, requireAdmin } = require('./auth');
 const { notifyAdmin, sendAutoReply } = require('./mailer');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Setup Uploads Directory (Ensure it exists)
 const uploadDir = path.join(__dirname, 'public', 'uploads');

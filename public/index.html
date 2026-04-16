@@ -463,71 +463,122 @@
 
 
 
-        <!-- 7. CONTACT SECTION -->
+        <!-- 7. CONTACT SECTION REDESIGNED (V2) -->
         <section id="contact" class="contact-section bordered-section">
-            <div class="container container-tight contact-grid">
-                <div class="contact-info">
-                    <h2 class="section-title reveal-text" style="font-size: clamp(3rem, 5vw, 5rem);"
-                        data-cs="ZAHÁJIT<br>SEKVENCI" data-en="INITIATE<br>SEQUENCE">ZAHÁJIT<br>SEKVENCI</h2>
-                    <br>
-                    <div class="social-links-minimal">
-                        <a href="#"><i class="ph ph-instagram-logo"></i> @KARBYVISUAL</a>
-                        <a href="#"><i class="ph ph-vimeo-logo"></i> VIMEO.COM</a>
-                        <a href="#"><i class="ph ph-youtube-logo"></i> YOUTUBE</a>
-                    </div>
+            <div class="container container-tight contact-v2-wrapper">
+                <div class="section-top-label" style="margin-bottom: 3rem;">
+                    <span class="mono-label" data-cs="KOMUNIKAČNÍ UZEL // 04" data-en="COMMUNICATION NODE // 04">KOMUNIKAČNÍ UZEL // 04</span>
                 </div>
 
-                <div class="contact-form-wrapper form-bento textured-bg">
-                    <div class="form-header">
-                        <span class="mono-label" data-cs="ZABEZPEČENÁ_LINKA [FORMULÁŘ]"
-                            data-en="SECURE_LINK [FORM]">ZABEZPEČENÁ_LINKA [FORMULÁŘ]</span>
+                <div class="contact-grid-v2">
+                    <!-- Column 1: Social Hub -->
+                    <div class="social-uplink-panel reveal-fade">
+                        <div class="social-node instagram-node textured-bg" onclick="window.open('https://www.instagram.com/karbyvisuals/', '_blank')">
+                            <div class="node-header">
+                                <span class="mono-label">SOCIAL_UPLINK</span>
+                                <span class="node-status"><span class="pulse-dot"></span> LIVE</span>
+                            </div>
+                            <div class="node-main">
+                                <div class="insta-icon-wrapper">
+                                    <i class="ph-fill ph-instagram-logo"></i>
+                                    <div class="icon-glow"></div>
+                                </div>
+                                <div class="node-info">
+                                    <h3 class="node-handle">@KARBYVISUALS</h3>
+                                    <p class="node-desc" data-cs="Denní archiv vizuálního šumu a finálních projektů." data-en="Daily archive of visual noise and final projects.">Denní archiv vizuálního šumu a finálních projektů.</p>
+                                </div>
+                            </div>
+                            <div class="node-footer">
+                                <span class="mono-label">FOLLOW_PROTOCOL_01</span>
+                                <i class="ph ph-arrow-up-right"></i>
+                            </div>
+                        </div>
+
+                        <div class="connection-list mt-2">
+                            <a href="#" class="connection-item">
+                                <span class="mono-label">VIMEO_CH</span>
+                                <i class="ph ph-video-camera"></i>
+                            </a>
+                            <a href="#" class="connection-item">
+                                <span class="mono-label">YOUTUBE_DIRECT</span>
+                                <i class="ph ph-youtube-logo"></i>
+                            </a>
+                        </div>
                     </div>
-                    <form id="contact-form" class="contact-form">
-                        <div class="form-group">
-                            <input type="text" id="name" name="name" placeholder="IDENTIFIKACE (JMÉNO) *" required
-                                data-placeholder-cs="IDENTIFIKACE (JMÉNO) *"
-                                data-placeholder-en="IDENTIFICATION (NAME) *">
+
+                    <!-- Column 2: The Transmission Form Redesigned -->
+                    <div class="form-module v3-module reveal-fade">
+                        <div class="form-header-v3">
+                            <div class="header-tag">SYS_INPUT_MODULE_v3</div>
+                            <h2 class="section-title-sm" data-cs="KONTAKTNÍ PROTOKOL" data-en="CONTACT_PROTOCOL">CONTACT_PROTOCOL</h2>
                         </div>
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="ADRESA (EMAIL) *" required
-                                data-placeholder-cs="ADRESA (EMAIL) *" data-placeholder-en="ADDRESS (EMAIL) *">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <select id="project_type" name="project_type">
-                                    <option value="" disabled selected data-cs="TYP OPERACE"
-                                        data-en="TYPE OF OPERATION">TYP OPERACE</option>
-                                    <option value="Music Video" data-cs="HUDEBNÍ KLIP" data-en="MUSIC VIDEO">HUDEBNÍ
-                                        KLIP</option>
-                                    <option value="Commercial" data-cs="REKLAMA" data-en="COMMERCIAL">REKLAMA</option>
-                                    <option value="Editorial" data-cs="EDITORIAL / FASHION"
-                                        data-en="EDITORIAL / FASHION">EDITORIAL / FASHION</option>
-                                    <option value="Other" data-cs="JINÉ" data-en="OTHER">JINÉ</option>
-                                </select>
+
+                        <form id="contact-form" class="transmission-form-v3">
+                            <div class="form-section">
+                                <span class="mono-label section-tag">01_CORE_DATA</span>
+                                <div class="form-row-v3">
+                                    <div class="tactical-input">
+                                        <label class="mono-label">UID / NAME</label>
+                                        <input type="text" id="name" name="name" required placeholder="IDENTIFY_NAME">
+                                    </div>
+                                    <div class="tactical-input">
+                                        <label class="mono-label">ADDR / EMAIL</label>
+                                        <input type="email" id="email" name="email" required placeholder="ROUTE_EMAIL">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <select id="budget" name="budget">
-                                    <option value="" disabled selected data-cs="KAPITÁL (ROZPOČET)"
-                                        data-en="CAPITAL (BUDGET)">KAPITÁL (ROZPOČET)</option>
-                                    <option value="< 20k">Menší než 20 000 CZK</option>
-                                    <option value="20k - 50k">20 000 - 50 000 CZK</option>
-                                    <option value="50k+">50 000+ CZK</option>
-                                </select>
+
+                            <div class="form-section mt-1">
+                                <span class="mono-label section-tag">02_MISSION_SPEC</span>
+                                <div class="options-matrix">
+                                    <div class="option-col">
+                                        <span class="mono-label small">TYPE_SELECT</span>
+                                        <div class="matrix-grid">
+                                            <input type="radio" name="project_type" id="type-mv" value="Music Video" checked>
+                                            <label for="type-mv">MUSIC_VIDEO</label>
+                                            
+                                            <input type="radio" name="project_type" id="type-comm" value="Commercial">
+                                            <label for="type-comm">COMMERCIAL</label>
+                                            
+                                            <input type="radio" name="project_type" id="type-fashion" value="Fashion">
+                                            <label for="type-fashion">FASHION</label>
+                                            
+                                            <input type="radio" name="project_type" id="type-other" value="Other">
+                                            <label for="type-other">OTHER</label>
+                                        </div>
+                                    </div>
+                                    <div class="option-col">
+                                        <span class="mono-label small">BUDGET_VAL</span>
+                                        <div class="matrix-grid">
+                                            <input type="radio" name="budget" id="b-low" value="< 20k" checked>
+                                            <label for="b-low">&lt; 20K</label>
+                                            
+                                            <input type="radio" name="budget" id="b-mid" value="20k - 50k">
+                                            <label for="b-mid">20K - 50K</label>
+                                            
+                                            <input type="radio" name="budget" id="b-high" value="50k+">
+                                            <label for="b-high">50K+</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="message" name="message" rows="4" placeholder="POSLAT DIREKTIVU (ZPRÁVA) *"
-                                required data-placeholder-cs="POSLAT DIREKTIVU (ZPRÁVA) *"
-                                data-placeholder-en="TRANSMIT DIRECTIVE (MESSAGE) *"></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn" id="submit-btn"
-                            style="position:relative; z-index:2; overflow:hidden;">
-                            <span class="btn-text" data-cs="[ VYKONAT ]" data-en="[ EXECUTE ]">[ VYKONAT ]</span>
-                            <div class="loader-ring hidden"></div>
-                            <div class="btn-glitch-overlay textured-bg" style="opacity: 0.2"></div>
-                        </button>
-                        <div class="form-status mono-label" id="form-status"></div>
-                    </form>
+
+                            <div class="form-section mt-1">
+                                <span class="mono-label section-tag">03_TRANSMISSION_TEXT</span>
+                                <div class="tactical-input">
+                                    <textarea id="message" name="message" rows="3" required placeholder="INPUT_DATA_SPECIFICATIONS..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-actions-v3 mt-2">
+                                <button type="submit" class="submit-btn-v3" id="submit-btn">
+                                    <span class="btn-text" data-cs="[ ODESLAT_DIREKTIVU ]" data-en="[ SEND_DIRECTIVE ]">[ SEND_DIRECTIVE ]</span>
+                                    <div class="scan-bar"></div>
+                                </button>
+                                <div class="form-status-v3 mono-label" id="form-status"></div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>

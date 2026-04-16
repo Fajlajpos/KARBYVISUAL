@@ -194,6 +194,47 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.querySelector('.reviews-marquee-viewport')) {
         initReviewsMarquee();
     }
+
+    // ==========================================================================
+    // Form Interaction V3
+    // ==========================================================================
+    function initFormV3() {
+        const tacticalInputs = document.querySelectorAll('.tactical-input');
+        
+        tacticalInputs.forEach(container => {
+            const input = container.querySelector('input, textarea');
+            if (!input) return;
+
+            input.addEventListener('focus', () => {
+                gsap.to(container, {
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    duration: 0.3
+                });
+            });
+
+            input.addEventListener('blur', () => {
+                gsap.to(container, {
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    borderColor: 'rgba(255,255,255,0.05)',
+                    duration: 0.3
+                });
+            });
+        });
+
+        // Submit Button Scan Effect Sync
+        const submitBtn = document.querySelector('.submit-btn-v3');
+        if (submitBtn) {
+            submitBtn.addEventListener('mouseenter', () => {
+                gsap.to('.scan-bar', { opacity: 0.4, duration: 0.2 });
+            });
+            submitBtn.addEventListener('mouseleave', () => {
+                gsap.to('.scan-bar', { opacity: 0.1, duration: 0.2 });
+            });
+        }
+    }
+
+    initFormV3();
 });
 
 // ==========================================================================
