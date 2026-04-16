@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Vertical animation (UPWARDS)
             const marquee = gsap.to(grid, {
                 y: -totalHeight,
-                duration: 70, 
+                duration: 45, 
                 ease: "none",
                 repeat: -1
             });
