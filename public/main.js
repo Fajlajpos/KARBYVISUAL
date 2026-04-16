@@ -583,24 +583,24 @@ function updateNavAuth(authenticated) {
             adminBtns = `
                 <button id="nav-db-btn" class="btn-admin-db" data-cs="DATABÁZE" data-en="DATABASE" title="View Records"><i class="ph ph-database"></i> DATABASE</button>
                 <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PŘIDAT" data-en="ADD">ADD</span></button>
-                <span class="admin-badge"></span>
+                <div class="admin-badge"></div>
             `;
         }
         
         navAuth.innerHTML = `
-            <div class="user-profile">
+            <div class="user-profile" style="display: flex; align-items: center; gap: 0.8rem;">
                 ${adminBtns}
-                <div class="user-info">
-                    <i class="ph ph-user-circle"></i>
-                    <span>${firstName.toUpperCase()}</span>
+                <div class="user-info" style="display: flex; align-items: center; gap: 0.5rem; margin-left: 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: #fff;">
+                    <i class="ph ph-user-circle" style="font-size: 1.1rem; opacity: 0.7;"></i>
+                    <span style="letter-spacing: 1px;">${firstName.toUpperCase()}</span>
                 </div>
-                <button class="logout-btn" id="main-logout-btn">LOGOUT</button>
+                <button class="logout-btn auth-btn" id="main-logout-btn" style="padding: 6px 14px; font-size: 0.65rem;">LOGOUT</button>
             </div>
         `;
     } else {
         navAuth.innerHTML = `
             <button class="auth-btn btn-login" id="login-trigger" data-cs="PŘIHLÁSIT" data-en="LOGIN">LOGIN</button>
-            <button class="auth-btn btn-register btn-filled" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
+            <button class="auth-btn btn-register auth-btn btn-filled" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
         `;
         window.isAdmin = false;
         document.body.classList.remove('admin-enabled');
