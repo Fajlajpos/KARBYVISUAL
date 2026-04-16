@@ -467,7 +467,7 @@
         <section id="contact" class="contact-section bordered-section">
             <div class="container container-tight contact-v2-wrapper">
                 <div class="section-top-label" style="margin-bottom: 3rem;">
-                    <span class="mono-label" data-cs="KOMUNIKAČNÍ UZEL // 04" data-en="COMMUNICATION NODE // 04">KOMUNIKAČNÍ UZEL // 04</span>
+                    <span class="mono-label" data-cs="KONTAKT // 04" data-en="CONTACT // 04">KONTAKT // 04</span>
                 </div>
 
                 <div class="contact-grid-v2">
@@ -494,15 +494,19 @@
                             </div>
                         </div>
 
-                        <div class="connection-list mt-2">
-                            <a href="#" class="connection-item">
-                                <span class="mono-label">VIMEO_CH</span>
-                                <i class="ph ph-video-camera"></i>
-                            </a>
-                            <a href="#" class="connection-item">
-                                <span class="mono-label">YOUTUBE_DIRECT</span>
-                                <i class="ph ph-youtube-logo"></i>
-                            </a>
+                        <div class="terminal-meta-v3 mt-2 reveal-fade">
+                            <div class="meta-row">
+                                <span class="mono-label">LOC_ORIGIN</span>
+                                <span class="meta-val">PRAGUE_CZ</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="mono-label">SIGNAL_LATENCY</span>
+                                <span class="meta-val">< 24H_RES</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="mono-label">VERSION_TAG</span>
+                                <span class="meta-val">R2026.4.V3</span>
+                            </div>
                         </div>
                     </div>
 
@@ -533,16 +537,22 @@
                                 <div class="options-matrix">
                                     <div class="option-col">
                                         <span class="mono-label small">TYPE_SELECT</span>
-                                        <div class="matrix-grid">
-                                            <input type="radio" name="project_type" id="type-mv" value="Music Video" checked>
-                                            <label for="type-mv">MUSIC_VIDEO</label>
+                                        <div class="matrix-grid matrix-3col">
+                                            <input type="radio" name="project_type" id="type-strih" value="Střih" checked>
+                                            <label for="type-strih">STŘIH</label>
                                             
-                                            <input type="radio" name="project_type" id="type-comm" value="Commercial">
-                                            <label for="type-comm">COMMERCIAL</label>
+                                            <input type="radio" name="project_type" id="type-nataceni" value="Natáčení">
+                                            <label for="type-nataceni">NATÁČENÍ</label>
                                             
-                                            <input type="radio" name="project_type" id="type-fashion" value="Fashion">
-                                            <label for="type-fashion">FASHION</label>
+                                            <input type="radio" name="project_type" id="type-grading" value="Color Grading">
+                                            <label for="type-grading">COLOR_GRAD</label>
+
+                                            <input type="radio" name="project_type" id="type-vfx" value="VFX">
+                                            <label for="type-vfx">VFX_PROD</label>
                                             
+                                            <input type="radio" name="project_type" id="type-full" value="Full Production">
+                                            <label for="type-full">FULL_PROD</label>
+
                                             <input type="radio" name="project_type" id="type-other" value="Other">
                                             <label for="type-other">OTHER</label>
                                         </div>

@@ -826,21 +826,27 @@ body.admin-enabled .delete-btn { display: flex; }
     color: var(--text-muted);
 }
 
-.connection-item {
+.terminal-meta-v3 {
     display: flex;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 1px;
     background: rgba(255,255,255,0.02);
     border: 1px solid rgba(255,255,255,0.05);
-    text-decoration: none;
-    color: var(--text-sec);
-    transition: all 0.3s;
-    margin-bottom: 0.5rem;
 }
 
-.connection-item:hover {
-    background: #fff;
-    color: #000;
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.meta-row:last-child { border-bottom: none; }
+
+.meta-val {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--accent);
 }
 
 /* V3 Form Styles */
@@ -940,6 +946,10 @@ body.admin-enabled .delete-btn { display: flex; }
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+}
+
+.matrix-3col {
+    grid-template-columns: repeat(3, 1fr) !important;
 }
 
 .matrix-grid input[type="radio"] {
