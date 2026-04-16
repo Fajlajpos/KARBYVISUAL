@@ -144,29 +144,56 @@ document.addEventListener("DOMContentLoaded", () => {
     // No mutual-exclusion scroll focus required for the new Grid layout.
 
     // ==========================================================================
-    // Engaging Micro-Interactions (Hero Section)
+    // Reviews Vertical Marquee
     // ==========================================================================
-    const heroSection = document.querySelector('.hero-section');
-    const magneticBtn = document.querySelector('.btn-primary');
+    function initReviewsMarquee() {
+        const viewport = document.querySelector('.reviews-marquee-viewport');
+        const grid = document.querySelector('#reviews-grid');
+        if (!viewport || !grid) return;
 
-    // 1. Magnetic Button Effect
-    if (magneticBtn && window.innerWidth > 768) {
-        magneticBtn.addEventListener('mousemove', (e) => {
-            const rect = magneticBtn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
+        // Clean up any existing clones first (if called multiple times)
+        const existingClones = grid.querySelectorAll('.is-clone');
+        existingClones.forEach(c => c.remove());
+
+        // Clone items for a seamless loop
+        const items = Array.from(grid.children);
+        items.forEach(item => {
+            const clone = item.cloneNode(true);
+            clone.classList.add('is-clone');
+            grid.appendChild(clone);
+        });
+
+        // Use a slight delay to ensure items are rendered and height is correct
+        setTimeout(() => {
+            // Calculate height of one full set of items
+            // We use the top of the first clone as the offset for totalHeight
+            const firstClone = grid.querySelector('.is-clone');
+            const totalHeight = firstClone.offsetTop - grid.offsetTop;
             
-            magneticBtn.classList.add('magnetic-active');
-            // Pull the button slightly towards the cursor (reduced scale for subtlety)
-            magneticBtn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-        });
+            // Vertical animation (UPWARDS)
+            const marquee = gsap.to(grid, {
+                y: -totalHeight,
+                duration: 70, 
+                ease: "none",
+                repeat: -1
+            });
 
-        magneticBtn.addEventListener('mouseleave', () => {
-            magneticBtn.classList.remove('magnetic-active');
-            magneticBtn.style.transform = 'translate(0px, 0px)';
-        });
+            // Interactive control - using more direct control
+            viewport.addEventListener('mouseenter', () => {
+                marquee.pause();
+                gsap.to(grid, { opacity: 0.8, duration: 0.3 }); // Subtle visual feedback
+            });
+            viewport.addEventListener('mouseleave', () => {
+                marquee.play();
+                gsap.to(grid, { opacity: 1, duration: 0.3 });
+            });
+        }, 100);
     }
 
+    // Initialize marquee if elements exist
+    if (document.querySelector('.reviews-marquee-viewport')) {
+        initReviewsMarquee();
+    }
 });
 
 // ==========================================================================
