@@ -1381,13 +1381,151 @@ body.admin-enabled .delete-btn { display: flex; }
 }
 
 /* FOOTER & MODALS */
-.footer { border-top: var(--border-thin); padding-top: 4rem; z-index: 10; position:relative; background: #000;}
-.footer-content { display: flex; justify-content: space-between; margin-bottom: 4rem; flex-wrap: wrap; gap: 2rem;}
-.footer-logo { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 500; }
-.footer-right { display: flex; gap: 2rem; }
-.mono-link { color: var(--text-sec); text-decoration: none; transition: color 0.3s; }
-.mono-link:hover { color: var(--accent); }
-.footer-bottom { border-top: var(--border-thin); padding: 2rem 0; display: flex; justify-content: space-between; }
+/* FOOTER REDESIGN (Tactical CommandCenter) */
+.footer { 
+    border-top: var(--border-thin); 
+    padding: 6vh 0 2vh 0; 
+    z-index: 10; 
+    position: relative; 
+    background: #000;
+}
+
+.footer-main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr 1fr;
+    gap: 4rem;
+    margin-bottom: 6vh;
+}
+
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.footer-col-title {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-col-title::after {
+    content: '';
+    height: 1px;
+    flex-grow: 1;
+    background: rgba(255,255,255,0.05);
+}
+
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.footer-logo { 
+    font-family: var(--font-heading); 
+    font-size: 1.8rem; 
+    font-weight: 700; 
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.footer-tagline {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-sec);
+    line-height: 1.8;
+}
+
+.footer-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.footer-link {
+    color: var(--text-sec);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-link:hover {
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.footer-link i {
+    font-size: 1rem;
+    opacity: 0.5;
+}
+
+.footer-bottom-bar {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.footer-copyright {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.footer-system-stats {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.stat-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background: #00ff00;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00ff00;
+}
+
+@media (max-width: 991px) {
+    .footer-main-grid {
+        grid-template-columns: 1.5fr 1fr;
+        gap: 3rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-main-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+    .footer-bottom-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
 
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(10px); }
 .modal.active { opacity: 1; pointer-events: all; }
