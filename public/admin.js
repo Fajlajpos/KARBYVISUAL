@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dashboardModal.classList.add('active');
         if (window.toggleBodyLock) window.toggleBodyLock(true);
         fetchCurrentSettings();
+        fetchFoldersAdmin();
     }
 
     function closeDashboard() {
@@ -111,6 +112,112 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // FOLDERS LOGIC
+    async function fetchFoldersAdmin() {
+        const categorySelect = document.getElementById('p-category');
+        const foldersList = document.getElementById('admin-folders-list');
+        
+        try {
+            const res = await fetch('/api/folders');
+            const data = await res.json();
+            
+            // Populate select
+            if (categorySelect) {
+                categorySelect.innerHTML = '';
+                data.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f.category_id;
+                    const isCS = (typeof currentLang !== 'undefined' ? currentLang : 'cs') === 'cs';
+                    opt.textContent = isCS ? f.title_cs : f.title_en;
+                    // Pro zachování překladů pokud by user přepínal jazyk i v adminu:
+                    opt.setAttribute('data-cs', f.title_cs);
+                    opt.setAttribute('data-en', f.title_en);
+                    categorySelect.appendChild(opt);
+                });
+            }
+
+            // Populate list
+            if (foldersList) {
+                if (data.length === 0) {
+                    foldersList.innerHTML = '<div class="mono-label" style="opacity: 0.5;">NO FOLDERS CONFIGURED.</div>';
+                } else {
+                    foldersList.innerHTML = '';
+                    data.forEach(f => {
+                        foldersList.innerHTML += `
+                            <div class="port-item" style="display:flex; justify-content:space-between; align-items:center; padding: 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
+                                <div>
+                                    <div class="mono-label" style="opacity:0.6; font-size: 0.6rem;">ID: ${f.category_id}</div>
+                                    <div style="font-weight: 500;">CS: ${f.title_cs} | EN: ${f.title_en}</div>
+                                </div>
+                                <button type="button" class="action-icon-btn" onclick="window.deleteFolder(${f.id})"><i class="ph ph-trash"></i> DELETE</button>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Failed to fetch folders', e);
+        }
+    }
+
+    const addFolderForm = document.getElementById('add-folder-form');
+    if (addFolderForm) {
+        addFolderForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = addFolderForm.querySelector('button[type="submit"]');
+            btn.innerHTML = 'CREATING...';
+            const statusLabel = document.getElementById('folder-form-status');
+            
+            const titleCS = document.getElementById('folder-title-cs').value;
+            const titleEN = document.getElementById('folder-title-en').value;
+            
+            try {
+                const res = await fetch('/api/folders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titleCS, titleEN })
+                });
+                
+                if (res.ok) {
+                    if (window.showToast) window.showToast('FOLDER ESTABLISHED', 'success');
+                    if (statusLabel) {
+                         statusLabel.style.color = '#4CAF50';
+                         statusLabel.textContent = 'SLOŽKA ÚSPĚŠNĚ VYTVOŘENA';
+                    }
+                    addFolderForm.reset();
+                    fetchFoldersAdmin();
+                    if (typeof loadFolders === 'function') loadFolders(); // public UI refresh
+                } else {
+                    if (statusLabel) {
+                         statusLabel.style.color = 'var(--accent)';
+                         statusLabel.textContent = 'CHYBA PŘI VYTVÁŘENÍ SLOŽKY';
+                    }
+                }
+            } catch (err) {
+                 if (statusLabel) statusLabel.textContent = 'NETWORK FAILURE';
+            } finally {
+                btn.innerHTML = '<span class="btn-text" data-cs="ZALOŽIT SLOŽKU" data-en="CREATE FOLDER">ZALOŽIT SLOŽKU</span>';
+                setTimeout(() => { if(statusLabel) statusLabel.textContent = ''; }, 3000);
+            }
+        });
+    }
+
+    window.deleteFolder = async function(id) {
+        if (!confirm('DELETE THIS FOLDER ENTIRELY?')) return;
+        try {
+            const res = await fetch(`/api/folders/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                if (window.showToast) window.showToast('FOLDER ANNIHILATED', 'success');
+                fetchFoldersAdmin();
+                if (typeof loadFolders === 'function') loadFolders();
+            } else {
+                if (window.showToast) window.showToast('ACTION FAILED', 'error');
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    };
 
     // PORTFOLIO LOGIC
     if (mediaTypeSelect) {

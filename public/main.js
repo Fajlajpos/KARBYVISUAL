@@ -38,22 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initLocalization();
     loadSettings(); // Load site settings (Hero Video etc)
     loadPortfolio();
+    if (typeof window.loadFolders === 'function') window.loadFolders();
     loadTestimonials();
     checkAuth(); 
     initAuthUI(); 
-    
-    // Folder Grid Event
-    const archiveGrid = document.getElementById('archive-grid');
-    if (archiveGrid) {
-        archiveGrid.querySelectorAll('.folder-item').forEach(folder => {
-            folder.addEventListener('click', () => {
-                const category = folder.getAttribute('data-category');
-                const titleCS = folder.querySelector('.folder-name').getAttribute('data-cs') || folder.querySelector('.folder-name').textContent;
-                const titleEN = folder.querySelector('.folder-name').getAttribute('data-en') || folder.querySelector('.folder-name').textContent;
-                openFolderModal(category, { cs: titleCS, en: titleEN }, folder);
-            });
-        });
-    }
 
     // Folder Modal Close
     const folderModal = document.getElementById('folder-modal');
@@ -273,6 +261,58 @@ async function loadPortfolio() {
     }
 }
 
+window.loadFolders = async function() {
+    const grid = document.getElementById('archive-grid');
+    if (!grid) return;
+
+    try {
+        const res = await fetch('/api/folders');
+        if (!res.ok) throw new Error('API fetch failed');
+        const folders = await res.json();
+        
+        if (folders && folders.length > 0) {
+            grid.innerHTML = '';
+            folders.forEach((f, idx) => {
+                const div = document.createElement('div');
+                div.className = 'folder-item reveal-fade';
+                div.setAttribute('data-category', f.category_id);
+                // Delay slightly for visual effect
+                div.style.animationDelay = `${idx * 0.1}s`;
+                
+                div.innerHTML = `
+                    <div class="folder-icon-wrap">
+                        <img src="${f.icon_url || '/assets/folder-icon.png'}" alt="Folder" class="folder-icon">
+                    </div>
+                    <span class="folder-name" data-cs="${f.title_cs}" data-en="${f.title_en}">${currentLang === 'cs' ? f.title_cs : f.title_en}</span>
+                `;
+                
+                div.addEventListener('click', () => {
+                    openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en }, div);
+                });
+                
+                grid.appendChild(div);
+            });
+            return; // We successfully loaded DB folders, exit fallback
+        }
+    } catch(err) {
+        console.warn('Folders load fallback active (DB not loaded yet):', err);
+    }
+
+    // Fallback: Bind event listeners to existing static HTML
+    grid.querySelectorAll('.folder-item').forEach(folder => {
+        if (folder.dataset.bound) return;
+        folder.dataset.bound = "true";
+        
+        folder.addEventListener('click', () => {
+            const category = folder.getAttribute('data-category');
+            const nameEl = folder.querySelector('.folder-name');
+            const titleCS = nameEl.getAttribute('data-cs') || nameEl.textContent;
+            const titleEN = nameEl.getAttribute('data-en') || nameEl.textContent;
+            openFolderModal(category, { cs: titleCS, en: titleEN }, folder);
+        });
+    });
+};
+
 function openFolderModal(category, titles, originEl) {
     const modal = document.getElementById('folder-modal');
     const modalContent = modal.querySelector('.modal-content');
@@ -295,21 +335,13 @@ function openFolderModal(category, titles, originEl) {
         const dbCat = item.category.toUpperCase();
         const targetCat = category.toUpperCase();
         
-        // Photography mapping
+        if (dbCat === targetCat) return true;
+        
+        // Legacy fallbacks for old DB records
         if (targetCat === 'PHOTOGRAPHY' || targetCat === 'FOTKY') return dbCat === 'PHOTOGRAPHY';
+        if (targetCat === 'VIDEOKLIPY') return dbCat === 'VIDEOKLIPY' || dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
         
-        // Video folder mapping (includes legacy Editing/Cinematography if needed)
-        if (targetCat === 'VIDEOKLIPY') {
-            return dbCat === 'VIDEOKLIPY' || dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
-        }
-        
-        // Social / Specific platforms
-        if (targetCat === 'TIKTOK') return dbCat === 'TIKTOK';
-        if (targetCat === 'INSTAGRAM') return dbCat === 'INSTAGRAM';
-        if (targetCat === 'YOUTUBE') return dbCat === 'YOUTUBE';
-        if (targetCat === 'AKCE') return dbCat === 'AKCE';
-
-        return dbCat === targetCat;
+        return false;
     });
 
     currentFolderItems = filtered;

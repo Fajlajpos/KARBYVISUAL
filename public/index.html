@@ -241,7 +241,7 @@
                 </div>
 
                 <div class="archive-grid" id="archive-grid">
-                    <!-- 6 Folders (3 across, 2 rows) -->
+                    <!-- 6 Folders Default (Fallback) -->
                     <div class="folder-item reveal-fade" data-category="PHOTOGRAPHY">
                         <div class="folder-icon-wrap">
                             <img src="/assets/folder-icon.png" alt="Folder" class="folder-icon">
@@ -882,6 +882,8 @@
                 <aside class="dashboard-sidebar">
                     <button class="db-nav-btn active" data-tab="upload"><i class="ph ph-plus-circle"></i> <span
                             data-cs="PŘIDAT PRÁCI" data-en="ADD WORK">ADD WORK</span></button>
+                    <button class="db-nav-btn" data-tab="folders"><i class="ph ph-folder"></i> <span data-cs="SLOŽKY"
+                            data-en="FOLDERS">FOLDERS</span></button>
                     <button class="db-nav-btn" data-tab="settings"><i class="ph ph-gear"></i> <span data-cs="KONFIGURACE"
                             data-en="CONFIG">CONFIG</span></button>
                 </aside>
@@ -910,12 +912,7 @@
                                             <div class="form-group">
                                                 <label class="mono-label" data-cs="KATEGORIE" data-en="CATEGORY">CATEGORY</label>
                                                 <select id="p-category" name="category" required class="brut-select">
-                                                    <option value="PHOTOGRAPHY" data-cs="FOTKY" data-en="PHOTOS">FOTKY</option>
-                                                    <option value="VIDEOKLIPY" data-cs="VIDEOKLIPY" data-en="MUSIC VIDEOS">VIDEOKLIPY</option>
-                                                    <option value="TIKTOK" data-cs="TIKTOK" data-en="TIKTOK">TIKTOK</option>
-                                                    <option value="INSTAGRAM" data-cs="INSTAGRAM" data-en="INSTAGRAM">INSTAGRAM</option>
-                                                    <option value="YOUTUBE" data-cs="YOUTUBE" data-en="YOUTUBE">YOUTUBE</option>
-                                                    <option value="AKCE" data-cs="AKCE" data-en="EVENTS">AKCE</option>
+                                                    <option value="" disabled selected data-cs="Aktivuji sys. uplink..." data-en="Activating sys. uplink...">Aktivuji sys. uplink...</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
@@ -923,7 +920,7 @@
                                                 <select id="p-media-type" name="mediaType" required class="brut-select">
                                                     <option value="image" data-cs="OBRÁZEK" data-en="IMAGE">OBRÁZEK</option>
                                                     <option value="video" data-cs="VIDEO (SOUBOR)" data-en="VIDEO (FILE)">VIDEO (SOUBOR)</option>
-                                                    <option value="vimeo" data-cs="EXTERNÍ LINK" data-en="EXT. LINK">EXTERNÍ LINK</option>
+                                                    <option value="vimeo" data-cs="EXT. LINK (YOUTUBE/VIMEO)" data-en="EXT. LINK (YT/VIMEO)">EXT. LINK (YOUTUBE/VIMEO)</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -995,7 +992,7 @@
                     <!-- Tab Content: Settings -->
                     <div class="db-tab-content" id="tab-settings">
                         <div class="db-section-header">
-                            <span class="mono-label">SYSTÉMOVÉ_OVLÁDÁNÍ // 02</span>
+                            <span class="mono-label">SYSTÉMOVÉ_OVLÁDÁNÍ // 03</span>
                         </div>
                         <form id="admin-settings-form" class="dashboard-config-form">
                             <div class="settings-panel textured-bg">
@@ -1017,6 +1014,47 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+
+                    <!-- Tab Content: Folders -->
+                    <div class="db-tab-content" id="tab-folders">
+                        <div class="db-section-header">
+                            <span class="mono-label">SPRÁVCE_SLOŽEK // 02</span>
+                            <div class="header-line"></div>
+                        </div>
+                        
+                        <div class="form-grid-dashboard">
+                            <!-- Add Folder -->
+                            <div class="form-panel" style="grid-column: span 1;">
+                                <div class="panel-header mono-label">CREATE_NEW_FOLDER</div>
+                                <div class="form-body">
+                                    <form id="add-folder-form">
+                                        <div class="form-group mb-1">
+                                            <label class="mono-label" data-cs="NÁZEV (CS)" data-en="TITLE (CS)">TITLE (CS)</label>
+                                            <input type="text" id="folder-title-cs" required placeholder="Např. Komerční" class="brut-input">
+                                        </div>
+                                        <div class="form-group mb-1">
+                                            <label class="mono-label" data-cs="NÁZEV (EN)" data-en="TITLE (EN)">TITLE (EN)</label>
+                                            <input type="text" id="folder-title-en" required placeholder="e.g. Commercials" class="brut-input">
+                                        </div>
+                                        <button type="submit" class="submit-btn publish-btn" style="width: 100%; margin-top: 1rem;">
+                                            <span class="btn-text" data-cs="ZALOŽIT SLOŽKU" data-en="CREATE FOLDER">ZALOŽIT SLOŽKU</span>
+                                        </button>
+                                    </form>
+                                    <div id="folder-form-status" style="margin-top: 1rem;" class="mono-label"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Folders List -->
+                            <div class="form-panel" style="grid-column: span 1;">
+                                <div class="panel-header mono-label">ACTIVE_FOLDERS</div>
+                                <div class="form-body" style="max-height: 400px; overflow-y: auto;">
+                                    <div id="admin-folders-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <div class="mono-label" style="opacity: 0.5;">LOADING DATABASE...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 

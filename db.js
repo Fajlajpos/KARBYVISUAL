@@ -15,13 +15,22 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 function initDb() {
     db.serialize(() => {
-        // Create Users table
         db.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE NOT NULL,
             full_name TEXT,
             password_hash TEXT NOT NULL,
             role TEXT DEFAULT 'user',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        // Create Folders table
+        db.run(`CREATE TABLE IF NOT EXISTS folders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title_cs TEXT NOT NULL,
+            title_en TEXT NOT NULL,
+            category_id TEXT UNIQUE NOT NULL,
+            icon_url TEXT DEFAULT '/assets/folder-icon.png',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
@@ -111,6 +120,24 @@ function initDb() {
                 });
                 stmt.finalize();
                 console.log('Dummy portfolio items seeded.');
+            }
+        });
+
+        // Seed default folders if empty
+        db.get(`SELECT COUNT(*) as count FROM folders`, (err, row) => {
+            if (row && row.count === 0) {
+                const defaultFolders = [
+                    { cs: 'Fotky', en: 'Photos', category: 'PHOTOGRAPHY' },
+                    { cs: 'Videoklipy', en: 'Music Videos', category: 'VIDEOKLIPY' },
+                    { cs: 'Tiktok videa', en: 'Tiktok Videos', category: 'TIKTOK' },
+                    { cs: 'Instagram videa', en: 'Instagram Videos', category: 'INSTAGRAM' },
+                    { cs: 'Youtube videa', en: 'Youtube Videos', category: 'YOUTUBE' },
+                    { cs: 'Akce', en: 'Events', category: 'AKCE' }
+                ];
+                const stmt = db.prepare(`INSERT INTO folders (title_cs, title_en, category_id) VALUES (?, ?, ?)`);
+                defaultFolders.forEach(f => stmt.run(f.cs, f.en, f.category));
+                stmt.finalize();
+                console.log('Default folders seeded.');
             }
         });
         

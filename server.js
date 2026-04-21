@@ -128,11 +128,20 @@ app.get('/api/check-auth', verifyToken, (req, res) => {
 });
 
 
-// 2. Portfolio Endpoints (Public)
+// 2. Portfolio & Folders Endpoints (Public)
 app.get('/api/portfolio', async (req, res) => {
     try {
         const items = await dbAsync.all('SELECT * FROM portfolio_items ORDER BY created_at DESC');
         res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/folders', async (req, res) => {
+    try {
+        const folders = await dbAsync.all('SELECT * FROM folders ORDER BY id ASC');
+        res.json(folders);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -180,6 +189,36 @@ app.delete('/api/portfolio/:id', verifyToken, requireAdmin, async (req, res) => 
     try {
         await dbAsync.run('DELETE FROM portfolio_items WHERE id = ?', [req.params.id]);
         res.json({ message: 'Item deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/folders', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { titleCS, titleEN } = req.body;
+        if (!titleCS || !titleEN) return res.status(400).json({ error: 'Titles are required' });
+        
+        // Generate category_id from English title (uppercase, no spaces)
+        const categoryId = titleEN.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+        
+        await dbAsync.run(
+            'INSERT INTO folders (title_cs, title_en, category_id) VALUES (?, ?, ?)',
+            [titleCS, titleEN, categoryId]
+        );
+        res.json({ message: 'Folder created successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const id = req.params.id;
+        // Optionally, check if folder has portfolio items before deleting
+        // But for now, allow deletion
+        await dbAsync.run('DELETE FROM folders WHERE id = ?', [id]);
+        res.json({ message: 'Folder deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
