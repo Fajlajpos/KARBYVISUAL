@@ -703,9 +703,13 @@ function initAuthUI() {
 
         const tabBtn = e.target.closest('.db-tab-btn');
         if (tabBtn) {
-            document.querySelectorAll('.db-tab-btn').forEach(b => b.classList.remove('active'));
+            const parentWrap = tabBtn.closest('.db-tabs') || document;
+            parentWrap.querySelectorAll('.db-tab-btn').forEach(b => b.classList.remove('active'));
             tabBtn.classList.add('active');
-            fetchAdminDbData(tabBtn.dataset.tab);
+            
+            if (typeof dashboardFetchDbData === 'function') {
+                dashboardFetchDbData(tabBtn.dataset.tab);
+            }
         }
 
         if (e.target.closest('#close-db-modal-btn') || e.target.closest('#close-db-modal-dot') || e.target.classList.contains('modal-overlay')) {
@@ -756,87 +760,11 @@ function openAdminDbModal() {
     document.body.style.overflow = 'hidden';
     
     // Default to submissions
-    fetchAdminDbData('messages');
-}
-
-async function fetchAdminDbData(type) {
-    const wrapper = document.getElementById('db-table-wrapper');
-    const countEl = document.getElementById('db-total-count');
-    
-    wrapper.innerHTML = '<div class="loading-state mono-label">SYNCHRONIZING DATA...</div>';
-    
-    try {
-        const res = await fetch(`/api/admin/${type}`);
-        if (!res.ok) throw new Error('Data Access Denied');
-        const data = await res.json();
-        
-        countEl.textContent = data.length;
-        renderDbTable(data, type);
-    } catch (err) {
-        wrapper.innerHTML = `<div class="error-state mono-label">ERROR: ${err.message}</div>`;
+    if (typeof dashboardFetchDbData === 'function') {
+        dashboardFetchDbData('messages');
     }
 }
 
-function renderDbTable(data, type) {
-    const wrapper = document.getElementById('db-table-wrapper');
-    
-    if (!data || data.length === 0) {
-        wrapper.innerHTML = '<div class="loading-state mono-label">NO RECORDS IDENTIFIED.</div>';
-        return;
-    }
-
-    let html = `<table class="admin-table"><thead><tr>`;
-    
-    if (type === 'messages') {
-        html += `
-            <th>DATE</th>
-            <th>CLIENT</th>
-            <th>EMAIL</th>
-            <th>TYPE</th>
-            <th>BUDGET</th>
-            <th>MESSAGE</th>
-        `;
-    } else {
-        html += `
-            <th>ID</th>
-            <th>NAME</th>
-            <th>EMAIL</th>
-            <th>ROLE</th>
-            <th>JOINED</th>
-        `;
-    }
-    
-    html += `</tr></thead><tbody>`;
-    
-    data.forEach(item => {
-        const date = new Date(item.created_at).toLocaleDateString();
-        if (type === 'messages') {
-            html += `
-                <tr>
-                    <td>${date}</td>
-                    <td>${item.name}</td>
-                    <td>${item.email}</td>
-                    <td>${item.project_type || 'N/A'}</td>
-                    <td>${item.budget || 'N/A'}</td>
-                    <td title="${item.message}">${item.message}</td>
-                </tr>
-            `;
-        } else {
-            html += `
-                <tr>
-                    <td>#${item.id}</td>
-                    <td>${item.full_name}</td>
-                    <td>${item.email}</td>
-                    <td><span class="mono-label" style="color: ${item.role === 'admin' ? 'var(--accent)' : 'inherit'}">${item.role.toUpperCase()}</span></td>
-                    <td>${date}</td>
-                </tr>
-            `;
-        }
-    });
-    
-    html += `</tbody></table>`;
-    wrapper.innerHTML = html;
-}
 
 function openAuthModal(id) {
     const modal = document.getElementById(id);

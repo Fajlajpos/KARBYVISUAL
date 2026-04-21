@@ -165,20 +165,125 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // DB VIEW INTEGRATION
-    function initDashboardDbView() {
-        const dbTabs = dashboardModal.querySelectorAll('.db-tab-btn');
-        dbTabs.forEach(btn => {
-            // Already has global listener from main/auth logic but let's ensure target
-            btn.dataset.wrapper = 'dashboard-db-wrapper';
-        });
-        // Initial fetch
-        dashboardFetchDbData('messages');
+    // Setup detail panel toggles globally for standalone DB Modal
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#detail-panel-close') || e.target.id === 'db-detail-overlay') {
+            closeDbDetailPanel();
+        }
+    });
+
+    function openDbDetailPanel() {
+        const panel = document.getElementById('db-detail-panel');
+        const overlay = document.getElementById('db-detail-overlay');
+        if(panel) panel.classList.add('active');
+        if(overlay) overlay.classList.add('active');
     }
 
-    async function dashboardFetchDbData(type) {
-        const wrapper = document.getElementById('dashboard-db-wrapper');
-        const countEl = document.getElementById('db-total-count'); // if global
+    function closeDbDetailPanel() {
+        const panel = document.getElementById('db-detail-panel');
+        const overlay = document.getElementById('db-detail-overlay');
+        if(panel) panel.classList.remove('active');
+        if(overlay) overlay.classList.remove('active');
+    }
+
+    async function deleteDbRecord(type, id) {
+        if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS ${type.toUpperCase()}?`)) return;
+        try {
+            const res = await fetch(`/api/admin/${type}/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                if(window.showToast) window.showToast('RECORD PURGED', 'success');
+                dashboardFetchDbData(type); // refresh
+                closeDbDetailPanel();
+            } else {
+                if(window.showToast) window.showToast('ACTION FAILED', 'error');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    window.openUserDetail = async function(email, fullName) {
+        openDbDetailPanel();
+        const title = document.getElementById('detail-panel-title');
+        const content = document.getElementById('detail-panel-content');
+        
+        title.textContent = `USER [${fullName}]`;
+        content.innerHTML = '<div class="loading-state mono-label">SCANNING ARCHIVE...</div>';
+
+        try {
+            const res = await fetch(`/api/admin/user-messages/${encodeURIComponent(email)}`);
+            const messages = await res.json();
+
+            if (messages.length === 0) {
+                content.innerHTML = '<div class="mono-label" style="opacity:0.5; padding: 2rem 0;">NO TRANSMISSION DATA FOUND.</div>';
+                return;
+            }
+
+            let html = `<div class="mono-label" style="margin-bottom:1.5rem;">FOUND [${messages.length}] RECORD(S)</div>`;
+            messages.forEach(msg => {
+                const date = new Date(msg.created_at).toLocaleString();
+                html += `
+                    <div class="transmission-log-card">
+                        <div class="meta-grid">
+                            <div class="meta-item"><span>DATE</span><strong>${date}</strong></div>
+                            <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
+                            <div class="meta-item"><span>BUDGET_CLASS</span><strong>${msg.budget || 'N/A'}</strong></div>
+                            <div class="meta-item"><span>STATUS</span><strong style="color:var(--accent);">DELIVERED</strong></div>
+                        </div>
+                        <div class="msg-content">${msg.message}</div>
+                        <div style="margin-top: 1.5rem; text-align: right;">
+                            <button type="button" class="action-icon-btn" onclick="window.deleteDbRecordMsg(${msg.id})">
+                                <i class="ph ph-trash"></i> PURGE_RECORD
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            content.innerHTML = html;
+        } catch(e) {
+            content.innerHTML = '<div class="error-msg">SCAN FAILED</div>';
+        }
+    };
+
+    window.openMessageDetail = function(msgJsonStr) {
+        openDbDetailPanel();
+        try {
+            const msg = JSON.parse(decodeURIComponent(msgJsonStr));
+            const title = document.getElementById('detail-panel-title');
+            const content = document.getElementById('detail-panel-content');
+            
+            title.textContent = `TRANSMISSION [ID#${msg.id}]`;
+            
+            const date = new Date(msg.created_at).toLocaleString();
+            let html = `
+                <div class="transmission-log-card">
+                    <div class="meta-grid">
+                        <div class="meta-item"><span>SENDER_NAME</span><strong>${msg.name}</strong></div>
+                        <div class="meta-item"><span>SENDER_EMAIL</span><strong>${msg.email}</strong></div>
+                        <div class="meta-item"><span>DATE_RECEIVED</span><strong>${date}</strong></div>
+                        <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
+                        <div class="meta-item"><span>BUDGET_VAL</span><strong>${msg.budget || 'N/A'}</strong></div>
+                    </div>
+                    <div class="msg-content" style="border:1px dashed rgba(255,255,255,0.1); padding: 1.5rem; background: rgba(0,0,0,0.3);">${msg.message}</div>
+                    
+                    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                        <a href="mailto:${msg.email}" class="action-btn-tactical" style="text-decoration:none;"><i class="ph ph-envelope-simple"></i> REPLY_LINK</a>
+                        <button type="button" class="action-icon-btn" style="padding: 0.6rem 1rem;" onclick="window.deleteDbRecordMsg(${msg.id})">
+                            <i class="ph ph-trash"></i> DELETE
+                        </button>
+                    </div>
+                </div>
+            `;
+            content.innerHTML = html;
+        } catch(e) { console.error(e); }
+    };
+
+    window.deleteDbRecordMsg = function(id) { deleteDbRecord('messages', id); };
+    window.deleteDbRecordUser = function(id) { deleteDbRecord('users', id); };
+
+    window.dashboardFetchDbData = async function(type) {
+        const wrapper = document.getElementById('db-table-wrapper');
+        const countEl = document.getElementById('db-total-count'); 
         
         wrapper.innerHTML = '<div class="loading-state mono-label">SYNCHRONIZING RECORDS...</div>';
         
@@ -193,18 +298,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let html = `<table class="admin-table"><thead><tr>`;
             if (type === 'messages') {
-                html += `<th>DATE</th><th>CLIENT</th><th>EMAIL</th><th>TYPE</th><th>MSG</th>`;
+                html += `<th>DATE</th><th>CLIENT</th><th>EMAIL</th><th>TYPE</th><th>MSG</th><th>ACTION</th>`;
             } else {
-                html += `<th>ID</th><th>NAME</th><th>EMAIL</th><th>ROLE</th>`;
+                html += `<th>ID</th><th>NAME</th><th>EMAIL</th><th>ROLE</th><th>ACTION</th>`;
             }
             html += `</tr></thead><tbody>`;
             
             data.forEach(item => {
                 const date = new Date(item.created_at).toLocaleDateString();
+                
                 if (type === 'messages') {
-                    html += `<tr><td>${date}</td><td>${item.name}</td><td>${item.email}</td><td>${item.project_type}</td><td title="${item.message}">${item.message.substring(0,20)}...</td></tr>`;
+                    const encodedMsg = encodeURIComponent(JSON.stringify(item));
+                    html += `
+                    <tr class="table-row-clickable">
+                        <td onclick="window.openMessageDetail('${encodedMsg}')">${date}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')">${item.name}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')">${item.email}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')">${item.project_type}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" title="${item.message}">${item.message.substring(0,30)}...</td>
+                        <td>
+                            <button class="action-icon-btn" onclick="window.deleteDbRecordMsg(${item.id})"><i class="ph ph-trash"></i></button>
+                        </td>
+                    </tr>`;
                 } else {
-                    html += `<tr><td>#${item.id}</td><td>${item.full_name}</td><td>${item.email}</td><td>${item.role.toUpperCase()}</td></tr>`;
+                    html += `
+                    <tr class="table-row-clickable">
+                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">#${item.id}</td>
+                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">${item.full_name}</td>
+                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">${item.email}</td>
+                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">${item.role.toUpperCase()}</td>
+                        <td>
+                            <button class="action-icon-btn" onclick="window.deleteDbRecordUser(${item.id})" ${item.role === 'admin' ? 'disabled style="opacity:0.2"' : ''}><i class="ph ph-trash"></i></button>
+                        </td>
+                    </tr>`;
                 }
             });
             html += `</tbody></table>`;

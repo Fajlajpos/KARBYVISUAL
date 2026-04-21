@@ -2129,12 +2129,131 @@ body.admin-enabled .delete-btn { display: flex; }
     text-overflow: ellipsis;
 }
 
-.admin-table tr:hover td {
-    background: rgba(255, 255, 255, 0.03);
+.table-row-clickable {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.table-row-clickable:hover td {
+    background: rgba(255, 255, 255, 0.05);
     opacity: 1;
 }
 
+.action-icon-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.3rem 0.5rem;
+    color: #ff4444;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+.action-icon-btn:hover {
+    background: #ff4444;
+    color: #000;
+    border-color: #ff4444;
+}
+
+/* STANDALONE ADMIN DB MODAL */
+.admin-db-modal {
+    max-width: 95vw !important;
+    width: 1400px !important;
+    height: 90vh !important;
+}
+
+/* ADMIN DETAIL PANEL */
+.db-detail-panel {
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 60%;
+    height: 100%;
+    background: #0a0a0a;
+    border-left: 1px solid rgba(255,255,255,0.1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+    transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 100;
+    overflow-y: auto;
+    padding: 2.5rem;
+}
+.db-detail-panel.active {
+    right: 0;
+}
+.db-detail-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    backdrop-filter: blur(2px);
+}
+.db-detail-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+.detail-close {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    transition: color 0.3s;
+}
+.detail-close:hover { color: var(--accent); }
+
+.detail-content-area {
+    font-family: var(--font-mono);
+}
+
+.transmission-log-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    border-radius: 4px;
+}
+.transmission-log-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent);
+}
+.transmission-log-card .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.transmission-log-card .meta-item span {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 0.3rem;
+}
+.transmission-log-card .meta-item strong {
+    font-size: 0.85rem;
+    color: #fff;
+}
+.transmission-log-card .msg-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #eee;
+    white-space: pre-wrap;
+}
+
 .btn-admin-db {
+
     background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);

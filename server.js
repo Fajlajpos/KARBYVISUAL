@@ -262,6 +262,34 @@ app.get('/api/admin/messages', verifyToken, requireAdmin, async (req, res) => {
     }
 });
 
+app.get('/api/admin/user-messages/:email', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const email = req.params.email;
+        const messages = await dbAsync.all('SELECT * FROM messages WHERE email = ? ORDER BY created_at DESC', [email]);
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/messages/:id', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        await dbAsync.run('DELETE FROM messages WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Message deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/users/:id', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        await dbAsync.run('DELETE FROM users WHERE id = ?', [req.params.id]);
+        res.json({ message: 'User deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 // SPA Catch-all
 app.get('*', (req, res) => {

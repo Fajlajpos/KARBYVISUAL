@@ -884,8 +884,6 @@
                             data-cs="PŘIDAT PRÁCI" data-en="ADD WORK">ADD WORK</span></button>
                     <button class="db-nav-btn" data-tab="settings"><i class="ph ph-gear"></i> <span data-cs="KONFIGURACE"
                             data-en="CONFIG">CONFIG</span></button>
-                    <button class="db-nav-btn" data-tab="db-view"><i class="ph ph-database"></i> <span
-                            data-cs="DATABÁZE" data-en="DATABASE">DATABASE</span></button>
                 </aside>
 
                 <main class="dashboard-main scrollbar-minimal" data-lenis-prevent>
@@ -1021,24 +1019,7 @@
                         </form>
                     </div>
 
-                    <!-- Tab Content: DB View (Integrated) -->
-                    <div class="db-tab-content" id="tab-db-view">
-                        <div class="db-modal-body" style="padding: 0;">
-                            <div class="db-tabs" style="margin-bottom: 1rem;">
-                                <button class="db-tab-btn active" data-tab="messages" data-cs="POPTÁVKY"
-                                    data-en="SUBMISSIONS">SUBMISSIONS</button>
-                                <button class="db-tab-btn" data-tab="users" data-cs="UŽIVATELÉ"
-                                    data-en="USERS">USERS</button>
-                            </div>
-                            <div class="db-view-area scrollbar-minimal"
-                                style="border: 1px solid rgba(255,255,255,0.05); padding: 1rem;" data-lenis-prevent>
-                                <div id="dashboard-db-wrapper">
-                                    <!-- Content injected via JS -->
-                                    <div class="loading-state mono-label">WAITING FOR COMMAND...</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </main>
             </div>
 
@@ -1069,18 +1050,35 @@
                 </div>
             </div>
 
-            <div class="db-modal-body">
-                <div class="db-tabs">
-                    <button class="db-tab-btn active" data-tab="messages" data-cs="POPTÁVKY"
-                        data-en="SUBMISSIONS">SUBMISSIONS</button>
-                    <button class="db-tab-btn" data-tab="users" data-cs="UŽIVATELÉ" data-en="USERS">USERS</button>
-                    <div class="db-stats mono-label">TOTAL: <span id="db-total-count">0</span></div>
+            <div class="db-modal-body" style="position: relative; overflow: hidden; padding: 0;">
+                <div style="padding: 2rem; display: flex; flex-direction: column; height: 100%;">
+                    <div class="db-tabs">
+                        <button class="db-tab-btn active" data-tab="messages" data-cs="POPTÁVKY"
+                            data-en="SUBMISSIONS">SUBMISSIONS</button>
+                        <button class="db-tab-btn" data-tab="users" data-cs="UŽIVATELÉ" data-en="USERS">USERS</button>
+                        <div class="db-stats mono-label">TOTAL: <span id="db-total-count">0</span></div>
+                    </div>
+
+                    <div class="db-view-area scrollbar-minimal" data-lenis-prevent style="padding: 2.5rem;">
+                        <div id="db-table-wrapper">
+                            <!-- Content injected via JS -->
+                            <div class="loading-state mono-label">SYNCHRONIZING DATA...</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="db-view-area scrollbar-minimal">
-                    <div id="db-table-wrapper">
+                <!-- Detail Sliding Panel -->
+                <div class="db-detail-overlay" id="db-detail-overlay"></div>
+                <div class="db-detail-panel scrollbar-minimal" id="db-detail-panel" data-lenis-prevent>
+                    <div class="detail-header">
+                        <div>
+                            <span class="mono-label" style="color: var(--accent); font-size: 0.6rem; letter-spacing: 2px;">SYS_INSPECTOR</span>
+                            <h3 id="detail-panel-title" style="margin-top: 0.5rem; font-size: 1.2rem;">DETAIL_VIEW</h3>
+                        </div>
+                        <i class="ph ph-x detail-close" id="detail-panel-close"></i>
+                    </div>
+                    <div class="detail-content-area" id="detail-panel-content">
                         <!-- Content injected via JS -->
-                        <div class="loading-state mono-label">SYNCHRONIZING DATA...</div>
                     </div>
                 </div>
             </div>
