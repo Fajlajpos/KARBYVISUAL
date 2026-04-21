@@ -635,18 +635,107 @@ body.admin-enabled .delete-btn { display: flex; }
     flex-grow: 1;
     overflow-y: auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
-    padding: 3rem; /* Symmetrical padding matched with left */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding: 2.5rem;
     margin-top: 0;
+    scroll-behavior: smooth;
 }
-.folder-content-modal .port-item { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); }
-.folder-content-modal .port-img-wrap { min-height: 250px; border-color: rgba(255,255,255,0.05); }
-.folder-content-modal .port-info { margin-top: 0.8rem; }
-.folder-content-modal .port-info h3 { font-size: 0.8rem; letter-spacing: 1px; }
-.folder-content-modal .port-cat { font-size: 0.6rem; }
+
+.folder-content-modal .port-item { 
+    background: #000; 
+    border-color: rgba(255,255,255,0.05); 
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+.folder-content-modal .port-media-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.folder-content-modal .port-img-wrap, 
+.folder-content-modal .port-video-wrap { 
+    height: 100%; 
+    min-height: unset; 
+    border: none;
+}
+.item-overlay-icon {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 1.2rem;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 5;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.folder-content-modal .port-item:hover .item-overlay-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.folder-content-modal .port-info { 
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 6;
+}
+.folder-content-modal .port-item:hover .port-info {
+    opacity: 1;
+}
+.folder-content-modal .port-info h3 { 
+    font-size: 0.85rem; 
+    letter-spacing: 1px; 
+    margin: 0.4rem 0; 
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.folder-content-modal .port-cat { 
+    font-size: 0.55rem; 
+    color: #fff;
+    opacity: 0.5;
+    letter-spacing: 2px;
+    font-family: var(--font-mono);
+}
+.view-indicator {
+    margin-top: 0.8rem;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 0.5rem;
+}
+
+
  
- .folder-content-modal #folder-items-grid::-webkit-scrollbar { display: none; }
+ .folder-content-modal #folder-items-grid::-webkit-scrollbar { 
+    width: 6px;
+    display: block;
+}
+.folder-content-modal #folder-items-grid::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+}
+.folder-content-modal #folder-items-grid::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 0;
+}
+.folder-content-modal #folder-items-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}
+
  
  .placeholder-card {
      aspect-ratio: 16/9;
@@ -2088,30 +2177,35 @@ body.admin-enabled .delete-btn { display: flex; }
     background: #ccc; 
 }
 
-/* INTERNAL MENU SCROLLBAR - Premium with Visual Gap (User Choice) */
+/* INTERNAL MENU SCROLLBAR - Premium with Visual Gap */
 .dashboard-main::-webkit-scrollbar,
-#folder-items-grid::-webkit-scrollbar,
 .db-view-area::-webkit-scrollbar { 
     width: 20px;
 }
 .dashboard-main::-webkit-scrollbar-thumb,
-#folder-items-grid::-webkit-scrollbar-thumb,
 .db-view-area::-webkit-scrollbar-thumb { 
     background-color: #fff; 
     border: 7px solid rgba(0, 0, 0, 0); 
     background-clip: padding-box; 
 }
 
+
 /* Remove old scrollbar helpers */
 .scrollbar-minimal::-webkit-scrollbar { display: none; }
 
 @media (max-width: 768px) {
+    .folder-content-modal #folder-items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        padding: 1.5rem;
+        gap: 1rem;
+    }
     .btn-admin-db { margin-right: 0.5rem; padding: 0.3rem 0.5rem; font-size: 0.65rem; }
     .db-modal-body { padding: 1rem; }
     .admin-table { font-size: 0.7rem; }
     .db-tabs { flex-direction: column; align-items: stretch; gap: 0.5rem; }
     .db-stats { margin-left: 0; margin-top: 0.5rem; }
 }
+
 
 @keyframes pulse {
     0% { opacity: 0.4; }

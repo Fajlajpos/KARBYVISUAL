@@ -331,12 +331,17 @@ function openFolderModal(category, titles, originEl) {
 
             div.innerHTML = `
                 ${adminHtml}
-                ${mediaHtml}
+                <div class="port-media-container">
+                    ${mediaHtml}
+                    <div class="item-overlay-icon"><i class="ph ph-plus"></i></div>
+                </div>
                 <div class="port-info">
+                    <span class="port-cat">${item.category}</span>
                     <h3>${item.title}</h3>
-                    <span class="port-cat">[ ${item.category} ]</span>
+                    <div class="view-indicator mono-label" data-cs="[ ZOBRAZIT ]" data-en="[ VIEW ]">[ VIEW ]</div>
                 </div>
             `;
+
             
             // Add delete listener if admin
             if (window.isAdmin) {
