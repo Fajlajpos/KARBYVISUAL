@@ -90,6 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Subtle Parallax for Media Frame
+    // Disabled: The user requested that the video stays completely still when scrolling.
+    /*
     if (document.querySelector('.hero-section')) {
         gsap.to('.hero-video', {
             yPercent: 15,
@@ -102,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    */
 
     // Preloader Sequence
     const tl = gsap.timeline();
