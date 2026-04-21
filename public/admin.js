@@ -81,7 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saveHeroBtn) {
         saveHeroBtn.addEventListener('click', async () => {
             const url = heroVidInput.value;
-            saveHeroBtn.textContent = 'SAVING...';
+            const statusEl = document.getElementById('hero-status');
+            
+            saveHeroBtn.textContent = 'TRANSMITTING...';
+            if (statusEl) statusEl.textContent = 'UPLOADING_DATA';
+            
             try {
                 const res = await fetch('/api/settings', {
                     method: 'POST',
@@ -89,14 +93,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ key: 'hero_video_url', value: url })
                 });
                 if (res.ok) {
-                    if (window.showToast) window.showToast('HERO VIDEO UPDATED', 'success');
-                    // Update the live iframe if user is looking at it
+                    if (window.showToast) window.showToast('HERO VISUALS SYNCHRONIZED', 'success');
+                    if (statusEl) statusEl.textContent = 'SYNC_COMPLETE';
+                    // Update the live iframe
                     if (typeof loadSettings === 'function') loadSettings();
+                } else {
+                    throw new Error('Save failed');
                 }
             } catch (err) {
-                if (window.showToast) window.showToast('SAVE FAILED', 'error');
+                if (window.showToast) window.showToast('CORE_LINK_FAILURE', 'error');
+                if (statusEl) statusEl.textContent = 'ERROR_DETECTED';
             } finally {
-                saveHeroBtn.textContent = 'SAVE';
+                setTimeout(() => {
+                    saveHeroBtn.textContent = 'UPDATE';
+                    if (statusEl && statusEl.textContent !== 'ERROR_DETECTED') statusEl.textContent = 'STANDBY';
+                }, 2000);
             }
         });
     }

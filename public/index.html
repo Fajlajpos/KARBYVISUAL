@@ -882,108 +882,113 @@
                 <aside class="dashboard-sidebar">
                     <button class="db-nav-btn active" data-tab="upload"><i class="ph ph-plus-circle"></i> <span
                             data-cs="PŘIDAT PRÁCI" data-en="ADD WORK">ADD WORK</span></button>
-                    <button class="db-nav-btn" data-tab="settings"><i class="ph ph-gear"></i> <span data-cs="NASTAVENÍ"
-                            data-en="SETTINGS">SETTINGS</span></button>
+                    <button class="db-nav-btn" data-tab="settings"><i class="ph ph-gear"></i> <span data-cs="KONFIGURACE"
+                            data-en="CONFIG">CONFIG</span></button>
                     <button class="db-nav-btn" data-tab="db-view"><i class="ph ph-database"></i> <span
                             data-cs="DATABÁZE" data-en="DATABASE">DATABASE</span></button>
                 </aside>
 
                 <main class="dashboard-main scrollbar-minimal" data-lenis-prevent>
                     <!-- Tab Content: Upload -->
+                    <!-- Tab Content: Upload -->
                     <div class="db-tab-content active" id="tab-upload">
-                        <form id="portfolio-form" enctype="multipart/form-data">
-                            <div class="form-body">
-                                <div class="form-group">
-                                    <label class="mono-label" data-cs="NÁZEV ZÁZNAMU" data-en="RECORD TITLE">RECORD
-                                        TITLE</label>
-                                    <input type="text" id="p-title" name="title" placeholder="ENTER TITLE" required>
-                                </div>
-
-                                <div class="form-row duo">
-                                    <div class="form-group">
-                                        <label class="mono-label" data-cs="SLOŽKA (KATEGORIE)"
-                                            data-en="FOLDER (CATEGORY)">FOLDER (CATEGORY)</label>
-                                        <select id="p-category" name="category" required>
-                                            <option value="PHOTOGRAPHY" data-cs="FOTKY" data-en="PHOTOS">FOTKY</option>
-                                            <option value="VIDEOKLIPY" data-cs="VIDEOKLIPY" data-en="MUSIC VIDEOS">
-                                                VIDEOKLIPY</option>
-                                            <option value="TIKTOK" data-cs="TIKTOK" data-en="TIKTOK">TIKTOK</option>
-                                            <option value="INSTAGRAM" data-cs="INSTAGRAM" data-en="INSTAGRAM">INSTAGRAM
-                                            </option>
-                                            <option value="YOUTUBE" data-cs="YOUTUBE" data-en="YOUTUBE">YOUTUBE</option>
-                                            <option value="AKCE" data-cs="AKCE" data-en="EVENTS">AKCE</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="mono-label" data-cs="TYP MÉDIA" data-en="MEDIA TYPE">MEDIA
-                                            TYPE</label>
-                                        <select id="p-media-type" name="mediaType" required>
-                                            <option value="image" data-cs="OBRÁZEK" data-en="IMAGE">OBRÁZEK</option>
-                                            <option value="video" data-cs="VIDEO (SOUBOR)" data-en="VIDEO (FILE)">VIDEO
-                                                (SOUBOR)</option>
-                                            <option value="vimeo" data-cs="VIMEO / YOUTUBE (LINK)"
-                                                data-en="VIMEO / YT (LINK)">VIMEO / YOUTUBE (LINK)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div id="file-upload-section">
-                                    <label class="mono-label" data-cs="VLOŽIT SOUBOR" data-en="UPLOAD FILE">UPLOAD
-                                        FILE</label>
-                                    <div class="upload-dropzone" id="p-dropzone">
-                                        <input type="file" id="p-media" name="media" accept="image/*,video/*" multiple>
-                                        <div class="dropzone-content">
-                                            <i class="ph ph-upload-simple"></i>
-                                            <span data-cs="KLIKNĚTE NEBO PŘETÁHNĚTE SOUBOR"
-                                                data-en="CLICK OR DRAG FILE HERE">KLIKNĚTE NEBO PŘETÁHNĚTE SOUBOR</span>
+                        <div class="db-section-header">
+                            <span class="mono-label">PŘIDAT_ZÁZNAM // 01</span>
+                            <div class="header-line"></div>
+                        </div>
+                        
+                        <form id="portfolio-form" enctype="multipart/form-data" class="tactical-form">
+                            <div class="form-grid-dashboard">
+                                <!-- First Section: Primary Intel -->
+                                <div class="form-panel">
+                                    <div class="panel-header mono-label">01_PRIMARY_INTEL</div>
+                                    <div class="form-body">
+                                        <div class="form-group mb-1">
+                                            <label class="mono-label" data-cs="NÁZEV ZÁZNAMU" data-en="RECORD TITLE">RECORD TITLE</label>
+                                            <input type="text" id="p-title" name="title" placeholder="IDENTIFY_TITLE" required class="brut-input">
                                         </div>
-                                        <div id="p-preview-container" class="preview-container hidden">
-                                            <div class="scanner-line"></div>
-                                            <img id="p-preview-img" src="" alt="Preview">
-                                            <div class="preview-overlay">
-                                                <div class="meta-info" id="p-meta-info">
-                                                    <span>SIZE: ---</span>
-                                                    <span>TYPE: ---</span>
-                                                </div>
-                                                <div class="status-ready"><i class="ph ph-check-circle"></i> DATA_READY
-                                                </div>
+
+                                        <div class="form-row duo">
+                                            <div class="form-group">
+                                                <label class="mono-label" data-cs="KATEGORIE" data-en="CATEGORY">CATEGORY</label>
+                                                <select id="p-category" name="category" required class="brut-select">
+                                                    <option value="PHOTOGRAPHY" data-cs="FOTKY" data-en="PHOTOS">FOTKY</option>
+                                                    <option value="VIDEOKLIPY" data-cs="VIDEOKLIPY" data-en="MUSIC VIDEOS">VIDEOKLIPY</option>
+                                                    <option value="TIKTOK" data-cs="TIKTOK" data-en="TIKTOK">TIKTOK</option>
+                                                    <option value="INSTAGRAM" data-cs="INSTAGRAM" data-en="INSTAGRAM">INSTAGRAM</option>
+                                                    <option value="YOUTUBE" data-cs="YOUTUBE" data-en="YOUTUBE">YOUTUBE</option>
+                                                    <option value="AKCE" data-cs="AKCE" data-en="EVENTS">AKCE</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="mono-label" data-cs="TYP MÉDIA" data-en="MEDIA TYPE">MEDIA TYPE</label>
+                                                <select id="p-media-type" name="mediaType" required class="brut-select">
+                                                    <option value="image" data-cs="OBRÁZEK" data-en="IMAGE">OBRÁZEK</option>
+                                                    <option value="video" data-cs="VIDEO (SOUBOR)" data-en="VIDEO (FILE)">VIDEO (SOUBOR)</option>
+                                                    <option value="vimeo" data-cs="EXTERNÍ LINK" data-en="EXT. LINK">EXTERNÍ LINK</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div id="vimeo-upload-section" class="hidden">
-                                    <label class="mono-label" data-cs="EXTERNÍ LINK (YT / VIMEO)"
-                                        data-en="EXTERNAL LINK (YT / VIMEO)">EXTERNAL LINK (YT / VIMEO)</label>
-                                    <input type="url" id="p-vimeo" name="vimeoUrl"
-                                        placeholder="https://youtube.com/watch?v=...">
+                                <!-- Second Section: Media Uplink -->
+                                <div class="form-panel">
+                                    <div class="panel-header mono-label">02_MEDIA_UPLINK</div>
+                                    <div class="form-body">
+                                        <div id="file-upload-section">
+                                            <div class="upload-dropzone" id="p-dropzone">
+                                                <input type="file" id="p-media" name="media" accept="image/*,video/*" multiple>
+                                                <div class="dropzone-content">
+                                                    <i class="ph ph-plus-square"></i>
+                                                    <span data-cs="DEPOZITÁŘ_SOUBORŮ" data-en="FILE_DEPOSITORY">DEPOZITÁŘ_SOUBORŮ</span>
+                                                </div>
+                                                <div id="p-preview-container" class="preview-container hidden">
+                                                    <div class="scanner-line"></div>
+                                                    <img id="p-preview-img" src="" alt="Preview">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="vimeo-upload-section" class="hidden">
+                                            <div class="form-group">
+                                                <label class="mono-label">REMOTE_SOURCE_URL</label>
+                                                <input type="url" id="p-vimeo" name="vimeoUrl" placeholder="https://..." class="brut-input">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="form-row duo" style="margin-top: 1rem;">
-                                    <div class="form-group">
-                                        <label class="mono-label" data-cs="POPIS (CS)" data-en="DESC (CS)">POPIS
-                                            (CS)</label>
-                                        <textarea id="p-desc-cs" name="descriptionCS" rows="3"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="mono-label" data-cs="POPIS (EN)" data-en="DESC (EN)">POPIS
-                                            (EN)</label>
-                                        <textarea id="p-desc-en" name="descriptionEN" rows="3"></textarea>
+                                <!-- Third Section: Localization -->
+                                <div class="form-panel full-width">
+                                    <div class="panel-header mono-label">03_LOC_DATA</div>
+                                    <div class="form-body form-row duo">
+                                        <div class="form-group">
+                                            <label class="mono-label" data-cs="POPIS (CS)" data-en="DESC (CS)">DESC (CS)</label>
+                                            <textarea id="p-desc-cs" name="descriptionCS" rows="2" class="brut-textarea"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mono-label" data-cs="POPIS (EN)" data-en="DESC (EN)">DESC (EN)</label>
+                                            <textarea id="p-desc-en" name="descriptionEN" rows="2" class="brut-textarea"></textarea>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="form-group" style="margin-top: 1rem;">
-                                    <label class="mono-label" data-cs="TAGY (ODDĚLENÉ ČÁRKOU)"
-                                        data-en="TAGS (COMMA SEPARATED)">TAGS (COMMA SEPARATED)</label>
-                                    <input type="text" id="p-tags" name="tags"
-                                        placeholder="e.g. fashion, street, cinematic">
+                                <!-- Fourth Section: Metadata -->
+                                <div class="form-panel full-width">
+                                    <div class="panel-header mono-label">04_SYS_METADATA</div>
+                                    <div class="form-body">
+                                        <div class="form-group">
+                                            <label class="mono-label" data-cs="TAGY (ODDĚLENÉ ČÁRKOU)" data-en="TAGS (COMMA SEPARATED)">TAGS (COMMA SEPARATED)</label>
+                                            <input type="text" id="p-tags" name="tags" placeholder="project, branding, edit" class="brut-input">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="form-footer">
+                            <div class="form-footer" style="padding-top: 1.5rem;">
                                 <button type="submit" class="submit-btn publish-btn" style="width: 100%;">
-                                    <span class="btn-text" data-cs="[ PUBLIKOVAT PŘÍSPĚVEK ]"
-                                        data-en="[ PUBLISH POST ]">[ PUBLIKOVAT PŘÍSPĚVEK ]</span>
+                                    <span class="btn-text" data-cs="[ INICIALIZOVAT_PUBLIKACI ]" data-en="[ INITIALIZE_PUBLICATION ]">[ INITIALIZE_PUBLICATION ]</span>
                                 </button>
                             </div>
                         </form>
@@ -991,16 +996,26 @@
 
                     <!-- Tab Content: Settings -->
                     <div class="db-tab-content" id="tab-settings">
-                        <form id="admin-settings-form">
-                            <div class="settings-group">
-                                <label class="mono-label" data-cs="HERO VIDEO LINK (YT / VIMEO)"
-                                    data-en="HERO VIDEO LINK (YT / VIMEO)">HERO VIDEO LINK (YT / VIMEO)</label>
-                                <p class="cell-desc" style="font-size: 0.7rem; margin-bottom: 0.5rem; opacity: 0.6;">
-                                    Změňte hlavní video v úvodní sekci webu.</p>
-                                <div class="input-with-action">
-                                    <input type="url" id="hero-vid-url" placeholder="https://www.youtube.com/embed/...">
-                                    <button type="button" class="action-btn" id="save-hero-vid-btn" data-cs="ULOŽIT"
-                                        data-en="SAVE">SAVE</button>
+                        <div class="db-section-header">
+                            <span class="mono-label">SYSTÉMOVÉ_OVLÁDÁNÍ // 02</span>
+                        </div>
+                        <form id="admin-settings-form" class="dashboard-config-form">
+                            <div class="settings-panel textured-bg">
+                                <div class="settings-group">
+                                    <div class="group-header">
+                                        <i class="ph ph-monitor-play"></i>
+                                        <label class="mono-label" data-cs="HLAVNÍ_VIDEO_ZDROJ" data-en="HERO_VISUAL_SOURCE">HERO_VISUAL_SOURCE</label>
+                                    </div>
+                                    <p class="cell-desc" style="font-size: 0.7rem; margin-bottom: 1rem; opacity: 0.6;" data-cs="Zadejte link na YouTube nebo Vimeo pro hero sekci." data-en="Input YouTube or Vimeo link for the hero section background.">
+                                        Zadejte link na YouTube nebo Vimeo pro hero sekci.</p>
+                                    <div class="input-with-action tactical-input-group">
+                                        <input type="url" id="hero-vid-url" placeholder="https://www.youtube.com/watch?v=...">
+                                        <button type="button" class="action-btn-tactical" id="save-hero-vid-btn" data-cs="AKTUALIZOVAT"
+                                            data-en="UPDATE">UPDATE</button>
+                                    </div>
+                                    <div class="status-bit mono-label mt-1" style="font-size: 0.6rem; opacity: 0.4;">
+                                        STATUS: <span id="hero-status">STANDBY</span>
+                                    </div>
                                 </div>
                             </div>
                         </form>

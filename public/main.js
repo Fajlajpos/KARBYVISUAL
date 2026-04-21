@@ -172,13 +172,32 @@ async function loadSettings() {
         if (settings.hero_video_url) {
             const heroIframe = document.querySelector('.hero-video');
             if (heroIframe) {
-                // Ensure it's an embed URL if it's a direct YouTube link
                 let url = settings.hero_video_url;
-                if (url.includes('watch?v=')) {
-                    url = url.replace('watch?v=', 'embed/');
+                
+                // YouTube cleaning
+                if (url.includes('youtube.com/watch?v=')) {
+                    const vidId = url.split('v=')[1].split('&')[0];
+                    url = `https://www.youtube.com/embed/${vidId}?autoplay=0&mute=1&loop=1&playlist=${vidId}&modestbranding=1&rel=0`;
                 } else if (url.includes('youtu.be/')) {
-                    url = url.replace('youtu.be/', 'youtube.com/embed/');
+                    const vidId = url.split('youtu.be/')[1].split('?')[0];
+                    url = `https://www.youtube.com/embed/${vidId}?autoplay=0&mute=1&loop=1&playlist=${vidId}&modestbranding=1&rel=0`;
+                } else if (url.includes('youtube.com/embed/')) {
+                    // Already an embed, just ensure essential params
+                    if (!url.includes('autoplay')) {
+                        url += (url.includes('?') ? '&' : '?') + 'autoplay=0&mute=1&loop=1&modestbranding=1';
+                    } else {
+                        url = url.replace('autoplay=1', 'autoplay=0');
+                    }
                 }
+                
+                // Vimeo cleaning
+                if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+                    const vidId = url.split('vimeo.com/')[1].split('?')[0];
+                    url = `https://player.vimeo.com/video/${vidId}?autoplay=0&muted=1&loop=1`;
+                } else if (url.includes('player.vimeo.com')) {
+                    url = url.replace('autoplay=1', 'autoplay=0');
+                }
+
                 heroIframe.src = url;
             }
         }

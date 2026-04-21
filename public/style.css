@@ -2258,3 +2258,98 @@ body.admin-enabled .delete-btn { display: flex; }
 .lb-nav-btn { width: 60px; height: 60px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 1.5rem; border-radius: 50%; cursor: pointer; pointer-events: auto; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
 .lb-nav-btn:hover { background: #fff; color: #000; border-color: #fff; transform: scale(1.1); }
 
+/* ADMIN DASHBOARD REDESIGN */
+.db-section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+.db-section-header .header-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255,255,255,0.2), transparent);
+}
+
+.form-grid-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+.form-panel {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    padding: 1.5rem;
+    padding-top: 2rem;
+}
+.form-panel.full-width { grid-column: span 2; }
+
+.panel-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(255,255,255,0.05);
+    padding: 0.3rem 0.8rem;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    border-bottom-right-radius: 4px;
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+.brut-input, .brut-select, .brut-textarea {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    padding: 0.8rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    border-radius: 0;
+    transition: all 0.3s;
+}
+.brut-input:focus, .brut-select:focus, .brut-textarea:focus {
+    border-color: var(--accent);
+    background: rgba(0,0,0,0.5);
+    outline: none;
+}
+
+.tactical-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+.action-btn-tactical {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.action-btn-tactical:hover {
+    background: var(--accent);
+}
+
+.settings-panel {
+    padding: 2.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.group-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.group-header i { font-size: 1.2rem; color: var(--accent); }
+
+@media (max-width: 900px) {
+    .form-grid-dashboard { grid-template-columns: 1fr; }
+    .form-panel.full-width { grid-column: auto; }
+}
+
