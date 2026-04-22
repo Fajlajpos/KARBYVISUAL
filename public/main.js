@@ -328,7 +328,7 @@ function openFolderModal(category, titles, originEl) {
 
     // Update Title
     const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
-    titleEl.textContent = `[ ${displayTitle.toUpperCase()} ]`;
+    titleEl.textContent = `[ ${displayTitle} ]`;
 
     // Filter Items (Standardized Categories)
     let filtered = portfolioData.filter(item => {
@@ -459,8 +459,16 @@ function openLightbox(item) {
     const title = document.getElementById('lightbox-title');
     const desc = document.getElementById('lightbox-desc');
     const cat = document.getElementById('lightbox-category');
+    const editBtn = document.getElementById('lightbox-edit-btn');
     
-    title.textContent = item.title;
+    if (window.isAdmin && editBtn) {
+        editBtn.classList.remove('hidden');
+        editBtn.onclick = () => openEditModal(item);
+    } else if (editBtn) {
+        editBtn.classList.add('hidden');
+    }
+    
+    title.textContent = item.title || 'Bez názvu';
     
     // Inject localized description (or plain string)
     let descriptionText = getLocalizedDesc(item.description);
@@ -521,6 +529,68 @@ function navigateLightbox(direction) {
     
     openLightbox(currentFolderItems[currentLightboxIndex]);
 }
+
+function openEditModal(item) {
+    const modal = document.getElementById('edit-portfolio-modal');
+    document.getElementById('edit-p-id').value = item.id;
+    document.getElementById('edit-p-title').value = item.title || '';
+    
+    let descObj = { cs: '', en: '' };
+    try {
+        const parsed = JSON.parse(item.description);
+        if (parsed && typeof parsed === 'object') descObj = parsed;
+        else descObj.cs = item.description;
+    } catch(e) {
+        descObj.cs = item.description || '';
+    }
+    
+    document.getElementById('edit-p-desc-cs').value = descObj.cs || '';
+    document.getElementById('edit-p-desc-en').value = descObj.en || '';
+    document.getElementById('edit-p-tags').value = item.tags || '';
+    
+    modal.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('close-edit-portfolio-btn')?.addEventListener('click', () => {
+        document.getElementById('edit-portfolio-modal').classList.remove('active');
+    });
+
+    document.getElementById('edit-portfolio-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-p-id').value;
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        const btn = e.target.querySelector('button[type="submit"]');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = '<span class="btn-text">SAVING...</span>';
+        
+        try {
+            const res = await fetch(`/api/portfolio/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                if (window.showToast) window.showToast('ZÁZNAM AKTUALIZOVÁN', 'success');
+                document.getElementById('edit-portfolio-modal').classList.remove('active');
+                await loadPortfolio();
+                
+                // Update currentFolderItems if needed, and close lightbox so user can reopen
+                const closeLightboxBtn = document.querySelector('#lightbox-modal .close-btn');
+                if (closeLightboxBtn) closeLightboxBtn.click();
+            } else {
+                if (window.showToast) window.showToast('CHYBA AKTUALIZACE', 'error');
+            }
+        } catch(err) {
+            console.error(err);
+        } finally {
+            btn.innerHTML = oldText;
+        }
+    });
+});
+
 
 // ==========================================
 // TESTIMONIALS & CONTACT

@@ -151,13 +151,14 @@ app.get('/api/folders', async (req, res) => {
 app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20), async (req, res) => {
     try {
         const { title, category, mediaType, vimeoUrl, descriptionCS, descriptionEN, tags } = req.body;
+        const finalTitle = title || '';
         
         // Handle Video/Vimeo Link (Single item as it's a link)
         if (mediaType === 'vimeo' && vimeoUrl) {
             const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
-                [title, category, description, vimeoUrl, '/assets/download_1774980242270.jpeg', tags]
+                [finalTitle, category, description, vimeoUrl, '/assets/download_1774980242270.jpeg', tags]
             );
             return res.json({ message: 'Portfolio item created' });
         }
@@ -175,7 +176,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
 
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
-                [title, category, description, finalMediaUrl, thumbnail_url, tags]
+                [finalTitle, category, description, finalMediaUrl, thumbnail_url, tags]
             );
         }
 
@@ -189,6 +190,22 @@ app.delete('/api/portfolio/:id', verifyToken, requireAdmin, async (req, res) => 
     try {
         await dbAsync.run('DELETE FROM portfolio_items WHERE id = ?', [req.params.id]);
         res.json({ message: 'Item deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/portfolio/:id', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { title, descriptionCS, descriptionEN, tags } = req.body;
+        const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
+        const finalTitle = title || '';
+        
+        await dbAsync.run(
+            'UPDATE portfolio_items SET title = ?, description = ?, tags = ? WHERE id = ?',
+            [finalTitle, description, tags || '', req.params.id]
+        );
+        res.json({ message: 'Item updated successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

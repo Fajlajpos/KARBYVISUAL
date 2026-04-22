@@ -733,6 +733,49 @@
                 <h3 id="lightbox-title">RECORD_NAME</h3>
                 <span id="lightbox-category" class="mono-label cat-tag">TYPE</span>
                 <span class="mono-label" style="float:right; opacity:0.5;">[ARCHIVE_ITEM]</span>
+                <button id="lightbox-edit-btn" class="hidden" style="float:right; margin-right:1rem; border:1px solid rgba(255,255,255,0.2); padding: 0.2rem 0.5rem; background:transparent; color:#fff; cursor:pointer; font-family:var(--font-mono); font-size:0.7rem; border-radius:4px; transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='#fff'" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.2)'"><i class="ph ph-pencil-simple"></i> EDIT_DATA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Portfolio Item Modal -->
+    <div class="modal" id="edit-portfolio-modal" aria-modal="true" role="dialog" style="z-index: 30000;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content bento-modal textured-bg" style="max-width: 600px; margin: auto; top: 10%; position: relative;">
+            <div class="modal-header">
+                <div class="header-main">
+                    <span class="mono-label">[ EDIT RECORD ]</span>
+                    <h2>UPDATE_INFO</h2>
+                </div>
+                <div class="header-status">
+                    <span class="close-btn" id="close-edit-portfolio-btn"><i class="ph ph-x"></i></span>
+                </div>
+            </div>
+            <div style="padding: 2rem;">
+                <form id="edit-portfolio-form" class="tactical-form">
+                    <input type="hidden" id="edit-p-id" name="id">
+                    <div class="form-group mb-1">
+                        <label class="mono-label" data-cs="NÁZEV ZÁZNAMU" data-en="RECORD TITLE">RECORD TITLE</label>
+                        <input type="text" id="edit-p-title" name="title" class="brut-input">
+                    </div>
+                    <div class="form-row duo mb-1">
+                        <div class="form-group">
+                            <label class="mono-label" data-cs="POPIS (CS)" data-en="DESC (CS)">DESC (CS)</label>
+                            <textarea id="edit-p-desc-cs" name="descriptionCS" rows="2" class="brut-textarea"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="mono-label" data-cs="POPIS (EN)" data-en="DESC (EN)">DESC (EN)</label>
+                            <textarea id="edit-p-desc-en" name="descriptionEN" rows="2" class="brut-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label class="mono-label" data-cs="TAGY" data-en="TAGS">TAGS</label>
+                        <input type="text" id="edit-p-tags" name="tags" class="brut-input">
+                    </div>
+                    <button type="submit" class="submit-btn publish-btn" style="width: 100%; margin-top: 1rem;">
+                        <span class="btn-text">SAVE_CHANGES</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -905,7 +948,7 @@
                                     <div class="form-body">
                                         <div class="form-group mb-1">
                                             <label class="mono-label" data-cs="NÁZEV ZÁZNAMU" data-en="RECORD TITLE">RECORD TITLE</label>
-                                            <input type="text" id="p-title" name="title" placeholder="IDENTIFY_TITLE" required class="brut-input">
+                                            <input type="text" id="p-title" name="title" placeholder="IDENTIFY_TITLE" class="brut-input">
                                         </div>
 
                                         <div class="form-row duo">

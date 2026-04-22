@@ -442,7 +442,7 @@ body.modal-open { overflow: hidden; }
 .port-item:hover .video-grid-overlay { opacity: 1; background: rgba(0,0,0,0); }
 
 .port-info { padding: 1.5rem; text-align: left; flex-grow: 1; }
-.port-info h3 { font-family: var(--font-heading); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0.5rem; text-transform: uppercase; }
+.port-info h3 { font-family: var(--font-heading); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0.5rem; text-transform: none; }
 .port-cat { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
 .port-line { width: 100%; height: 1px; background: var(--border-color); }
 body.admin-enabled .delete-btn { display: flex; }
@@ -521,7 +521,7 @@ body.admin-enabled .delete-btn { display: flex; }
      font-family: var(--font-mono);
      font-size: 0.75rem;
      color: var(--text-sec);
-     text-transform: uppercase;
+     text-transform: none;
      letter-spacing: 0.12em;
      transition: color 0.3s;
  }
@@ -687,21 +687,40 @@ body.admin-enabled .delete-btn { display: flex; }
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 1rem;
+    padding: 1.5rem;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     pointer-events: none;
     z-index: 6;
 }
 .folder-content-modal .port-item:hover .port-info {
     opacity: 1;
 }
+
+.folder-content-modal .port-info h3, 
+.folder-content-modal .port-cat,
+.view-indicator {
+    transform: translateY(15px);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+.folder-content-modal .port-item:hover .port-info h3,
+.folder-content-modal .port-item:hover .port-cat,
+.folder-content-modal .port-item:hover .view-indicator {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.folder-content-modal .port-item:hover .port-info h3 { transition-delay: 0.05s; }
+.folder-content-modal .port-item:hover .view-indicator { transition-delay: 0.1s; }
+
 .folder-content-modal .port-info h3 { 
-    font-size: 0.85rem; 
-    letter-spacing: 1px; 
+    font-size: 0.95rem; 
+    letter-spacing: 0.5px; 
     margin: 0.4rem 0; 
-    text-transform: uppercase;
-    font-weight: 700;
+    text-transform: none;
+    font-weight: 600;
 }
 .folder-content-modal .port-cat { 
     font-size: 0.55rem; 
@@ -1618,6 +1637,8 @@ body.admin-enabled .delete-btn { display: flex; }
 
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(10px); }
 .modal.active { opacity: 1; pointer-events: all; }
+
+#lightbox-title { text-transform: none; }
 .bento-modal { background: var(--bg-color); border: 1px solid #333; width: 450px; padding: 2.5rem; }
 
 /* ADMIN DASHBOARD REDESIGN */
