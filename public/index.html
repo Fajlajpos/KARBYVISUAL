@@ -77,6 +77,8 @@
     </div>
 
     <!-- Navigation -->
+    <div class="global-site-bg"></div>
+
     <nav class="navbar">
         <div class="logo">
             <a href="#hero">
@@ -114,46 +116,48 @@
     </nav>
 
     <main id="main-content" style="position: relative;">
-        <!-- Simple Scrolling Background (Full Image) -->
-        <div class="site-intro-bg"></div>
-        <section id="hero" class="hero-brand-section hero-section">
-            <div class="giant-branding-wrapper reveal-fade">
-                <h1 class="giant-branding" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">KARBYVISUALS</h1>
-                <div class="hero-subline mono-label" data-cs="Creative Director & Cinematographer"
-                    data-en="Creative Director & Cinematographer">Creative Director & Cinematographer</div>
+        <section id="hero" class="hero-center-workspace">
+            
+            <!-- Node Editor Design Layer -->
+            <div class="node-design-layer">
+                <!-- Curved Connections SVG -->
+                <svg class="node-connection-svg" viewBox="0 0 1000 1000">
+                    <path class="node-path" d="M 150 250 C 250 250, 250 150, 350 150" />
+                    <path class="node-path" d="M 150 250 C 250 250, 250 350, 350 350" />
+                    <path class="node-path orange" d="M 150 750 C 300 750, 300 600, 450 600" />
+                    <path class="node-path" d="M 750 200 C 850 200, 850 400, 950 400" />
+                    <path class="node-path" d="M 850 700 C 900 700, 900 800, 950 800" />
+                </svg>
+
+                <!-- Decorative Nodes -->
+                <div class="node-element" style="top: 22%; left: 8%;">
+                    <div class="node-header"><span>INPUT_SOURCE</span><div class="node-port output active"></div></div>
+                    <div class="mono-label" style="font-size: 0.5rem; opacity: 0.5;">RAW_6K_GEN_5</div>
+                </div>
+                <div class="node-element" style="top: 55%; left: 45%;">
+                    <div class="node-header" style="border-color: rgba(255,149,0,0.3);"><div class="node-port input orange active"></div><span style="color: #ff9500;">COLOR_GRADE</span><div class="node-port output orange"></div></div>
+                    <div class="mono-label" style="font-size: 0.5rem; opacity: 0.5;">LUT: KARBY_FILM_01</div>
+                </div>
+                <div class="node-element" style="top: 15%; right: 5%;">
+                    <div class="node-header"><div class="node-port input active"></div><span>COMPRESS</span></div>
+                    <div class="mono-label" style="font-size: 0.5rem; opacity: 0.5;">CODEC: H265_10BIT</div>
+                </div>
             </div>
 
-            <div class="hero-grid container">
-                <div class="hero-text-col reveal-fade">
-                    <div class="hero-top-labels">
-                        <span class="mono-label" id="hero-clock">00:00:00</span>
-                        <span class="mono-label alert-label" data-cs="REC [●] LIVE" data-en="REC [●] LIVE">REC [●]
-                            LIVE</span>
-                        <span class="mono-label" data-cs="LAT 50.075° N" data-en="LAT 50.075° N">LAT 50.075° N</span>
-                    </div>
-
-                    <h2 class="hero-title reveal-text" data-cs="VISUAL<br>PRODUCTION." data-en="VISUAL<br>PRODUCTION.">
-                        VISUAL<br>PRODUCTION.</h2>
-
-                    <div class="hero-bottom-info">
-                        <p class="hero-subtitle"
-                            data-cs="Zkoumám absolutní vizuální kontrasty. Od režie videoklipů po temnou eventově-fashion estetiku."
-                            data-en="Exploring absolute visual contrasts. From music video directing to dark event-fashion aesthetics.">
-                            Zkoumám absolutní vizuální kontrasty. Od režie videoklipů po temnou eventově-fashion
-                            estetiku.</p>
-                        <div class="hero-cta">
-                            <a href="#portfolio" class="btn-primary" style="margin-top: 1rem;"><span
-                                    data-cs="VSTOUPIT DO ARCHIVU" data-en="ACCESS ARCHIVE">VSTOUPIT DO ARCHIVU</span> <i
-                                    class="ph ph-arrow-right"></i></a>
-                            <div class="scroll-indicator" style="margin-left: 2rem;">
-                                <span class="mono-label" style="text-orientation: mixed; writing-mode: vertical-rl;"
-                                    data-cs="SCROLL" data-en="SCROLL">SCROLL</span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="hero-center-content">
+                <div class="hero-top-labels-center">
+                    <span class="mono-label" id="hero-clock">00:00:00</span>
+                    <span class="mono-label alert-label" data-cs="REC [●] LIVE" data-en="REC [●] LIVE">REC [●] LIVE</span>
+                    <span class="mono-label" data-cs="LAT 50.075° N" data-en="LAT 50.075° N">LAT 50.075° N</span>
                 </div>
 
-                <div class="hero-media-col reveal-fade">
+                <div class="giant-branding-wrapper">
+                    <h1 class="giant-branding" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">KARBYVISUALS</h1>
+                    <div class="hero-subline mono-label" data-cs="Creative Director & Cinematographer"
+                        data-en="Creative Director & Cinematographer">Creative Director & Cinematographer</div>
+                </div>
+
+                <div class="monitor-workspace">
                     <div class="media-frame">
                         <div class="frame-corners">
                             <i class="ph ph-corners-out"></i>
@@ -164,9 +168,21 @@
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                         </iframe>
-                        <div class="frame-label mono-label" data-cs="[ ZÁZNAM 01 / V-CAM ]"
-                            data-en="[ ZÁZNAM 01 / V-CAM ]">[ ZÁZNAM 01 / V-CAM ]</div>
+                        <div class="frame-label mono-label" data-cs="[ MONITORING_SIGNAL / V-CAM_01 ]"
+                            data-en="[ MONITORING_SIGNAL / V-CAM_01 ]">[ MONITORING_SIGNAL / V-CAM_01 ]</div>
                     </div>
+                </div>
+
+                <div class="hero-cta-group">
+                    <p class="hero-subtitle-centered"
+                        data-cs="Zkoumám absolutní vizuální kontrasty. Od režie videoklipů po temnou eventově-fashion estetiku."
+                        data-en="Exploring absolute visual contrasts. From music video directing to dark event-fashion aesthetics.">
+                        Zkoumám absolutní vizuální kontrasty. Od režie videoklipů po temnou eventově-fashion estetiku.</p>
+                    
+                    <a href="#portfolio" class="btn-primary">
+                        <span data-cs="VSTOUPIT DO ARCHIVU" data-en="ACCESS ARCHIVE">VSTOUPIT DO ARCHIVU</span>
+                        <i class="ph ph-arrow-right"></i>
+                    </a>
                 </div>
             </div>
         </section>

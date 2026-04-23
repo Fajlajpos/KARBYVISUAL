@@ -131,17 +131,34 @@ document.addEventListener("DOMContentLoaded", () => {
         onComplete: () => {
             document.body.classList.remove('loading');
             document.body.style.overflow = 'auto'; // Re-enable lenis
+            ScrollTrigger.refresh(); // Ensure triggers are calculated correctly
         }
     })
-    // Hero Entrance Anim
-    .from('.hero-top-labels, .hero-bottom-info', {
-        y: 20, opacity: 0,
-        duration: 0.8, stagger: 0.2
-    }, "-=0.3")
-    .from('.media-frame', {
-        y: 50, opacity: 0,
-        duration: 1, ease: 'power3.out'
-    }, "-=0.5");
+    // Hero Entrance Sequence (Redo)
+    .from('.monitor-workspace', {
+        scale: 0.98, opacity: 0, duration: 1.4, ease: 'expo.out'
+    }, "-=0.6")
+    .from('.node-element', {
+        scale: 0.8, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'back.out(1.5)'
+    }, "-=1.2")
+    .from('.node-path', {
+        strokeDasharray: 1000, strokeDashoffset: 1000, duration: 2, ease: 'power2.inOut'
+    }, "-=1.5")
+    .from('.hero-cta-group', {
+        y: 20, opacity: 0, duration: 0.8, ease: 'power2.out'
+    }, "-=0.6");
+
+
+    // Continuous Node Floating Animation (Subtle)
+    gsap.to('.node-element', {
+        y: "random(-15, 15)",
+        x: "random(-10, 10)",
+        duration: "random(3, 5)",
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+    });
+
 
     // Reviews logic is now handled by the general .reveal-fade transition
     // No mutual-exclusion scroll focus required for the new Grid layout.
