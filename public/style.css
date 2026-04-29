@@ -1812,6 +1812,201 @@ body.admin-enabled .delete-btn { display: flex; }
      font-size: 0.7rem;
      letter-spacing: 2px;
  }
+     width: 12px;
+     height: 12px;
+     border-radius: 50%;
+     position: relative;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
+ }
+ .win-dot i { 
+     font-size: 7px; 
+     opacity: 0; 
+     transition: opacity 0.2s; 
+     color: rgba(0,0,0,0.5); 
+     pointer-events: none; /* Make icons non-interactive for better dot hits */
+ }
+ 
+ /* Disable conflicting CSS transitions for GSAP-controlled folder modal */
+ #folder-modal, #folder-modal .modal-overlay {
+     transition: none !important;
+ }
+ .win-dot.minimize { background: #ffbd2e; border: 0.5px solid #e09e1b; }
+ .win-dot.maximize { background: #28c840; border: 0.5px solid #14ab2b; }
+ 
+ .window-title {
+     font-family: var(--font-mono);
+     font-size: 0.75rem;
+     letter-spacing: 4px;
+     color: rgba(255,255,255,0.6);
+     text-transform: uppercase;
+     font-weight: 600;
+ }
+ 
+ .window-controls-right {
+     display: flex;
+     gap: 1.8rem;
+ }
+ 
+ .win-btn {
+     color: rgba(255,255,255,0.3);
+     cursor: pointer;
+     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+     font-size: 1.1rem;
+ }
+ .win-btn:hover { color: #fff; transform: scale(1.1); }
+ 
+ .folder-content-modal #folder-items-grid {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    padding: 2.5rem;
+    margin-top: 0;
+    scroll-behavior: smooth;
+}
+
+.folder-content-modal .port-item { 
+    background: #000; 
+    border-color: rgba(255,255,255,0.05); 
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+.folder-content-modal .port-media-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.folder-content-modal .port-img-wrap, 
+.folder-content-modal .port-video-wrap { 
+    height: 100%; 
+    min-height: unset; 
+    border: none;
+}
+.item-overlay-icon {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 1.2rem;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 5;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.folder-content-modal .port-item:hover .item-overlay-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.folder-content-modal .port-info { 
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    pointer-events: none;
+    z-index: 6;
+}
+.folder-content-modal .port-item:hover .port-info {
+    opacity: 1;
+}
+
+.folder-content-modal .port-info h3, 
+.folder-content-modal .port-cat,
+.view-indicator {
+    transform: translateY(15px);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+.folder-content-modal .port-item:hover .port-info h3,
+.folder-content-modal .port-item:hover .port-cat,
+.folder-content-modal .port-item:hover .view-indicator {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.folder-content-modal .port-item:hover .port-info h3 { transition-delay: 0.05s; }
+.folder-content-modal .port-item:hover .view-indicator { transition-delay: 0.1s; }
+
+.folder-content-modal .port-info h3 { 
+    font-size: 0.95rem; 
+    letter-spacing: 0.5px; 
+    margin: 0.4rem 0; 
+    text-transform: none;
+    font-weight: 600;
+}
+.folder-content-modal .port-cat { 
+    font-size: 0.55rem; 
+    color: #fff;
+    opacity: 0.5;
+    letter-spacing: 2px;
+    font-family: var(--font-mono);
+}
+.view-indicator {
+    margin-top: 0.8rem;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 0.5rem;
+}
+
+
+ 
+ .folder-content-modal #folder-items-grid::-webkit-scrollbar { 
+    width: 6px;
+    display: block;
+}
+.folder-content-modal #folder-items-grid::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+}
+.folder-content-modal #folder-items-grid::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 0;
+}
+.folder-content-modal #folder-items-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+ 
+ .placeholder-card {
+     aspect-ratio: 16/9;
+     background: #080808;
+     border: 1px solid #151515;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     gap: 1.5rem;
+     color: #333;
+     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+     cursor: pointer;
+ }
+ 
+ .placeholder-card i {
+     font-size: 2.5rem;
+     opacity: 0.3;
+ }
+ 
+ .placeholder-card span {
+     font-family: var(--font-mono);
+     font-size: 0.7rem;
+     letter-spacing: 2px;
+ }
  
  .placeholder-card:hover {
      border-color: #444;
@@ -1830,19 +2025,17 @@ body.admin-enabled .delete-btn { display: flex; }
      .folder-icon-wrap {
          width: 130px;
      }
-     .folder-content-modal #folder-items-grid {
-         grid-template-columns: 1fr;
-     }
  }
-
-
+ 
+ 
 /* ABOUT ME SECTION */
+.about-me-section { background: transparent !important; }
 .about-me-split { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; margin-top: 3rem; }
 .about-me-photo-container {
     border: 1px solid var(--border-color); width: 100%; aspect-ratio: 0.75;
     position: relative; display: flex; align-items: center; justify-content: center;
     transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); overflow: visible;
-    background: #050505;
+    background: rgba(255,255,255,0.02);
 }
 /* Premium Offset Frame for better integration */
 .about-me-photo-container::after {
@@ -1862,27 +2055,41 @@ body.admin-enabled .delete-btn { display: flex; }
 .about-me-photo { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; opacity: 1; transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
 .about-me-photo-container:hover .about-me-photo { transform: scale(1.05); }
 
-.bento-grid { display: grid; gap: 1px; background: var(--border-color); border: var(--border-thin); }
+.bento-grid { 
+    display: grid; 
+    gap: 20px; 
+    background: transparent; 
+    border: none; 
+}
+
 .bento-cell { 
-    background-color: var(--bg-elevated);
-    padding: 3rem; display: flex; flex-direction: column; position: relative; overflow: hidden;
+    background: rgba(255, 255, 255, 0.02) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 0 !important;
+    padding: 3rem; 
+    display: flex; 
+    flex-direction: column; 
+    position: relative; 
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.01);
 }
+
 .bento-cell::after {
-    content:''; position:absolute; inset:0; background: var(--noise-bg); opacity: 0.05; mix-blend-mode: overlay; pointer-events: none;
+    display: none;
 }
-.cell-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; color: var(--text-muted); }
+
+.cell-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    margin-bottom: 2rem; 
+    color: var(--text-muted); 
+}
+
 .bento-metric { align-items: flex-start; padding: 2rem;}
 .stat-number { font-family: var(--font-heading); font-size: 4rem; color: var(--text-primary); }
-
-/* SERVICES LIST */
-.services-list { display: flex; flex-direction: column; border-top: var(--border-thin); margin-top: 3rem;}
-.svc-row { display: grid; grid-template-columns: 80px 1fr 50px; align-items: center; padding: 2.5rem 0; border-bottom: var(--border-thin); transition: background 0.4s; }
-.svc-row:hover { background: rgba(20,20,20,0.8); }
-.svc-content h3 { font-size: 1.8rem; margin-bottom: 0.5rem; transition: color 0.3s; }
-.svc-content p { color: var(--text-sec); font-size: 0.95rem; max-width: 500px; }
-.svc-row:hover .svc-content h3 { color: var(--accent); }
-.svc-action { font-size: 2rem; color: var(--text-muted); transition: transform 0.3s, color 0.3s; }
-.svc-row:hover .svc-action { color: #fff; transform: translate(5px, -5px); }
 
 /* DOCTRINE & ARSENAL (Replaced Process) */
 .giant-manifesto-text {
