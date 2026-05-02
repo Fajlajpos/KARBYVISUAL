@@ -144,6 +144,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Hero Video Click to Open Lightbox
+    const heroVideoTrigger = document.getElementById('hero-video-trigger');
+    if (heroVideoTrigger) {
+        heroVideoTrigger.addEventListener('click', () => {
+            const iframe = heroVideoTrigger.querySelector('iframe');
+            let src = iframe ? iframe.src : 'https://www.youtube.com/watch?v=_VWkv_ONEiM';
+            
+            const item = {
+                title: 'KARBYVISUALS SHOWREEL',
+                category: 'SHOWREEL',
+                description: 'Vizuální produkce bez kompromisů.',
+                media_url: src
+            };
+            
+            currentFolderItems = [item];
+            currentLightboxIndex = 0;
+            openLightbox(item);
+        });
+    }
+
     // Modified Close logic to use window helper
 });
 
@@ -158,30 +178,30 @@ async function loadSettings() {
         
         // Update Hero Video
         if (settings.hero_video_url) {
-            const heroIframe = document.querySelector('.hero-video');
+            const heroIframe = document.querySelector('.hs-video-iframe');
             if (heroIframe) {
                 let url = settings.hero_video_url;
                 
                 // YouTube cleaning
                 if (url.includes('youtube.com/watch?v=')) {
                     const vidId = url.split('v=')[1].split('&')[0];
-                    url = `https://www.youtube.com/embed/${vidId}?autoplay=0&mute=1&loop=1&playlist=${vidId}&modestbranding=1&rel=0`;
+                    url = `https://www.youtube.com/embed/${vidId}?autoplay=0&mute=0&loop=1&playlist=${vidId}&modestbranding=1&rel=0&controls=1`;
                 } else if (url.includes('youtu.be/')) {
                     const vidId = url.split('youtu.be/')[1].split('?')[0];
-                    url = `https://www.youtube.com/embed/${vidId}?autoplay=0&mute=1&loop=1&playlist=${vidId}&modestbranding=1&rel=0`;
+                    url = `https://www.youtube.com/embed/${vidId}?autoplay=0&mute=0&loop=1&playlist=${vidId}&modestbranding=1&rel=0&controls=1`;
                 } else if (url.includes('youtube.com/embed/')) {
                     // Already an embed, just ensure essential params
                     if (!url.includes('autoplay')) {
-                        url += (url.includes('?') ? '&' : '?') + 'autoplay=0&mute=1&loop=1&modestbranding=1';
+                        url += (url.includes('?') ? '&' : '?') + 'autoplay=0&mute=0&loop=1&modestbranding=1&controls=1';
                     } else {
-                        url = url.replace('autoplay=1', 'autoplay=0');
+                        url = url.replace('autoplay=1', 'autoplay=0').replace('mute=1', 'mute=0').replace('controls=0', 'controls=1');
                     }
                 }
                 
                 // Vimeo cleaning
                 if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
                     const vidId = url.split('vimeo.com/')[1].split('?')[0];
-                    url = `https://player.vimeo.com/video/${vidId}?autoplay=0&muted=1&loop=1`;
+                    url = `https://player.vimeo.com/video/${vidId}?autoplay=0&muted=0&loop=1&controls=1`;
                 } else if (url.includes('player.vimeo.com')) {
                     url = url.replace('autoplay=1', 'autoplay=0');
                 }
