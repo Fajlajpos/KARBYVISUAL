@@ -3753,7 +3753,7 @@ body.admin-enabled .delete-btn { display: flex; }
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 80px 4vw 60px 4vw;
+    padding: 90px 4vw 60px 4vw;
     background: radial-gradient(circle at 70% 50%, rgba(255,149,0,0.03) 0%, transparent 60%);
     overflow: hidden;
 }
@@ -4003,6 +4003,7 @@ body.admin-enabled .delete-btn { display: flex; }
     opacity: 0;
     animation: slide-up-fade 1.2s ease forwards;
     animation-delay: 0.8s;
+    transform: translateY(-40px); /* Shifted up as requested */
 }
 
 .hs-video-container {
