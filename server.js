@@ -158,7 +158,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
             const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
-                [finalTitle, category, description, vimeoUrl, '/assets/download_1774980242270.jpeg', tags]
+                [finalTitle, category, description, vimeoUrl, null, tags]
             );
             return res.json({ message: 'Portfolio item created' });
         }
@@ -172,7 +172,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
 
         for (const file of req.files) {
             const finalMediaUrl = '/uploads/' + file.filename;
-            const thumbnail_url = file.mimetype.startsWith('image') ? finalMediaUrl : '/assets/download_1774980242270.jpeg';
+            const thumbnail_url = file.mimetype.startsWith('image') ? finalMediaUrl : null;
 
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,

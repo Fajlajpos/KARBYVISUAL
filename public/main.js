@@ -381,10 +381,11 @@ function openFolderModal(category, titles, originEl) {
             }
 
             let mediaHtml = '';
-            const url = (item.media_url || '').toLowerCase();
-            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube');
+            const rawUrl = (item.media_url || '');
+            const url = rawUrl.toLowerCase();
+            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube') || url.includes('youtu.be');
 
-            if (isVideo && !url.includes('vimeo') && !url.includes('youtube')) {
+            if (isVideo && !url.includes('vimeo') && !url.includes('youtube') && !url.includes('youtu.be')) {
                 mediaHtml = `
                     <div class="port-video-wrap">
                         <video src="${item.media_url}" muted loop playsinline class="port-video-preview"></video>
@@ -392,9 +393,22 @@ function openFolderModal(category, titles, originEl) {
                     </div>
                 `;
             } else {
+                let displayThumb = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+                
+                // Auto-generate YouTube thumbnail if possible
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    let ytId = '';
+                    if (rawUrl.includes('watch?v=')) ytId = rawUrl.split('v=')[1].split(/[&#]/)[0];
+                    else if (rawUrl.includes('youtu.be/')) ytId = rawUrl.split('youtu.be/')[1].split(/[?#]/)[0];
+                    else if (rawUrl.includes('embed/')) ytId = rawUrl.split('embed/')[1].split(/[?#]/)[0];
+                    else if (rawUrl.includes('shorts/')) ytId = rawUrl.split('shorts/')[1].split(/[?#]/)[0];
+                    
+                    if (ytId) displayThumb = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+                }
+
                 mediaHtml = `
                     <div class="port-img-wrap">
-                        <img src="${item.thumbnail_url || '/assets/portfolio-placeholder.png'}" alt="${item.title}" class="port-img" loading="lazy" onerror="this.src='/assets/portfolio-placeholder.png'">
+                        <img src="${displayThumb}" alt="${item.title}" class="port-img" loading="lazy" onerror="this.src='/assets/kolaz_v5.jpg'">
                         ${isVideo ? '<div class="video-grid-overlay"><i class="ph ph-video-camera"></i></div>' : ''}
                     </div>
                 `;
@@ -510,29 +524,52 @@ function openLightbox(item) {
     lightboxMedia.innerHTML = '';
     
     if (item.media_url) {
-        const url = item.media_url.toLowerCase();
+        const rawUrl = item.media_url;
+        const url = rawUrl.toLowerCase();
+
         if (url.includes('vimeo.com') || url.includes('player.vimeo.com')) {
-            // Extract Vimeo ID
-            let vimeoId = url.split('/').pop().split('?')[0];
-            if (url.includes('video/')) vimeoId = url.split('video/')[1].split('?')[0];
+            // Extract Vimeo ID (Case sensitive)
+            let vimeoId = '';
+            if (rawUrl.includes('video/')) {
+                vimeoId = rawUrl.split('video/')[1].split(/[?#]/)[0];
+            } else {
+                vimeoId = rawUrl.split('/').pop().split(/[?#]/)[0];
+            }
             const embedUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1`;
             lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="width:100%; height:100%;"></iframe>`;
         } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            // Extract YouTube ID
+            // Extract YouTube ID (Case sensitive)
             let ytId = '';
-            if (url.includes('watch?v=')) ytId = url.split('watch?v=')[1].split('&')[0];
-            else if (url.includes('youtu.be/')) ytId = url.split('youtu.be/')[1].split('?')[0];
-            else if (url.includes('embed/')) ytId = url.split('embed/')[1].split('?')[0];
+            if (rawUrl.includes('watch?v=')) {
+                ytId = rawUrl.split('v=')[1].split(/[&#]/)[0];
+            } else if (rawUrl.includes('youtu.be/')) {
+                ytId = rawUrl.split('youtu.be/')[1].split(/[?#]/)[0];
+            } else if (rawUrl.includes('embed/')) {
+                ytId = rawUrl.split('embed/')[1].split(/[?#]/)[0];
+            } else if (rawUrl.includes('shorts/')) {
+                ytId = rawUrl.split('shorts/')[1].split(/[?#]/)[0];
+            }
             
             const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1`;
             lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>`;
-        } else if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) {
+        } else if (url.match(/\.(mp4|webm|mov)(\?.*)?$/i)) {
             lightboxMedia.innerHTML = `<video controls autoplay name="media" style="max-height:100%; width:100%;"><source src="${item.media_url}" type="video/mp4"></video>`;
         } else {
              lightboxMedia.innerHTML = `<img src="${item.media_url}" alt="${item.title}" style="max-height:100%; object-fit: contain;">`;
         }
     } else {
-        lightboxMedia.innerHTML = `<img src="${item.thumbnail_url || '/assets/download_1774980242270.jpeg'}" alt="${item.title}" style="max-height:100%; object-fit: contain;">`;
+        let displayThumb = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+        const url = (item.media_url || '').toLowerCase();
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            let ytId = '';
+            if (item.media_url.includes('watch?v=')) ytId = item.media_url.split('v=')[1].split(/[&#]/)[0];
+            else if (item.media_url.includes('youtu.be/')) ytId = item.media_url.split('youtu.be/')[1].split(/[?#]/)[0];
+            else if (item.media_url.includes('embed/')) ytId = item.media_url.split('embed/')[1].split(/[?#]/)[0];
+            else if (item.media_url.includes('shorts/')) ytId = item.media_url.split('shorts/')[1].split(/[?#]/)[0];
+            
+            if (ytId) displayThumb = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+        }
+        lightboxMedia.innerHTML = `<img src="${displayThumb}" alt="${item.title}" style="max-height:100%; object-fit: contain;" onerror="this.src='/assets/kolaz_v5.jpg'">`;
     }
     
     lightboxModal.classList.add('active');
