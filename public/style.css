@@ -3930,47 +3930,182 @@ body.admin-enabled .delete-btn { display: flex; }
     margin-top: 0.5rem;
 }
 
-.btn-sales-primary {
+.btn-cad-primary {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.8rem;
-    background: #fff;
-    color: #000;
-    padding: 1.2rem 2.2rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-decoration: none;
-    text-transform: uppercase;
-    border-radius: 4px;
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.btn-sales-primary:hover {
-    background: #f0f0f0;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(255,255,255,0.15);
-}
-
-.btn-sales-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    background: transparent;
+    justify-content: center;
+    padding: 1.8rem 4.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 1.2rem 2.2rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
     text-decoration: none;
-    text-transform: uppercase;
-    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.cad-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 15px 15px;
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: -1;
+}
+
+.btn-cad-primary:hover .cad-grid-bg {
+    opacity: 1;
+    animation: blueprint-pulse 2s ease-in-out infinite;
+}
+
+@keyframes blueprint-pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+}
+
+.cad-scanner {
+    position: absolute;
+    top: 0; left: -20%;
+    width: 2px; height: 100%;
+    background: linear-gradient(to bottom, transparent, #fff, transparent);
+    box-shadow: 0 0 15px #fff;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.btn-cad-primary:hover .cad-scanner {
+    animation: scanner-sweep 2.5s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes scanner-sweep {
+    0% { left: -20%; }
+    100% { left: 120%; }
+}
+
+.cad-corners span {
+    position: absolute;
+    width: 8px; height: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s;
 }
+.cad-corners span:nth-child(1) { top: 6px; left: 6px; border-right: 0; border-bottom: 0; }
+.cad-corners span:nth-child(2) { top: 6px; right: 6px; border-left: 0; border-bottom: 0; }
+.cad-corners span:nth-child(3) { bottom: 6px; left: 6px; border-right: 0; border-top: 0; }
+.cad-corners span:nth-child(4) { bottom: 6px; right: 6px; border-left: 0; border-top: 0; }
 
-.btn-sales-secondary:hover {
-    background: rgba(255,255,255,0.05);
+.btn-cad-primary:hover .cad-corners span {
+    width: 14px; height: 14px;
     border-color: #fff;
+}
+
+/* Extension Lines */
+.btn-cad-primary::before,
+.btn-cad-primary::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all 0.4s;
+    pointer-events: none;
+}
+.btn-cad-primary::before { left: -10px; top: -15px; width: 1px; height: calc(100% + 30px); }
+.btn-cad-primary::after { right: -10px; top: -15px; width: 1px; height: calc(100% + 30px); }
+
+.cad-dim-w { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; opacity: 0.4; letter-spacing: 1px; }
+.cad-dim-h { position: absolute; left: -42px; top: 50%; transform: translateY(-50%) rotate(-90deg); font-size: 0.55rem; opacity: 0.4; letter-spacing: 1px; }
+
+.btn-cad-primary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #fff;
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.btn-cad-primary:hover::before,
+.btn-cad-primary:hover::after {
+    background: rgba(255, 255, 255, 0.5);
+    height: calc(100% + 40px);
+    top: -20px;
+}
+
+/* Secondary Button - Cinematic Focus Frame Style */
+.btn-cad-secondary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.8rem 4.5rem;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cad-focus-frame span {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.cad-focus-frame span:nth-child(1) { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.cad-focus-frame span:nth-child(2) { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+.cad-focus-frame span:nth-child(3) { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+.cad-focus-frame span:nth-child(4) { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+.btn-cad-secondary:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    letter-spacing: 6px; /* Subtle expansion */
+}
+
+.btn-cad-secondary:hover .cad-focus-frame span {
+    width: 20px;
+    height: 20px;
+    border-color: #fff;
+}
+
+.btn-cad-secondary:hover .cad-focus-frame span:nth-child(1) { top: -8px; left: -8px; }
+.btn-cad-secondary:hover .cad-focus-frame span:nth-child(2) { top: -8px; right: -8px; }
+.btn-cad-secondary:hover .cad-focus-frame span:nth-child(3) { bottom: -8px; left: -8px; }
+.btn-cad-secondary:hover .cad-focus-frame span:nth-child(4) { bottom: -8px; right: -8px; }
+
+.btn-cad-secondary::before {
+    content: 'REC';
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 0.5rem;
+    color: #ff3b30;
+    opacity: 0;
+    transition: opacity 0.3s;
+    letter-spacing: 1px;
+}
+
+.btn-cad-secondary:hover::before {
+    opacity: 1;
+    animation: pulse-live 1s infinite;
+}
+
+@keyframes icon-glitch-anim {
+    0% { transform: translate(0); border-color: rgba(255,255,255,0.2); }
+    50% { transform: translate(-2px, 1px); border-color: rgba(255,255,255,0.5); }
+    100% { transform: translate(2px, -1px); border-color: rgba(255,255,255,0.2); }
 }
 
 .hero-sales-trust {
