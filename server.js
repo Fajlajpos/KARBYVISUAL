@@ -196,6 +196,17 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
 
 app.delete('/api/portfolio/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
+        const item = await dbAsync.get('SELECT media_url, thumbnail_url FROM portfolio_items WHERE id = ?', [req.params.id]);
+        if (item) {
+            if (item.media_url && item.media_url.startsWith('/uploads/')) {
+                const filePath = path.join(__dirname, 'public', item.media_url);
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+            }
+            if (item.thumbnail_url && item.thumbnail_url.startsWith('/uploads/') && item.thumbnail_url !== item.media_url) {
+                const thumbPath = path.join(__dirname, 'public', item.thumbnail_url);
+                if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+            }
+        }
         await dbAsync.run('DELETE FROM portfolio_items WHERE id = ?', [req.params.id]);
         res.json({ message: 'Item deleted' });
     } catch (err) {
@@ -289,6 +300,11 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
 
 app.delete('/api/testimonials/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
+        const testimonial = await dbAsync.get('SELECT avatar_url FROM testimonials WHERE id = ?', [req.params.id]);
+        if (testimonial && testimonial.avatar_url && testimonial.avatar_url.startsWith('/uploads/')) {
+            const filePath = path.join(__dirname, 'public', testimonial.avatar_url);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        }
         await dbAsync.run('DELETE FROM testimonials WHERE id = ?', [req.params.id]);
         res.json({ message: 'Testimonial deleted' });
     } catch (err) {
