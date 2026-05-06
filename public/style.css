@@ -2256,16 +2256,24 @@ body.admin-enabled .delete-btn { display: flex; }
 
 /* V3 Form Styles */
 .v3-module {
-    background: rgba(10,10,10,0.85);
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(40px);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
     position: relative;
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.v3-module:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
 }
 
 .form-header-v3 {
-    padding: 2rem 3rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.02);
+    padding: 2.5rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
 }
 
 .header-tag {
@@ -2366,44 +2374,78 @@ body.admin-enabled .delete-btn { display: flex; }
     align-items: center;
     justify-content: center;
     padding: 0.8rem;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--text-sec);
     font-family: var(--font-mono);
     font-size: 0.65rem;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
 }
 
 .matrix-grid label:hover {
-    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.4);
+    color: #fff;
+    background: rgba(255,255,255,0.02);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .matrix-grid input[type="radio"]:checked + label {
     background: #fff;
     color: #000;
-    font-weight: 700;
+    font-weight: 800;
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
 }
 
 /* Submit V3 */
 .submit-btn-v3 {
     width: 100%;
-    height: 65px;
-    background: #fff;
-    color: #000;
-    border: none;
+    height: 70px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
     font-family: var(--font-mono);
-    font-weight: 800;
+    font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.submit-btn-v3:hover {
+.submit-btn-v3::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 0;
+}
+
+.submit-btn-v3:hover::before {
+    transform: scaleY(1);
+}
+
+.submit-btn-v3 .btn-text {
+    position: relative;
+    z-index: 1;
+    transition: color 0.4s, letter-spacing 0.4s;
     letter-spacing: 2px;
-    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+}
+
+.submit-btn-v3:hover .btn-text {
+    color: #000;
+    font-weight: 800;
+    letter-spacing: 4px;
 }
 
 .submit-btn-v3:active {
@@ -2414,9 +2456,10 @@ body.admin-enabled .delete-btn { display: flex; }
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 2px;
-    background: var(--bg-color);
-    opacity: 0.1;
+    background: #fff;
+    opacity: 0.15;
     animation: scan-v3 3s linear infinite;
+    z-index: 2;
 }
 
 @keyframes scan-v3 {
