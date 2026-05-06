@@ -31,17 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Admin dashboard modal not found');
             return;
         }
-        modal.classList.add('active');
-        if (window.toggleBodyLock) window.toggleBodyLock(true);
+        if (typeof window.openAuthModal === 'function') {
+            window.openAuthModal('admin-dashboard-modal');
+        } else {
+            modal.classList.add('active');
+            if (window.toggleBodyLock) window.toggleBodyLock(true);
+        }
         fetchCurrentSettings();
         fetchFoldersAdmin();
     }
 
     function closeDashboard() {
-        const modal = document.getElementById('admin-dashboard-modal');
-        if (!modal) return;
-        modal.classList.remove('active');
-        if (window.toggleBodyLock) window.toggleBodyLock(false);
+        if (typeof window.closeAuthModal === 'function') {
+            window.closeAuthModal('admin-dashboard-modal');
+        } else {
+            const modal = document.getElementById('admin-dashboard-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            if (window.toggleBodyLock) window.toggleBodyLock(false);
+        }
     }
 
     // TAB SWITCHING

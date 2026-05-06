@@ -266,15 +266,17 @@ window.animateModalOpen = function(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     
-    const panel = modal.querySelector('.modal-panel');
+    const panel = modal.querySelector('.modal-panel') || modal.querySelector('.modal-content');
     const overlay = modal.querySelector('.modal-overlay');
     
     if (!panel || !overlay) {
+        gsap.set(modal, { clearProps: 'visibility,pointerEvents,opacity' });
         gsap.set(modal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
         return;
     }
     
     // Preparation
+    gsap.set(modal, { clearProps: 'visibility,pointerEvents,opacity' });
     gsap.set(modal, { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
     gsap.set(overlay, { opacity: 0 });
     
@@ -293,7 +295,7 @@ window.animateModalClose = function(modalId, callback) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     
-    const panel = modal.querySelector('.modal-panel');
+    const panel = modal.querySelector('.modal-panel') || modal.querySelector('.modal-content');
     const overlay = modal.querySelector('.modal-overlay');
     
     if (!panel || !overlay) {

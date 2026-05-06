@@ -935,8 +935,14 @@ function initAuthUI() {
 // ADMIN DB FUNCTIONS
 function openAdminDbModal() {
     const modal = document.getElementById('admin-db-modal');
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    if (!modal) return;
+    
+    if (typeof window.openAuthModal === 'function') {
+        window.openAuthModal('admin-db-modal');
+    } else {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
     
     // Default to submissions
     if (typeof window.dashboardFetchDbData === 'function') {
@@ -947,22 +953,26 @@ function openAdminDbModal() {
 
 function openAuthModal(id) {
     const modal = document.getElementById(id);
-    modal.classList.add('active');
-    window.toggleBodyLock(true);
+    if (modal) modal.classList.add('active');
+    if (window.toggleBodyLock) window.toggleBodyLock(true);
     if (window.animateModalOpen) window.animateModalOpen(id);
 }
+window.openAuthModal = openAuthModal;
 
 function closeAuthModal(id) {
     if (window.animateModalClose) {
         window.animateModalClose(id, () => {
-            document.getElementById(id).classList.remove('active');
-            window.toggleBodyLock(false);
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active');
+            if (window.toggleBodyLock) window.toggleBodyLock(false);
         });
     } else {
-        document.getElementById(id).classList.remove('active');
-        window.toggleBodyLock(false);
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('active');
+        if (window.toggleBodyLock) window.toggleBodyLock(false);
     }
 }
+window.closeAuthModal = closeAuthModal;
 
 function switchModals(from, to) {
     if (window.transitionAuthPanels) {

@@ -25,7 +25,6 @@ body {
 
 body.modal-open { 
     overflow: hidden !important; 
-    height: 100vh !important;
 }
 
 /* Background Grid Pattern - Acid Style */
