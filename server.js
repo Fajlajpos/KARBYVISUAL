@@ -17,9 +17,9 @@ const PORT = process.env.PORT || 3001;
 
 // Setup Uploads Directory (Ensure it exists)
 const uploadDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const avatarDir = path.join(uploadDir, 'avatars');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
 
 // Multer Storage config
 const storage = multer.diskStorage({
@@ -29,10 +29,18 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + '-' + file.originalname);
     }
 });
+const avatarStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, avatarDir),
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    }
+});
 const upload = multer({ storage: storage });
+const uploadAvatar = multer({ storage: avatarStorage });
 
 // Middlewares
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -245,8 +253,44 @@ app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
 // 4. Testimonials (Public)
 app.get('/api/testimonials', async (req, res) => {
     try {
-        const items = await dbAsync.all('SELECT * FROM testimonials');
+        const items = await dbAsync.all('SELECT * FROM testimonials ORDER BY created_at DESC');
         res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('avatar'), async (req, res) => {
+    try {
+        console.log('--- TESTIMONIAL UPLOAD START ---');
+        console.log('Body:', req.body);
+        console.log('File:', req.file ? req.file.filename : 'No avatar');
+
+        const { clientName, project, quoteCS, quoteEN } = req.body;
+        if (!clientName || !quoteCS) {
+            console.warn('Validation failed: Missing clientName or quoteCS');
+            return res.status(400).json({ error: 'Client name and Czech quote are required' });
+        }
+
+        const avatarUrl = req.file ? '/uploads/avatars/' + req.file.filename : null;
+
+        await dbAsync.run(
+            'INSERT INTO testimonials (client_name, project, quote, quote_en, avatar_url) VALUES (?, ?, ?, ?, ?)',
+            [clientName, project || '', quoteCS, quoteEN || '', avatarUrl]
+        );
+
+        console.log('Testimonial inserted successfully');
+        res.json({ message: 'Testimonial added successfully' });
+    } catch (err) {
+        console.error('Testimonial upload ERROR:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/testimonials/:id', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        await dbAsync.run('DELETE FROM testimonials WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Testimonial deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -346,18 +390,36 @@ app.delete('/api/admin/users/:id', verifyToken, requireAdmin, async (req, res) =
     }
 });
 
+// JSON 404 for unknown API routes
+app.all('/api/*', (req, res) => {
+    res.status(404).json({ error: `Route ${req.method} ${req.url} not found` });
+});
 
 // SPA Catch-all
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// STARTUP DB CHECK: Ensure admin role for the main email
-dbAsync.run(
-    "UPDATE users SET role = 'admin', full_name = 'KARBY ADMIN' WHERE email = ?",
-    [process.env.ADMIN_EMAIL]
-).then(() => console.log('Admin role check completed.')).catch(err => console.error('Admin role check failed:', err));
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('GLOBAL_ERROR:', err);
+    res.status(err.status || 500).json({ 
+        error: err.message || 'INTERNAL_SERVER_ERROR'
+    });
 });
+
+// STARTUP DB CHECK: Strictly enforce admin role ONLY for the main email in .env
+dbAsync.run("UPDATE users SET role = 'user'").then(() => {
+    return dbAsync.run(
+        "UPDATE users SET role = 'admin', full_name = 'KARBY ADMIN' WHERE email = ?",
+        [process.env.ADMIN_EMAIL]
+    );
+}).then(() => console.log('Admin policy enforced: ONLY .env account is admin.'))
+  .catch(err => console.error('Admin policy enforcement failed:', err));
+
+const server = app.listen(PORT, () => {
+    console.log(`TACTICAL_COMMAND_CENTER_READY at http://localhost:${PORT}`);
+});
+
+// Set timeout to 10 minutes for large uploads
+server.timeout = 600000;

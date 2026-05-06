@@ -62,8 +62,23 @@ function initDb() {
             client_name TEXT NOT NULL,
             project TEXT,
             quote TEXT NOT NULL,
+            quote_en TEXT,
+            avatar_url TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
+
+        // Migration for testimonials
+        db.all("PRAGMA table_info(testimonials)", (err, columns) => {
+            if (err) return;
+            const hasQuoteEn = columns.some(c => c.name === 'quote_en');
+            const hasAvatar = columns.some(c => c.name === 'avatar_url');
+            if (!hasQuoteEn) {
+                db.run("ALTER TABLE testimonials ADD COLUMN quote_en TEXT");
+            }
+            if (!hasAvatar) {
+                db.run("ALTER TABLE testimonials ADD COLUMN avatar_url TEXT");
+            }
+        });
 
         // Create Messages table
         db.run(`CREATE TABLE IF NOT EXISTS messages (
@@ -141,14 +156,27 @@ function initDb() {
             }
         });
         
-        // Seed some dummy testimonials if empty
+        // Testimonials seeding with original DM reviews
         db.get(`SELECT COUNT(*) as count FROM testimonials`, (err, row) => {
              if (row && row.count === 0) {
-                 const stmt = db.prepare(`INSERT INTO testimonials (client_name, project, quote) VALUES (?, ?, ?)`);
-                 stmt.run('Lukas K.', 'Music Video', 'Absolutely incredible eye for detail. The final video exceeded all our expectations.');
-                 stmt.run('Sarah J.', 'Brand Campaign', 'KARBYVISUAL understands the modern aesthetic like no one else. Raw, emotional, perfect.');
+                 const stmt = db.prepare(`INSERT INTO testimonials (client_name, project, quote, quote_en, avatar_url) VALUES (?, ?, ?, ?, ?)`);
+                 
+                 const originalReviews = [
+                    { name: 'nayssone01', project: '', cs: 'Díky za dnešek, bomba uplně, až budeš mít, hned posílej', en: 'Thanks for today, absolutely bomb, as soon as you have it, send it', avatar: '/assets/fotky profilovek/Snímek obrazovky 2026-04-21 202602.jpg' },
+                    { name: 'pbsaam', project: '', cs: 'hele kamo pokracuj dal delas neco co tady v cesku chybi beres to vazne a jde to videt z prace co delas big up fotky a stříh popici', en: 'hey bro keep going you\'re doing something that is missing here in Czechia you take it seriously and it shows in your work big up photos and editing are sick', avatar: '/assets/fotky profilovek/pbsaam.jpg' },
+                    { name: 'lilstat__', project: '', cs: 'Velmi talentovaný, skvělá spolupráce, vřele doporučuji, určitě se brzy ozvu znovu', en: 'Very talented, great collaboration, highly recommended, will definitely be in touch soon', avatar: '/assets/fotky profilovek/lilstat__.jpg' },
+                    { name: 'nayssone01', project: '', cs: 'Fakt super práce kamo az to dodelas tak ti poslu dalsi jmena fotky atd', en: 'Really great work bro, when you finish it I\'ll send you more names photos etc', avatar: '/assets/fotky profilovek/Snímek obrazovky 2026-04-21 202602.jpg' },
+                    { name: 'nikofadess', project: '', cs: 'braaaaaaaacho extremne to je diki moooc', en: 'broooooo this is extremely good thanks a looooot', avatar: '/assets/fotky profilovek/nikofadess.jpg' },
+                    { name: 'nayssone01', project: '', cs: 'Top práce, těším se na další věci! Diky!', en: 'Top work, looking forward to the next stuff! Thanks!', avatar: '/assets/fotky profilovek/Snímek obrazovky 2026-04-21 202602.jpg' },
+                    { name: 'nikofadess', project: '', cs: 'predtym to bolo ppci kamo a teraz uplny strop', en: 'before it was dope bro and now it\'s absolute peak', avatar: '/assets/fotky profilovek/nikofadess.jpg' }
+                 ];
+
+                 originalReviews.forEach(r => {
+                    stmt.run(r.name, r.project, r.cs, r.en, r.avatar);
+                 });
+                 
                  stmt.finalize();
-                 console.log('Dummy testimonials seeded.');
+                 console.log('Original DM reviews seeded to database.');
              }
         });
     });

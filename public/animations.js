@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Vertical animation (UPWARDS)
             const marquee = gsap.to(grid, {
                 y: -totalHeight,
-                duration: 45, 
+                duration: 25, 
                 ease: "none",
                 repeat: -1
             });
@@ -211,6 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Initialize marquee if elements exist
+    window.initReviewsMarquee = initReviewsMarquee;
     if (document.querySelector('.reviews-marquee-viewport')) {
         initReviewsMarquee();
     }

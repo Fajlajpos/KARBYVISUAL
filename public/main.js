@@ -4,7 +4,7 @@ const portfolioGrid = document.getElementById('portfolio-grid');
 const filterBtns = document.querySelectorAll('.filter-btn');
 const contactForm = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
-const testSlider = document.getElementById('testimonial-slider');
+const reviewsGrid = document.getElementById('reviews-grid');
 const lightboxModal = document.getElementById('lightbox-modal');
 const lightboxMedia = document.getElementById('lightbox-media-container');
 
@@ -664,27 +664,39 @@ async function loadTestimonials() {
 }
 
 function renderTestimonials(data) {
-    if (!testSlider || data.length === 0) return;
-    testSlider.innerHTML = '';
+    if (!reviewsGrid || data.length === 0) return;
+    
+    // Use data-attributes for localization if needed, or render based on currentLang
+    reviewsGrid.innerHTML = '';
     
     data.forEach((t, i) => {
-        const div = document.createElement('div');
-        div.className = `t-slide ${i === 0 ? 'active' : ''}`;
-        div.innerHTML = `
-            <p class="t-quote">"${t.quote}"</p>
-            <div class="t-client">${t.client_name}</div>
+        const card = document.createElement('div');
+        card.className = 'insta-dm-card reveal-fade';
+        
+        const quote = currentLang === 'cs' ? (t.quote || t.quote_cs) : (t.quote_en || t.quote || t.quote_cs);
+        // Better fallback for avatar: use UI Avatars instead of random pravatar
+        const avatarImg = t.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.client_name)}&background=111&color=fff&bold=true`;
+        const hasProject = t.project && t.project.trim() !== '';
+        
+        card.innerHTML = `
+            <div class="dm-avatar-wrapper">
+                <img src="${avatarImg}" alt="${t.client_name}" class="dm-avatar" onerror="this.src='/assets/user-icon.png'">
+            </div>
+            <div class="dm-content-wrapper">
+                <span class="dm-username">${t.client_name.toLowerCase().replace(/\s/g, '_')}</span>
+                <div class="dm-bubble">
+                    <p class="dm-text" data-cs="${quote}" data-en="${quote}">${quote}</p>
+                    <div class="dm-scanner-line"></div>
+                </div>
+                ${hasProject ? `<span class="dm-meta">${t.project}</span>` : ''}
+            </div>
         `;
-        testSlider.appendChild(div);
+        reviewsGrid.appendChild(card);
     });
-    
-    if (data.length > 1) {
-        setInterval(() => {
-            const slides = document.querySelectorAll('.t-slide');
-            if(slides.length === 0) return;
-            slides[slideIndex].classList.remove('active');
-            slideIndex = (slideIndex + 1) % slides.length;
-            slides[slideIndex].classList.add('active');
-        }, 5000);
+
+    // RE-INIT MARQUEE for the new content
+    if (typeof window.initReviewsMarquee === 'function') {
+        window.initReviewsMarquee();
     }
 }
 
@@ -805,87 +817,95 @@ async function handleLogout() {
 }
 
 function initAuthUI() {
-    // Event Delegation
+    // Global Event Delegation for Auth and Admin actions
     document.addEventListener('click', (e) => {
-        const id = e.target.id || e.target.closest('[id]')?.id;
-        const isFootLink = e.target.classList.contains('auth-foot-link') || e.target.closest('.auth-foot-link');
+        const target = e.target;
+        const id = target.id || target.closest('[id]')?.id;
         
+        // --- AUTH TRIGGERS ---
+        const isFootLink = target.classList.contains('auth-foot-link') || target.closest('.auth-foot-link');
         if (id === 'login-trigger' || isFootLink) {
             e.preventDefault();
             openAuthModal('login-modal');
+            return;
         }
-        if (id === 'register-trigger') openAuthModal('reg-modal');
-        if (id === 'main-logout-btn') handleLogout();
-        
-        // Closes
-        if (e.target.classList.contains('auth-close') || e.target.closest('.auth-close') || e.target.classList.contains('modal-overlay') || e.target.closest('.close-btn')) {
-            const modal = e.target.closest('.auth-modal') || e.target.closest('.modal');
-            
-            // Skip folder-modal as it uses custom GSAP logic
-            if (modal && modal.id === 'folder-modal') return;
+        if (id === 'register-trigger') {
+            openAuthModal('reg-modal');
+            return;
+        }
+        if (id === 'main-logout-btn') {
+            handleLogout();
+            return;
+        }
 
+        // --- ADMIN TRIGGERS ---
+        if (id === 'nav-db-btn' || target.closest('#nav-db-btn')) {
+            openAdminDbModal();
+            return;
+        }
+        if (id === 'nav-admin-btn' || target.closest('#nav-admin-btn')) {
+            console.log('Admin Dashboard trigger detected');
+            if (typeof window.openDashboard === 'function') {
+                window.openDashboard();
+            } else {
+                console.error('window.openDashboard not found');
+            }
+            return;
+        }
+
+        // --- MODAL CLOSES ---
+        if (target.classList.contains('auth-close') || target.closest('.auth-close') || target.classList.contains('modal-overlay') || target.closest('.close-btn')) {
+            const modal = target.closest('.auth-modal') || target.closest('.modal');
             if (modal) {
+                // Skip folder-modal as it uses custom GSAP logic
+                if (modal.id === 'folder-modal') return;
+
                 if (modal.classList.contains('auth-modal')) {
                     closeAuthModal(modal.id);
                 } else {
+                    // This handles general modals like admin-db-modal
                     modal.classList.remove('active');
                     document.body.style.overflow = '';
+                    if (window.toggleBodyLock) window.toggleBodyLock(false);
                 }
             }
         }
         
-        // Switches
-        const switchBtn = e.target.closest('.switch-btn') || e.target.closest('.switch-btn-full');
+        // --- TABS & SWITCHES ---
+        const switchBtn = target.closest('.switch-btn') || target.closest('.switch-btn-full');
         if (switchBtn) {
             const current = switchBtn.closest('.auth-modal').id;
-            const target = switchBtn.dataset.target;
-            switchModals(current, target);
+            const targetModal = switchBtn.dataset.target;
+            switchModals(current, targetModal);
         }
 
-        // Pass Toggle
-        if (e.target.classList.contains('toggle-password')) {
-            const input = e.target.previousElementSibling;
-            if (input) {
-                input.type = input.type === 'password' ? 'text' : 'password';
-                e.target.classList.toggle('ph-eye');
-                e.target.classList.toggle('ph-eye-closed');
-            }
-        }
-    });
-
-    // Admin actions
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('#nav-db-btn');
-        if (btn) {
-            openAdminDbModal();
-        }
-
-        const tabBtn = e.target.closest('.db-tab-btn');
+        const tabBtn = target.closest('.db-tab-btn');
         if (tabBtn) {
             const parentWrap = tabBtn.closest('.db-tabs') || document;
             parentWrap.querySelectorAll('.db-tab-btn').forEach(b => b.classList.remove('active'));
             tabBtn.classList.add('active');
-            
-            if (typeof dashboardFetchDbData === 'function') {
-                dashboardFetchDbData(tabBtn.dataset.tab);
+            if (typeof window.dashboardFetchDbData === 'function') {
+                window.dashboardFetchDbData(tabBtn.dataset.tab);
             }
         }
 
-        if (e.target.closest('#close-db-modal-btn') || e.target.closest('#close-db-modal-dot') || e.target.classList.contains('modal-overlay')) {
-            const modal = document.getElementById('admin-db-modal');
-            if (modal && modal.classList.contains('active')) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
+        // --- PASS TOGGLE ---
+        if (target.classList.contains('toggle-password')) {
+            const input = target.previousElementSibling;
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                target.classList.toggle('ph-eye');
+                target.classList.toggle('ph-eye-closed');
             }
         }
 
-        // DELETE PORTFOLIO ITEM
-        const deleteBtn = e.target.closest('.delete-btn');
+        // --- DELETE ACTIONS ---
+        const deleteBtn = target.closest('.delete-btn');
         if (deleteBtn && window.isAdmin) {
-            const id = deleteBtn.dataset.id;
+            const itemId = deleteBtn.dataset.id;
             const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'PERMANENTLY DELETE THIS RECORD?';
             if (confirm(confirmMsg)) {
-                deletePortfolioItem(id, deleteBtn.closest('.port-item'));
+                deletePortfolioItem(itemId, deleteBtn.closest('.port-item'));
             }
         }
     });
@@ -919,8 +939,8 @@ function openAdminDbModal() {
     document.body.style.overflow = 'hidden';
     
     // Default to submissions
-    if (typeof dashboardFetchDbData === 'function') {
-        dashboardFetchDbData('messages');
+    if (typeof window.dashboardFetchDbData === 'function') {
+        window.dashboardFetchDbData('messages');
     }
 }
 

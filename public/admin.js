@@ -21,28 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Auth check
     checkAuthStatus();
 
-    // DASHBOARD TRIGGER
-    document.addEventListener('click', (e) => {
-        if (e.target.id === 'nav-admin-btn' || e.target.closest('#nav-admin-btn')) {
-            openDashboard();
-        }
-    });
-
-    if (closeDashboardBtn) {
-        closeDashboardBtn.addEventListener('click', closeDashboard);
-    }
+    // Expose functions to window for global access
+    window.openDashboard = openDashboard;
+    window.closeDashboard = closeDashboard;
 
     function openDashboard() {
-        if (!dashboardModal) return;
-        dashboardModal.classList.add('active');
+        const modal = document.getElementById('admin-dashboard-modal');
+        if (!modal) {
+            console.error('Admin dashboard modal not found');
+            return;
+        }
+        modal.classList.add('active');
         if (window.toggleBodyLock) window.toggleBodyLock(true);
         fetchCurrentSettings();
         fetchFoldersAdmin();
     }
 
     function closeDashboard() {
-        if (!dashboardModal) return;
-        dashboardModal.classList.remove('active');
+        const modal = document.getElementById('admin-dashboard-modal');
+        if (!modal) return;
+        modal.classList.remove('active');
         if (window.toggleBodyLock) window.toggleBodyLock(false);
     }
 
@@ -61,9 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Special logic for DB view
-            if (target === 'db-view') {
-                initDashboardDbView();
+            if (target === 'reviews') {
+                fetchReviewsAdmin();
             }
         });
     });
@@ -176,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await fetch('/api/folders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ titleCS, titleEN })
                 });
                 
@@ -249,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await fetch('/api/portfolio', {
                     method: 'POST',
+                    credentials: 'include',
                     body: formData
                 });
                 if (res.ok) {
@@ -258,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showSuccessAnimation(successMsg);
                     
                     portfolioForm.reset();
-                    clearPreview();
+                    clearPortfolioPreview();
                     if (typeof loadPortfolio === 'function') loadPortfolio();
                 } else {
                     const data = await res.json();
@@ -269,6 +268,77 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 btn.innerHTML = originalText;
             }
+        });
+    }
+
+    const testimonialForm = document.getElementById('testimonial-form');
+    if (testimonialForm) {
+        testimonialForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = testimonialForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'UPLOADING REVIEW...';
+            
+            const formData = new FormData(testimonialForm);
+            
+            try {
+                const res = await fetch('/api/testimonials', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                if (res.ok) {
+                    const successMsg = currentLang === 'cs' ? 'RECENZE BYLA PUBLIKOVÁNA.' : 'REVIEW HAS BEEN PUBLISHED.';
+                    showSuccessAnimation(successMsg);
+                    testimonialForm.reset();
+                    document.getElementById('avatar-preview-container').classList.add('hidden');
+                    if (typeof loadTestimonials === 'function') loadTestimonials();
+                    fetchReviewsAdmin();
+                } else {
+                    const data = await res.json();
+                    console.error('Testimonial submission failed:', data);
+                    if (window.showToast) window.showToast('SYNC_FAILED: ' + (data.error || 'UNKNOWN_ERROR'), 'error');
+                }
+            } catch (err) {
+                console.error('NETWORK_ERROR:', err);
+                if (window.showToast) window.showToast('NETWORK_FAILURE: ' + err.message, 'error');
+            } finally {
+                btn.innerHTML = originalText;
+            }
+        });
+    }
+
+    // Live Preview Logic for Testimonials
+    const previewBtn = document.getElementById('preview-testimonial-btn');
+    const previewTarget = document.getElementById('preview-render-target');
+    const testimonialPreviewContainer = document.getElementById('testimonial-live-preview');
+
+    if (previewBtn && previewTarget) {
+        previewBtn.addEventListener('click', () => {
+            const formData = new FormData(testimonialForm);
+            const clientName = formData.get('clientName') || 'username';
+            const quote = (currentLang === 'cs' ? formData.get('quoteCS') : formData.get('quoteEN')) || '...';
+            const previewImg = document.getElementById('avatar-preview-img').src;
+            const avatarUrl = previewImg && previewImg !== window.location.href ? previewImg : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=111&color=fff&bold=true`;
+
+            testimonialPreviewContainer.classList.remove('hidden');
+            previewTarget.innerHTML = `
+                <div class="insta-dm-card reveal-fade" style="margin: 0 auto; transform: scale(1.1); transform-origin: top; animation: none; opacity: 1; visibility: visible;">
+                    <div class="dm-avatar-wrapper">
+                        <img src="${avatarUrl}" alt="Preview" class="dm-avatar">
+                    </div>
+                    <div class="dm-content-wrapper">
+                        <span class="dm-username">${clientName.toLowerCase().replace(/\s/g, '_')}</span>
+                        <div class="dm-bubble">
+                            <p class="dm-text">${quote}</p>
+                            <div class="dm-scanner-line"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to preview
+            testimonialPreviewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
     }
 
@@ -398,6 +468,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/api/admin/${type}`);
             const data = await res.json();
             
+            if (countEl) countEl.textContent = data.length;
+            
             if (data.length === 0) {
                 wrapper.innerHTML = '<div class="loading-state mono-label">NO RECORDS DETECTED.</div>';
                 return;
@@ -449,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dropzone = document.getElementById('p-dropzone');
     const mediaInput = document.getElementById('p-media');
-    const previewContainer = document.getElementById('p-preview-container');
+    const portfolioPreviewContainer = document.getElementById('p-preview-container');
     const previewImg = document.getElementById('p-preview-img');
 
     const metaInfo = document.getElementById('p-meta-info');
@@ -468,10 +540,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 let imageCount = 0;
                 let videoCount = 0;
                 
-                previewContainer.innerHTML = '<div class="scanner-line"></div>'; // Reset
+                portfolioPreviewContainer.innerHTML = '<div class="scanner-line"></div>'; // Reset
                 const galleryWrapper = document.createElement('div');
                 galleryWrapper.className = 'preview-gallery';
-                previewContainer.appendChild(galleryWrapper);
+                portfolioPreviewContainer.appendChild(galleryWrapper);
 
                 Array.from(files).forEach((file, index) => {
                     totalSize += file.size;
@@ -496,7 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     metaInfo.innerHTML = `<span>BATCH: ${files.length} ITEMS</span><span>TOTAL: ${totalSizeMB} MB</span>`;
                 }
 
-                previewContainer.classList.remove('hidden');
+                portfolioPreviewContainer.classList.remove('hidden');
                 
                 // Re-add status overlay
                 const statusOverlay = document.createElement('div');
@@ -505,18 +577,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="meta-info">${metaInfo.innerHTML}</div>
                     <div class="status-ready"><i class="ph ph-check-circle"></i> DATA_ARRAY_READY</div>
                 `;
-                previewContainer.appendChild(statusOverlay);
+                portfolioPreviewContainer.appendChild(statusOverlay);
 
             } else {
-                clearPreview();
+                clearPortfolioPreview();
             }
         });
     }
 
-    function clearPreview() {
-        if (previewContainer) {
-            previewContainer.innerHTML = '<div class="scanner-line"></div>';
-            previewContainer.classList.add('hidden');
+    function clearPortfolioPreview() {
+        if (portfolioPreviewContainer) {
+            portfolioPreviewContainer.innerHTML = '<div class="scanner-line"></div>';
+            portfolioPreviewContainer.classList.add('hidden');
         }
     }
 
@@ -550,6 +622,94 @@ document.addEventListener('DOMContentLoaded', () => {
         }});
     }
 
+    // --- REVIEWS MANAGEMENT ---
+    async function fetchReviewsAdmin() {
+        const list = document.getElementById('admin-reviews-list');
+        if (!list) return;
+
+        try {
+            const res = await fetch('/api/testimonials');
+            const data = await res.json();
+            
+            list.innerHTML = '';
+            
+            if (data.length === 0) {
+                list.innerHTML = '<div class="mono-label" style="opacity: 0.3; padding: 2rem; text-align: center; border: 1px dashed rgba(255,255,255,0.1);">NO_REVIEWS_FOUND_IN_ARCHIVE</div>';
+                return;
+            }
+
+            data.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'insta-dm-card';
+                card.style.marginBottom = '2.5rem';
+                card.style.position = 'relative';
+                
+                const quoteCS = t.quote || t.quote_cs || '---';
+                const quoteEN = t.quote_en || '---';
+                
+                const avatarImg = t.avatar_url 
+                    ? `<img src="${t.avatar_url}" class="dm-avatar">` 
+                    : `<div class="dm-avatar" style="background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;"><i class="ph ph-user" style="opacity: 0.3;"></i></div>`;
+
+                card.innerHTML = `
+                    <div class="dm-avatar-wrapper">
+                        ${avatarImg}
+                    </div>
+                    <div class="dm-content-wrapper">
+                        <span class="dm-username">${t.client_name.toLowerCase().replace(/\s/g, '_')}</span>
+                        <div class="dm-bubble" style="margin-bottom: 0.8rem;">
+                            <p class="dm-text"><span style="color: var(--accent); font-size: 0.6rem; opacity: 0.4; letter-spacing: 1px;">[CS]</span> ${quoteCS}</p>
+                            <div class="dm-scanner-line"></div>
+                        </div>
+                        ${quoteEN !== '---' ? `
+                        <div class="dm-bubble">
+                            <p class="dm-text"><span style="color: var(--accent); font-size: 0.6rem; opacity: 0.4; letter-spacing: 1px;">[EN]</span> ${quoteEN}</p>
+                        </div>` : ''}
+                        
+                        <div class="card-actions" style="margin-top: 1rem; display: flex; gap: 1rem; opacity: 0.6;">
+                             <span class="mono-label" style="font-size: 0.6rem;">ID: ${t.id}</span>
+                             <span class="mono-label" style="font-size: 0.6rem;">TYPE: TESTIMONIAL</span>
+                        </div>
+                    </div>
+                    <div style="position: absolute; top: 1rem; right: 1rem;">
+                        <button class="delete-btn-tactical delete-review-btn" data-id="${t.id}" title="DELETE_ENTRY">
+                            <i class="ph ph-trash"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+
+            // Add delete listeners
+            list.querySelectorAll('.delete-review-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (!confirm('PERMANENTLY DELETE THIS REVIEW?')) return;
+                    const id = btn.dataset.id;
+                    try {
+                        const delRes = await fetch(`/api/testimonials/${id}`, { 
+                            method: 'DELETE',
+                            credentials: 'include'
+                        });
+                        if (delRes.ok) {
+                            showToast('REVIEW DELETED', 'success');
+                            fetchReviewsAdmin();
+                        } else {
+                            const errData = await delRes.json();
+                            console.error('Delete failed:', errData);
+                            if (window.showToast) window.showToast('PURGE_FAILED', 'error');
+                        }
+                    } catch (e) {
+                        console.error('Delete error:', e);
+                        if (window.showToast) window.showToast('CORE_COMMS_FAILURE', 'error');
+                    }
+                };
+            });
+
+        } catch (e) {
+            list.innerHTML = '<div class="mono-label" style="color: #ff4444;">SYNC_ERROR</div>';
+        }
+    }
+
     // Auth status helper
     async function checkAuthStatus() {
         try {
@@ -560,5 +720,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.isAdmin) document.body.classList.add('admin-enabled');
             }
         } catch(e) {}
+    }
+
+    // Avatar Preview logic
+    const avatarInput = document.getElementById('t-avatar');
+    const avatarPreviewContainer = document.getElementById('avatar-preview-container');
+    const avatarPreviewImg = document.getElementById('avatar-preview-img');
+
+    if (avatarInput && avatarPreviewContainer) {
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    avatarPreviewImg.src = re.target.result;
+                    avatarPreviewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                avatarPreviewContainer.classList.add('hidden');
+            }
+        });
     }
 });
