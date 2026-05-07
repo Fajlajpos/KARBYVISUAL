@@ -83,7 +83,6 @@
         <div class="logo">
             <a href="#hero">
                 KARBYVISUALS
-                <span class="tag" data-cs="ZAL. 2026" data-en="EST. 2026">ZAL. 2026</span>
             </a>
         </div>
         <!-- Navigation Links -->
@@ -190,14 +189,7 @@
                             </iframe>
                         </div>
                     </div>
-                    <!-- Floating element for dynamic feel -->
-                    <div class="hs-floating-card hs-float-1">
-                        <i class="ph ph-star-fill" style="color: #ff9500;"></i>
-                        <div>
-                            <span class="hs-float-title" data-cs="Top Hodnocení" data-en="Top Rated">Top Hodnocení</span>
-                            <span class="hs-float-sub" data-cs="Od 50+ klientů" data-en="From 50+ clients">Od 50+ klientů</span>
-                        </div>
-                    </div>
+
                 </div>
 
             </div>
@@ -383,9 +375,8 @@
                                 </div>
                                 <div class="node-info">
                                     <h3 class="node-handle">@KARBYVISUALS</h3>
-                                    <p class="node-desc" data-cs="Denní archiv vizuálního šumu a finálních projektů."
-                                        data-en="Daily archive of visual noise and final projects.">Denní archiv
-                                        vizuálního šumu a finálních projektů.</p>
+                                    <p class="node-desc" data-cs="Sleduj můj profil pro aktuální releasy a backstage z natáčení."
+                                        data-en="Follow my profile for latest releases and filming backstage.">Sleduj můj profil pro aktuální releasy a backstage z natáčení.</p>
                                 </div>
                             </div>
                             <div class="node-footer">
@@ -394,21 +385,62 @@
                             </div>
                         </div>
 
-                        <div class="terminal-meta-v3 mt-2 reveal-fade">
-                            <div class="meta-row">
-                                <span class="mono-label">LOC_ORIGIN</span>
-                                <span class="meta-val">PRAGUE_CZ</span>
+                        <div class="social-node email-node textured-bg" style="cursor: pointer;"
+                            onclick="const opts = this.querySelector('.email-options'); opts.style.display = opts.style.display === 'none' ? 'flex' : 'none';">
+                            <div class="node-header">
+                                <span class="mono-label">MAIL_UPLINK</span>
+                                <span class="node-status"><span class="pulse-dot"></span> SECURE</span>
                             </div>
-                            <div class="meta-row">
-                                <span class="mono-label">SIGNAL_LATENCY</span>
-                                <span class="meta-val">
-                                    < 24H_RES</span>
+                            <div class="node-main">
+                                <div class="insta-icon-wrapper">
+                                    <i class="ph-fill ph-envelope-simple"></i>
+                                    <div class="icon-glow"></div>
+                                </div>
+                                <div class="node-info">
+                                    <h3 class="node-handle">samkarban@gmail.com</h3>
+                                    <p class="node-desc" data-cs="Přímý komunikační kanál. Zvolte klienta." data-en="Direct communication channel. Choose client.">Přímý komunikační kanál. Zvolte klienta.</p>
+                                </div>
                             </div>
-                            <div class="meta-row">
-                                <span class="mono-label">VERSION_TAG</span>
-                                <span class="meta-val">R2026.4.V3</span>
+                            <div class="node-footer">
+                                <span class="mono-label">SELECT_PROVIDER</span>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+
+                            <div class="email-options" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                                <button type="button" class="btn-cad-secondary" onclick="window.open('https://mail.google.com/mail/?view=cm&fs=1&to=samkarban@gmail.com', '_blank'); event.stopPropagation();" style="width: 100%; padding: 0.8rem; display: flex; justify-content: center;">
+                                    <div class="cad-focus-frame"><span></span><span></span><span></span><span></span></div>
+                                    <span class="cad-label">GMAIL</span>
+                                </button>
+                                <button type="button" class="btn-cad-secondary" onclick="window.open('https://email.seznam.cz/', '_blank'); event.stopPropagation();" style="width: 100%; padding: 0.8rem; display: flex; justify-content: center;">
+                                    <div class="cad-focus-frame"><span></span><span></span><span></span><span></span></div>
+                                    <span class="cad-label">SEZNAM EMAIL</span>
+                                </button>
                             </div>
                         </div>
+
+                        <div class="social-node phone-node textured-bg" style="cursor: pointer;"
+                            onclick="window.location.href='tel:+420737516301'">
+                            <div class="node-header">
+                                <span class="mono-label">VOICE_UPLINK</span>
+                                <span class="node-status"><span class="pulse-dot" style="background: #34c759; box-shadow: 0 0 10px #34c759;"></span> AVAILABLE</span>
+                            </div>
+                            <div class="node-main">
+                                <div class="insta-icon-wrapper">
+                                    <i class="ph-fill ph-phone"></i>
+                                    <div class="icon-glow"></div>
+                                </div>
+                                <div class="node-info">
+                                    <h3 class="node-handle">+420 737 516 301</h3>
+                                    <p class="node-desc" data-cs="Hlasová linka pro okamžité spojení." data-en="Voice line for immediate connection.">Hlasová linka pro okamžité spojení.</p>
+                                </div>
+                            </div>
+                            <div class="node-footer">
+                                <span class="mono-label">DIAL_PROTOCOL</span>
+                                <i class="ph ph-phone-call"></i>
+                            </div>
+                        </div>
+
+
                     </div>
 
                     <!-- Column 2: The Transmission Form Redesigned -->

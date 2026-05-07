@@ -402,7 +402,7 @@ body.modal-open {
 
 .nav-links {
     display: flex;
-    gap: 2.5rem;
+    gap: 1.2rem;
     align-items: center;
 }
 
@@ -410,32 +410,65 @@ body.modal-open {
     text-decoration: none;
     color: var(--text-sec);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    transition: all 0.3s ease;
-    letter-spacing: 0.2em;
+    font-size: 0.72rem;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    letter-spacing: 0.15em;
     font-weight: 500;
     text-transform: uppercase;
     position: relative;
-    padding: 5px 0;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.nav-link::after {
-    content: '';
+/* Left Bracket */
+.nav-link::before {
+    content: '[';
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--text-primary);
-    transition: width 0.3s ease;
+    left: -5px;
+    opacity: 0;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    font-weight: 300;
+    transform: scaleY(0.5);
+}
+
+/* Right Bracket (Replacing the old underline logic) */
+.nav-link::after {
+    content: ']';
+    position: absolute;
+    right: -5px;
+    opacity: 0;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    font-weight: 300;
+    transform: scaleY(0.5);
+    /* Reset previous underline styles */
+    width: auto;
+    height: auto;
+    background: none;
+    bottom: auto;
+    left: auto;
 }
 
 .nav-link:hover {
-    color: var(--text-primary);
+    color: #fff;
+    letter-spacing: 0.3em;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.nav-link:hover::before {
+    opacity: 1;
+    left: -2px;
+    transform: scaleY(1.2);
 }
 
 .nav-link:hover::after {
-    width: 100%;
+    opacity: 1;
+    right: -2px;
+    transform: scaleY(1.2);
+    width: auto; /* Ensure it doesn't take width: 100% from previous style */
 }
 
 .lang-switcher {
@@ -2781,23 +2814,30 @@ cursor: pointer;
 /* CONTACT SECTION V3 REDESIGN */
 .contact-grid-v2 {
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr 1.8fr;
     gap: 4rem;
-    align-items: start;
+    align-items: stretch;
 }
 
 /* Social Uplink Panel */
+.social-uplink-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
 .social-node {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 2.5rem;
+    padding: 2.3rem;
     cursor: pointer;
     transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.8rem;
 }
 
 .social-node:hover {
@@ -2848,12 +2888,12 @@ cursor: pointer;
 }
 
 .insta-icon-wrapper {
-    width: 80px;
-    height: 80px;
+    width: 74px;
+    height: 74px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     color: #fff;
     position: relative;
 }
@@ -2872,8 +2912,8 @@ cursor: pointer;
 }
 
 .node-handle {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
     letter-spacing: 1px;
 }
 
@@ -2887,7 +2927,7 @@ cursor: pointer;
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 1.5rem;
+    padding-top: 1.6rem;
     color: var(--text-muted);
 }
 
@@ -3025,7 +3065,7 @@ cursor: pointer;
 }
 
 .matrix-3col {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
 }
 
 .matrix-grid input[type="radio"] {
