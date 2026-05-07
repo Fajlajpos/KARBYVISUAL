@@ -566,7 +566,6 @@
                 <div class="footer-links-list">
                     <a href="#" class="footer-link" data-cs="PODMÍNKY UŽITÍ" data-en="TERMS OF SERVICE">PODMÍNKY UŽITÍ</a>
                     <a href="#" class="footer-link" data-cs="OCHRANA SOUKROMÍ" data-en="PRIVACY POLICY">OCHRANA SOUKROMÍ</a>
-                    <a href="#" class="footer-link auth-foot-link" data-cs="[ SYSTÉMOVÝ VSTUP ]" data-en="[ SYS.LOGIN ]">[ SYSTÉMOVÝ VSTUP ]</a>
                 </div>
             </div>
 
@@ -721,96 +720,12 @@
                         <div class="loader-ring hidden"></div>
                     </button>
 
-                    <div class="auth-divider"><span>OR</span></div>
-
-                    <button type="button" class="btn-cad-secondary switch-btn-full" data-target="reg-modal" style="width: 100%; padding: 1.2rem;">
-                        <div class="cad-focus-frame">
-                            <span></span><span></span><span></span><span></span>
-                        </div>
-                        <span class="cad-label" data-cs="VYTVOŘIT ÚČET" data-en="CREATE ACCOUNT">VYTVOŘIT ÚČET</span>
-                    </button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Register Modal -->
-    <div class="auth-modal" id="reg-modal" aria-modal="true" role="dialog">
-        <div class="modal-overlay"></div>
-        <div class="modal-panel">
-            <div class="auth-close" data-modal="reg-modal"><i class="ph ph-x"></i></div>
-            <div class="auth-content">
-                <div class="auth-logo">KARBYVISUALS</div>
-                <h2 class="auth-title" data-cs="VYTVOŘIT ÚČET" data-en="CREATE ACCOUNT">CREATE ACCOUNT</h2>
-                <p class="auth-subtitle" data-cs="Připojte se ke KARBYVISUALS" data-en="Join KARBYVISUALS">Join
-                    KARBYVISUALS</p>
 
-                <form id="register-form" class="auth-form">
-                    <div class="input-group">
-                        <label for="reg-name" class="mono-label" data-cs="CELÉ JMÉNO" data-en="FULL NAME">FULL
-                            NAME</label>
-                        <input type="text" id="reg-name" name="fullName" required autocomplete="name"
-                            data-placeholder-cs="Jan Novák" data-placeholder-en="John Doe">
-                        <div class="error-msg"></div>
-                    </div>
-                    <div class="input-group">
-                        <label for="reg-email" class="mono-label">EMAIL</label>
-                        <input type="email" id="reg-email" name="email" required autocomplete="email">
-                        <div class="error-msg"></div>
-                    </div>
-                    <div class="input-group">
-                        <label for="reg-password" class="mono-label" data-cs="HESLO" data-en="PASSWORD">PASSWORD</label>
-                        <div class="password-wrap">
-                            <input type="password" id="reg-password" name="password" required
-                                autocomplete="new-password">
-                            <i class="ph ph-eye toggle-password"></i>
-                        </div>
-                        <div class="password-strength">
-                            <div class="strength-bar"></div>
-                        </div>
-                        <div class="error-msg"></div>
-                    </div>
-                    <div class="input-group">
-                        <label for="reg-confirm" class="mono-label" data-cs="POTVRDIT HESLO"
-                            data-en="CONFIRM PASSWORD">CONFIRM PASSWORD</label>
-                        <div class="password-wrap">
-                            <input type="password" id="reg-confirm" name="confirmPassword" required
-                                autocomplete="new-password">
-                            <i class="ph ph-eye toggle-password"></i>
-                        </div>
-                        <div class="error-msg"></div>
-                    </div>
-
-                    <label class="checkbox-label full-width">
-                        <input type="checkbox" name="terms" required>
-                        <span class="checkmark"></span>
-                        <span data-cs="Souhlasím s Podmínkami a Soukromím"
-                            data-en="I agree to the Terms & Privacy Policy">I agree to the Terms & Privacy Policy</span>
-                    </label>
-
-                    <button type="submit" class="btn-cad-primary auth-submit" style="width: 100%; padding: 1.2rem;">
-                        <div class="cad-grid-bg"></div>
-                        <div class="cad-scanner"></div>
-                        <div class="cad-extension-lines"></div>
-                        <div class="cad-corners">
-                            <span></span><span></span><span></span><span></span>
-                        </div>
-                        <span class="btn-text cad-label" data-cs="[ VYTVOŘIT ÚČET ]" data-en="[ CREATE ACCOUNT ]">[ CREATE ACCOUNT ]</span>
-                        <div class="loader-ring hidden"></div>
-                    </button>
-
-                    <div class="auth-divider"><span>OR</span></div>
-
-                    <button type="button" class="btn-cad-secondary switch-btn-full" data-target="login-modal" style="width: 100%; padding: 1.2rem;">
-                        <div class="cad-focus-frame">
-                            <span></span><span></span><span></span><span></span>
-                        </div>
-                        <span class="cad-label" data-cs="UŽ MÁM ÚČET - PŘIHLÁSIT" data-en="ALREADY HAVE AN ACCOUNT - LOGIN">UŽ MÁM ÚČET - PŘIHLÁSIT</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- NEW ADMIN DASHBOARD MODAL -->
     <div id="admin-dashboard-modal" class="auth-modal">

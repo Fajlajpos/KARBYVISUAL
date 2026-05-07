@@ -793,10 +793,7 @@ function updateNavAuth(authenticated) {
             </div>
         `;
     } else {
-        navAuth.innerHTML = `
-            <button class="auth-btn btn-login" id="login-trigger" data-cs="PŘIHLÁSIT" data-en="LOGIN">LOGIN</button>
-            <button class="auth-btn btn-register auth-btn btn-filled" id="register-trigger" data-cs="REGISTRACE" data-en="REGISTER">REGISTER</button>
-        `;
+        navAuth.innerHTML = '';
         window.isAdmin = false;
         document.body.classList.remove('admin-enabled');
     }
@@ -913,22 +910,26 @@ function initAuthUI() {
     // Forms
     document.addEventListener('submit', (e) => {
         if (e.target.id === 'login-form') handleLogin(e);
-        if (e.target.id === 'register-form') handleRegister(e);
     });
 
-    // Password Strength
-    document.addEventListener('input', (e) => {
-        if (e.target.id === 'reg-password') {
-            const val = e.target.value;
-            const bar = document.querySelector('.strength-bar');
-            if (!bar) return;
-            bar.className = 'strength-bar';
-            if (val.length > 0) {
-                if (val.length < 6) bar.classList.add('weak');
-                else if (val.match(/[A-Z]/) && val.match(/[0-9]/)) bar.classList.add('strong');
-                else bar.classList.add('medium');
+    // Secret Login Shortcut (Shift + K + V)
+    let secretKeys = { k: false, v: false };
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'k') secretKeys.k = true;
+        if (e.key.toLowerCase() === 'v') secretKeys.v = true;
+
+        if (e.shiftKey && secretKeys.k && secretKeys.v) {
+            if (typeof openAuthModal === 'function') {
+                openAuthModal('login-modal');
+            } else {
+                const loginModal = document.getElementById('login-modal');
+                if (loginModal) loginModal.classList.add('active');
             }
         }
+    });
+    document.addEventListener('keyup', (e) => {
+        if (e.key.toLowerCase() === 'k') secretKeys.k = false;
+        if (e.key.toLowerCase() === 'v') secretKeys.v = false;
     });
 }
 

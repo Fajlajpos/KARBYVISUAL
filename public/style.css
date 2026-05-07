@@ -410,13 +410,13 @@ body.modal-open {
     text-decoration: none;
     color: var(--text-sec);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.95rem; /* Zvětšeno z 0.72rem */
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em; /* Mírně zmenšeno z 0.15em kvůli většímu fontu */
     font-weight: 500;
     text-transform: uppercase;
     position: relative;
-    padding: 6px 8px;
+    padding: 6px 12px; /* Větší padding pro lepší klikatelnost a proporce */
     display: flex;
     align-items: center;
     justify-content: center;

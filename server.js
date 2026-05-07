@@ -58,39 +58,9 @@ const authLimiter = rateLimit({
 
 // 1. Auth Endpoints
 
-app.post('/api/register', async (req, res) => {
-    try {
-        const { fullName, email, password } = req.body;
-        
-        if (!fullName || !email || !password) {
-            return res.status(400).json({ error: 'All fields are required' });
-        }
-
-        const existing = await dbAsync.get('SELECT id FROM users WHERE email = ?', [email]);
-        if (existing) return res.status(400).json({ error: 'Email already exists' });
-
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-
-        const result = await dbAsync.run(
-            'INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)',
-            [fullName, email, hash, 'user']
-        );
-
-        const user = { id: result.lastID, email, full_name: fullName, role: 'user' };
-        const token = createToken(user);
-        
-        res.cookie('token', token, { 
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 
-        });
-
-        res.json({ message: 'Registration successful', fullName: fullName });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+app.post('/api/register', (req, res) => {
+    // Registration disabled for public users
+    res.status(403).json({ error: 'Registration is currently disabled.' });
 });
 
 app.post('/api/login', authLimiter, async (req, res) => {
