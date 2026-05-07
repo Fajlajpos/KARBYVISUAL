@@ -978,8 +978,20 @@ function switchModals(from, to) {
     if (window.transitionAuthPanels) {
         window.transitionAuthPanels(from, to);
     } else {
+        const toModal = document.getElementById(to);
+        const toOverlay = toModal.querySelector('.modal-overlay');
+        const toPanel = toModal.querySelector('.modal-panel');
+        
+        if (toOverlay) toOverlay.style.transition = 'none';
+        if (toPanel) toPanel.style.transition = 'none';
+        
         document.getElementById(from).classList.remove('active');
-        document.getElementById(to).classList.add('active');
+        toModal.classList.add('active');
+        
+        setTimeout(() => {
+            if (toOverlay) toOverlay.style.transition = '';
+            if (toPanel) toPanel.style.transition = '';
+        }, 50);
     }
 }
 
