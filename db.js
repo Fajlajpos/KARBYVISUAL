@@ -13,6 +13,16 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
+// Force migration for existing database
+db.serialize(() => {
+    db.run("ALTER TABLE messages ADD COLUMN is_completed INTEGER DEFAULT 0", (err) => {
+        // If it already exists, this will error, which is fine
+        if (err && !err.message.includes("duplicate column name")) {
+            console.log('Migration info:', err.message);
+        }
+    });
+});
+
 function initDb() {
     db.serialize(() => {
         db.run(`CREATE TABLE IF NOT EXISTS users (
@@ -88,8 +98,18 @@ function initDb() {
             project_type TEXT,
             budget TEXT,
             message TEXT NOT NULL,
+            is_completed INTEGER DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
+
+        // Migration for messages
+        db.all("PRAGMA table_info(messages)", (err, columns) => {
+            if (err) return;
+            const hasIsCompleted = columns.some(c => c.name === 'is_completed');
+            if (!hasIsCompleted) {
+                db.run("ALTER TABLE messages ADD COLUMN is_completed INTEGER DEFAULT 0");
+            }
+        });
 
         // Create Settings table
         db.run(`CREATE TABLE IF NOT EXISTS settings (

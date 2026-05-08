@@ -3065,7 +3065,7 @@ cursor: pointer;
 }
 
 .matrix-3col {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
 }
 
 .matrix-grid input[type="radio"] {
@@ -4198,6 +4198,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     justify-content: center;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
 }
 
 .auth-close:hover {
@@ -4848,11 +4849,22 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     cursor: pointer;
     font-size: 1.5rem;
     color: var(--text-muted);
-    transition: color 0.3s;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 .detail-close:hover {
     color: var(--accent);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
+    transform: rotate(90deg);
 }
 
 .detail-content-area {
@@ -5007,6 +5019,26 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
         margin-left: 0;
         margin-top: 0.5rem;
     }
+}
+
+/* MISSION STATUS STYLES */
+.completed-row {
+    background: rgba(76, 175, 80, 0.03) !important;
+}
+
+.transmission-log-card.completed {
+    border-color: rgba(76, 175, 80, 0.3) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+}
+
+.transmission-log-card.completed .meta-item strong {
+    color: #4CAF50 !important;
+}
+
+.transmission-log-card.completed .msg-content {
+    opacity: 0.5;
+    text-decoration: line-through;
+    text-decoration-color: rgba(255,255,255,0.2);
 }
 
 

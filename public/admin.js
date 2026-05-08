@@ -371,10 +371,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if(overlay) overlay.classList.remove('active');
     }
 
+    async function toggleMessageStatus(id, isCompleted) {
+        try {
+            const res = await fetch(`/api/admin/messages/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ is_completed: isCompleted })
+            });
+            if (res.ok) {
+                // Refresh the current view
+                dashboardFetchDbData('messages');
+                
+                // If detail panel is open, we might want to refresh it too, 
+                // but since toggleMessageStatus is usually called from the table or detail panel itself,
+                // the refresh of the table is the most important.
+            } else {
+                if(window.showToast) window.showToast('STATUS_SYNC_FAILURE', 'error');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    window.toggleMessageStatus = toggleMessageStatus;
+
     async function deleteDbRecord(type, id) {
         if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS ${type.toUpperCase()}?`)) return;
         try {
-            const res = await fetch(`/api/admin/${type}/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/admin/${type}/${id}`, { 
+                method: 'DELETE',
+                credentials: 'include'
+            });
             if (res.ok) {
                 if(window.showToast) window.showToast('RECORD PURGED', 'success');
                 dashboardFetchDbData(type); // refresh
@@ -396,7 +424,9 @@ document.addEventListener('DOMContentLoaded', () => {
         content.innerHTML = '<div class="loading-state mono-label">SCANNING ARCHIVE...</div>';
 
         try {
-            const res = await fetch(`/api/admin/user-messages/${encodeURIComponent(email)}`);
+            const res = await fetch(`/api/admin/user-messages/${encodeURIComponent(email)}`, {
+                credentials: 'include'
+            });
             const messages = await res.json();
 
             if (messages.length === 0) {
@@ -408,15 +438,19 @@ document.addEventListener('DOMContentLoaded', () => {
             messages.forEach(msg => {
                 const date = new Date(msg.created_at).toLocaleString();
                 html += `
-                    <div class="transmission-log-card">
+                    <div class="transmission-log-card ${msg.is_completed ? 'completed' : ''}">
                         <div class="meta-grid">
                             <div class="meta-item"><span>DATE</span><strong>${date}</strong></div>
                             <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
                             <div class="meta-item"><span>BUDGET_CLASS</span><strong>${msg.budget || 'N/A'}</strong></div>
-                            <div class="meta-item"><span>STATUS</span><strong style="color:var(--accent);">DELIVERED</strong></div>
+                            <div class="meta-item"><span>STATUS</span><strong style="color:${msg.is_completed ? '#4CAF50' : 'var(--accent)'};">${msg.is_completed ? 'COMPLETED' : 'PENDING'}</strong></div>
                         </div>
                         <div class="msg-content">${msg.message}</div>
-                        <div style="margin-top: 1.5rem; text-align: right;">
+                        <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                            <button type="button" class="action-btn-tactical" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => window.openUserDetail('${email}', '${fullName}'))">
+                                <i class="ph ${msg.is_completed ? 'ph-arrow-counter-clockwise' : 'ph-check'}"></i> 
+                                ${msg.is_completed ? 'REOPEN_MISSION' : 'MARK_COMPLETED'}
+                            </button>
                             <button type="button" class="action-icon-btn" onclick="window.deleteDbRecordMsg(${msg.id})">
                                 <i class="ph ph-trash"></i> PURGE_RECORD
                             </button>
@@ -448,10 +482,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="meta-item"><span>DATE_RECEIVED</span><strong>${date}</strong></div>
                         <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
                         <div class="meta-item"><span>BUDGET_VAL</span><strong>${msg.budget || 'N/A'}</strong></div>
+                        <div class="meta-item"><span>MISSION_STATUS</span><strong style="color:${msg.is_completed ? '#4CAF50' : 'var(--accent)'};">${msg.is_completed ? 'COMPLETED' : 'PENDING'}</strong></div>
                     </div>
                     <div class="msg-content" style="border:1px dashed rgba(255,255,255,0.1); padding: 1.5rem; background: rgba(0,0,0,0.3);">${msg.message}</div>
                     
-                    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
+                        <button type="button" class="action-btn-tactical" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => closeDbDetailPanel())">
+                            <i class="ph ${msg.is_completed ? 'ph-arrow-counter-clockwise' : 'ph-check'}"></i> 
+                            ${msg.is_completed ? 'REOPEN_MISSION' : 'MARK_COMPLETED'}
+                        </button>
                         <a href="mailto:${msg.email}" class="action-btn-tactical" style="text-decoration:none;"><i class="ph ph-envelope-simple"></i> REPLY_LINK</a>
                         <button type="button" class="action-icon-btn" style="padding: 0.6rem 1rem;" onclick="window.deleteDbRecordMsg(${msg.id})">
                             <i class="ph ph-trash"></i> DELETE
@@ -473,7 +512,9 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.innerHTML = '<div class="loading-state mono-label">SYNCHRONIZING RECORDS...</div>';
         
         try {
-            const res = await fetch(`/api/admin/${type}`);
+            const res = await fetch(`/api/admin/${type}`, {
+                credentials: 'include'
+            });
             const data = await res.json();
             
             if (countEl) countEl.textContent = data.length;
@@ -496,14 +537,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (type === 'messages') {
                     const encodedMsg = encodeURIComponent(JSON.stringify(item));
+                    const isComp = item.is_completed;
                     html += `
-                    <tr class="table-row-clickable">
-                        <td onclick="window.openMessageDetail('${encodedMsg}')">${date}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')">${item.name}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')">${item.email}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')">${item.project_type}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')" title="${item.message}">${item.message.substring(0,30)}...</td>
-                        <td>
+                    <tr class="table-row-clickable ${isComp ? 'completed-row' : ''}">
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${date}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.name}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.email}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.project_type}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" title="${item.message}" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.message.substring(0,30)}...</td>
+                        <td style="display:flex; gap: 0.5rem; align-items: center;">
+                            <button class="action-icon-btn" onclick="window.toggleMessageStatus(${item.id}, ${!isComp})" title="${isComp ? 'REOPEN' : 'COMPLETE'}" style="color: ${isComp ? '#4CAF50' : 'var(--accent)'}">
+                                <i class="ph ${isComp ? 'ph-check-circle' : 'ph-circle'}"></i>
+                            </button>
                             <button class="action-icon-btn" onclick="window.deleteDbRecordMsg(${item.id})"><i class="ph ph-trash"></i></button>
                         </td>
                     </tr>`;

@@ -408,6 +408,19 @@ app.delete('/api/admin/messages/:id', verifyToken, requireAdmin, async (req, res
     }
 });
 
+app.patch('/api/admin/messages/:id/status', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { is_completed } = req.body;
+        await dbAsync.run(
+            'UPDATE messages SET is_completed = ? WHERE id = ?',
+            [is_completed ? 1 : 0, req.params.id]
+        );
+        res.json({ message: 'Message status updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.delete('/api/admin/users/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
         await dbAsync.run('DELETE FROM users WHERE id = ?', [req.params.id]);
