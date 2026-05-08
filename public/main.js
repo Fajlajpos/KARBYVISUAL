@@ -791,8 +791,13 @@ function updateNavAuth(authenticated) {
     if (!navAuth) return;
 
     if (authenticated && currentUser) {
-        const firstName = currentUser.full_name.split(' ')[0];
+        console.log('DEBUG: User logged in:', currentUser); // Debugging
+        
+        // Handle both snake_case and camelCase from session
+        const fullName = currentUser.full_name || currentUser.fullName || 'User';
+        const firstName = fullName.split(' ')[0];
         const isAdmin = currentUser.role === 'admin';
+        
         window.isAdmin = isAdmin;
         document.body.classList.toggle('admin-enabled', isAdmin);
         
