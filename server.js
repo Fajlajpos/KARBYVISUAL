@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
+const sharp = require('sharp');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
@@ -21,23 +22,16 @@ const avatarDir = path.join(uploadDir, 'avatars');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
 
-// Multer Storage config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
-    }
+// Multer Storage config - Memory Storage for Sharp processing
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
 });
-const avatarStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, avatarDir),
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
-    }
+const uploadAvatar = multer({ 
+    storage: storage,
+    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
 });
-const upload = multer({ storage: storage });
-const uploadAvatar = multer({ storage: avatarStorage });
 
 // Middlewares
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }));
@@ -149,8 +143,33 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
         const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
 
         for (const file of req.files) {
-            const finalMediaUrl = '/uploads/' + file.filename;
-            const thumbnail_url = file.mimetype.startsWith('image') ? finalMediaUrl : null;
+            let finalMediaUrl = '';
+            let thumbnail_url = null;
+
+            if (file.mimetype.startsWith('image/')) {
+                // Process image with Sharp
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                const filename = uniqueSuffix + '.webp';
+                const outputPath = path.join(uploadDir, filename);
+
+                await sharp(file.buffer)
+                    .resize({ width: 2560, withoutEnlargement: true })
+                    .webp({ quality: 85 })
+                    .toFile(outputPath);
+
+                finalMediaUrl = '/uploads/' + filename;
+                thumbnail_url = finalMediaUrl;
+            } else {
+                // Fallback for non-images (if uploaded)
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                const ext = path.extname(file.originalname);
+                const filename = uniqueSuffix + ext;
+                const outputPath = path.join(uploadDir, filename);
+                fs.writeFileSync(outputPath, file.buffer);
+                
+                finalMediaUrl = '/uploads/' + filename;
+                thumbnail_url = null; // No thumb for video right now
+            }
 
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -245,7 +264,7 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
     try {
         console.log('--- TESTIMONIAL UPLOAD START ---');
         console.log('Body:', req.body);
-        console.log('File:', req.file ? req.file.filename : 'No avatar');
+        console.log('File uploaded:', !!req.file);
 
         const { clientName, project, quoteCS, quoteEN } = req.body;
         if (!clientName || !quoteCS) {
@@ -253,7 +272,29 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
             return res.status(400).json({ error: 'Client name and Czech quote are required' });
         }
 
-        const avatarUrl = req.file ? '/uploads/avatars/' + req.file.filename : null;
+        let avatarUrl = null;
+        
+        if (req.file) {
+            if (req.file.mimetype.startsWith('image/')) {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                const filename = uniqueSuffix + '.webp';
+                const outputPath = path.join(avatarDir, filename);
+
+                await sharp(req.file.buffer)
+                    .resize({ width: 800, withoutEnlargement: true })
+                    .webp({ quality: 85 })
+                    .toFile(outputPath);
+                
+                avatarUrl = '/uploads/avatars/' + filename;
+            } else {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                const ext = path.extname(req.file.originalname);
+                const filename = uniqueSuffix + ext;
+                const outputPath = path.join(avatarDir, filename);
+                fs.writeFileSync(outputPath, req.file.buffer);
+                avatarUrl = '/uploads/avatars/' + filename;
+            }
+        }
 
         await dbAsync.run(
             'INSERT INTO testimonials (client_name, project, quote, quote_en, avatar_url) VALUES (?, ?, ?, ?, ?)',

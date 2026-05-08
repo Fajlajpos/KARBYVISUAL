@@ -115,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         lightboxModal.classList.remove('active');
         lightboxMedia.innerHTML = '';
         if (window.toggleBodyLock) window.toggleBodyLock(false);
+        if (window.location.hash.startsWith('#work-')) {
+            history.replaceState(null, null, window.location.pathname);
+        }
     }
 
     // Body Scroll Lock Helper
@@ -275,9 +278,26 @@ async function loadPortfolio() {
         const res = await fetch('/api/portfolio');
         if (!res.ok) throw new Error('Failed to load portfolio');
         portfolioData = await res.json();
-        // We no longer render directly to a grid on home, we wait for folder clicks
+        // Check for direct link via hash
+        checkHashRouting();
     } catch (err) {
         console.error('Portfolio load error:', err);
+    }
+}
+
+function checkHashRouting() {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#work-')) {
+        const id = parseInt(hash.replace('#work-', ''), 10);
+        if (!isNaN(id)) {
+            const item = portfolioData.find(p => p.id === id);
+            if (item) {
+                const categoryItems = portfolioData.filter(p => p.category === item.category);
+                currentFolderItems = categoryItems;
+                currentLightboxIndex = categoryItems.findIndex(p => p.id === item.id);
+                openLightbox(item);
+            }
+        }
     }
 }
 
@@ -574,6 +594,9 @@ function openLightbox(item) {
     
     lightboxModal.classList.add('active');
     window.toggleBodyLock(true);
+    
+    // Update URL Hash for sharing and SEO
+    window.location.hash = 'work-' + item.id;
 }
 
 function navigateLightbox(direction) {
