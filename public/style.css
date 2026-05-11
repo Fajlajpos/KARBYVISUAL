@@ -371,7 +371,7 @@ body.modal-open {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 4vw;
-    z-index: 1000;
+    z-index: 9990;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -455,7 +455,6 @@ body.modal-open {
 .nav-link:hover {
     color: #fff;
     letter-spacing: 0.3em;
-    background: rgba(255, 255, 255, 0.03);
 }
 
 .nav-link:hover::before {
@@ -586,28 +585,6 @@ body.modal-open {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
-.admin-badge {
-    width: 6px;
-    height: 6px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #fff;
-    animation: pulse-live 2s infinite;
-}
-
-@keyframes pulse-live {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.4;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
 
 /* GLOBAL PERSISTENT BACKGROUND (REDO) */
 .global-site-bg {
@@ -1404,8 +1381,6 @@ body.modal-open {
     right: -12px;
     font-size: 1.8rem;
     color: #fff;
-    background: var(--bg-color);
-    padding: 6px;
     z-index: 12;
 }
 
@@ -1766,10 +1741,7 @@ body.modal-open {
     top: -12px;
     right: -12px;
     font-size: 1.8rem;
-    /* Larger corners */
     color: #fff;
-    background: var(--bg-color);
-    padding: 6px;
     z-index: 12;
 }
 
@@ -4055,13 +4027,6 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     gap: 0.5rem;
 }
 
-.admin-badge {
-    width: 8px;
-    height: 8px;
-    background: #ff4444;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #ff4444;
-}
 
 .logout-btn {
     background: transparent;
@@ -4579,7 +4544,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 9991;
+    z-index: 9989;
     display: flex;
 }
 

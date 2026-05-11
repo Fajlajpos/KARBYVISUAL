@@ -806,7 +806,6 @@ function updateNavAuth(authenticated) {
             adminBtns = `
                 <button id="nav-db-btn" class="btn-admin-db" data-cs="DATABÁZE" data-en="DATABASE" title="View Records"><i class="ph ph-database"></i> DATABASE</button>
                 <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PŘIDAT" data-en="ADD">ADD</span></button>
-                <div class="admin-badge"></div>
             `;
         }
         

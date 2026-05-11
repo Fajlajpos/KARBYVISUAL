@@ -316,39 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Live Preview Logic for Testimonials
-    const previewBtn = document.getElementById('preview-testimonial-btn');
-    const previewTarget = document.getElementById('preview-render-target');
-    const testimonialPreviewContainer = document.getElementById('testimonial-live-preview');
-
-    if (previewBtn && previewTarget) {
-        previewBtn.addEventListener('click', () => {
-            const formData = new FormData(testimonialForm);
-            const clientName = formData.get('clientName') || 'username';
-            const quote = (currentLang === 'cs' ? formData.get('quoteCS') : formData.get('quoteEN')) || '...';
-            const previewImg = document.getElementById('avatar-preview-img').src;
-            const avatarUrl = previewImg && previewImg !== window.location.href ? previewImg : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=111&color=fff&bold=true`;
-
-            testimonialPreviewContainer.classList.remove('hidden');
-            previewTarget.innerHTML = `
-                <div class="insta-dm-card reveal-fade" style="margin: 0 auto; transform: scale(1.1); transform-origin: top; animation: none; opacity: 1; visibility: visible;">
-                    <div class="dm-avatar-wrapper">
-                        <img src="${avatarUrl}" alt="Preview" class="dm-avatar">
-                    </div>
-                    <div class="dm-content-wrapper">
-                        <span class="dm-username">${clientName.toLowerCase().replace(/\s/g, '_')}</span>
-                        <div class="dm-bubble">
-                            <p class="dm-text">${quote}</p>
-                            <div class="dm-scanner-line"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Scroll to preview
-            testimonialPreviewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    }
 
     // Setup detail panel toggles globally for standalone DB Modal
     document.addEventListener('click', (e) => {
