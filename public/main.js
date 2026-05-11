@@ -326,8 +326,104 @@ window.loadFolders = async function() {
                     <span class="folder-name" data-cs="${f.title_cs}" data-en="${f.title_en}">${currentLang === 'cs' ? f.title_cs : f.title_en}</span>
                 `;
                 
+                let clickTimeout = null;
                 div.addEventListener('click', () => {
-                    openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en }, div);
+                    if (clickTimeout) {
+                        clearTimeout(clickTimeout);
+                        clickTimeout = null;
+                        return; // Handle via dblclick
+                    }
+                    clickTimeout = setTimeout(() => {
+                        openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en, id: f.id }, div);
+                        clickTimeout = null;
+                    }, 250);
+                });
+
+                div.addEventListener('dblclick', (e) => {
+                    if (window.isAdmin) {
+                        e.stopPropagation();
+                        if (clickTimeout) {
+                            clearTimeout(clickTimeout);
+                            clickTimeout = null;
+                        }
+                        
+                        const nameEl = div.querySelector('.folder-name');
+                        if (nameEl.querySelector('input')) return; // Already editing
+
+                        const originalCS = f.title_cs;
+                        const originalEN = f.title_en;
+
+                        nameEl.innerHTML = `
+                            <div class="folder-grid-rename" onclick="event.stopPropagation()">
+                                <input type="text" value="${originalCS}" class="edit-cs-input tactical-input-xs">
+                                <input type="text" value="${originalEN}" class="edit-en-input tactical-input-xs">
+                                <button class="save-grid-rename"><i class="ph ph-check"></i></button>
+                            </div>
+                        `;
+
+                        const saveBtn = nameEl.querySelector('.save-grid-rename');
+                        const inputs = nameEl.querySelectorAll('input');
+
+                        let isSaving = false;
+                        const performSave = async () => {
+                            if (isSaving) return;
+                            isSaving = true;
+
+                            const newCS = nameEl.querySelector('.edit-cs-input').value;
+                            const newEN = nameEl.querySelector('.edit-en-input').value;
+                            
+                            if (newCS && newEN && (newCS !== originalCS || newEN !== originalEN)) {
+                                try {
+                                    const res = await fetch(`/api/admin/folders/update/${f.id}`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
+                                    });
+                                    if (res.ok) {
+                                        showToast('FOLDER_RENAMED', 'success');
+                                        window.loadFolders();
+                                    } else {
+                                        const errData = await res.json().catch(() => ({}));
+                                        showToast(`RENAME_FAILED: ${res.status} ${errData.error || ''}`, 'error');
+                                        window.loadFolders();
+                                    }
+                                } catch (err) {
+                                    showToast('RENAME_NETWORK_ERROR', 'error');
+                                    window.loadFolders();
+                                }
+                            } else {
+                                window.loadFolders(); 
+                            }
+                        };
+
+                        inputs.forEach(input => {
+                            input.addEventListener('keydown', (ke) => {
+                                if (ke.key === 'Enter') {
+                                    ke.preventDefault();
+                                    performSave();
+                                }
+                                if (ke.key === 'Escape') {
+                                    ke.preventDefault();
+                                    window.loadFolders();
+                                }
+                            });
+                            input.addEventListener('blur', (be) => {
+                                setTimeout(() => {
+                                    if (!nameEl.contains(document.activeElement)) {
+                                        performSave();
+                                    }
+                                }, 200);
+                            });
+                        });
+
+                        saveBtn.onclick = (se) => {
+                            se.preventDefault();
+                            se.stopPropagation();
+                            performSave();
+                        };
+                        
+                        inputs[0].focus();
+                    }
                 });
                 
                 grid.appendChild(div);
@@ -368,7 +464,89 @@ function openFolderModal(category, titles, originEl) {
 
     // Update Title
     const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
-    titleEl.textContent = `[ ${displayTitle} ]`;
+    titleEl.innerHTML = `<span class="title-text">[ ${displayTitle} ]</span>`;
+    
+    // Admin Rename Feature (Double Click & Pencil Icon)
+    if (window.isAdmin && titles.id) {
+        const titleText = titleEl.querySelector('.title-text');
+        titleText.style.cursor = 'pointer';
+        titleText.title = "DOUBLE_CLICK_TO_RENAME";
+        
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'btn-tactical-subtle';
+        renameBtn.style.marginLeft = '1rem';
+        renameBtn.innerHTML = '<i class="ph ph-pencil-simple"></i>';
+        renameBtn.title = "RENAME_FOLDER";
+        
+        const startRename = () => {
+            const originalContent = titleEl.innerHTML;
+            titleEl.innerHTML = `
+                <div class="folder-rename-mini-menu">
+                    <input type="text" class="rename-cs-input tactical-input-sm" value="${titles.cs}" placeholder="CZ NAME">
+                    <input type="text" class="rename-en-input tactical-input-sm" value="${titles.en}" placeholder="EN NAME">
+                    <button id="save-rename" class="btn-tactical-subtle" style="color:#4CAF50;"><i class="ph ph-check"></i></button>
+                    <button id="cancel-rename" class="btn-tactical-subtle"><i class="ph ph-x"></i></button>
+                </div>
+            `;
+            
+            titleEl.querySelector('#cancel-rename').onclick = () => {
+                openFolderModal(category, titles, originEl); // Reload modal state
+            };
+            
+            let isSaving = false;
+            const saveAction = async () => {
+                if (isSaving) return;
+                const newCS = titleEl.querySelector('.rename-cs-input').value;
+                const newEN = titleEl.querySelector('.rename-en-input').value;
+                
+                if (newCS && newEN) {
+                    isSaving = true;
+                    try {
+                        const res = await fetch(`/api/admin/folders/update/${titles.id}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
+                        });
+                        if (res.ok) {
+                            showToast('FOLDER_RENAMED', 'success');
+                            titles.cs = newCS;
+                            titles.en = newEN;
+                            openFolderModal(category, titles, originEl);
+                            if (window.loadFolders) window.loadFolders();
+                        } else {
+                            const errData = await res.json().catch(() => ({}));
+                            showToast(`RENAME_FAILED: ${res.status} ${errData.error || ''}`, 'error');
+                            isSaving = false;
+                        }
+                    } catch (err) {
+                        showToast('RENAME_NETWORK_ERROR', 'error');
+                        isSaving = false;
+                    }
+                }
+            };
+
+            const inputs = titleEl.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('keydown', (ke) => {
+                    if (ke.key === 'Enter') saveAction();
+                    if (ke.key === 'Escape') openFolderModal(category, titles, originEl);
+                });
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        if (!titleEl.contains(document.activeElement)) {
+                            saveAction();
+                        }
+                    }, 150);
+                });
+            });
+
+            titleEl.querySelector('#save-rename').onclick = saveAction;
+        };
+
+        renameBtn.onclick = startRename;
+        titleText.ondblclick = startRename;
+        titleEl.appendChild(renameBtn);
+    }
 
     // Filter Items (Standardized Categories)
     let filtered = portfolioData.filter(item => {
@@ -816,7 +994,7 @@ function updateNavAuth(authenticated) {
                     <i class="ph ph-user-circle" style="font-size: 1.1rem; opacity: 0.7;"></i>
                     <span style="letter-spacing: 1px;">${firstName.toUpperCase()}</span>
                 </div>
-                <button class="logout-btn auth-btn" id="main-logout-btn" style="padding: 6px 14px; font-size: 0.65rem;">LOGOUT</button>
+                <button class="btn-logout-tactical" id="main-logout-btn"><i class="ph ph-power"></i> LOGOUT</button>
             </div>
         `;
     } else {

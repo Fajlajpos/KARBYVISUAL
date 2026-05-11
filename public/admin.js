@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div class="mono-label" style="opacity:0.6; font-size: 0.6rem;">ID: ${f.category_id}</div>
                                     <div style="font-weight: 500;">CS: ${f.title_cs} | EN: ${f.title_en}</div>
                                 </div>
-                                <button type="button" class="action-icon-btn" onclick="window.deleteFolder(${f.id})"><i class="ph ph-trash"></i> DELETE</button>
+                                <button type="button" class="action-btn-tactical btn-danger-tactical" onclick="window.deleteFolder(${f.id})"><i class="ph ph-trash"></i> DELETE</button>
                             </div>
                         `;
                     });
@@ -410,15 +410,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="meta-item"><span>DATE</span><strong>${date}</strong></div>
                             <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
                             <div class="meta-item"><span>BUDGET_CLASS</span><strong>${msg.budget || 'N/A'}</strong></div>
-                            <div class="meta-item"><span>STATUS</span><strong style="color:${msg.is_completed ? '#4CAF50' : 'var(--accent)'};">${msg.is_completed ? 'COMPLETED' : 'PENDING'}</strong></div>
+
                         </div>
                         <div class="msg-content">${msg.message}</div>
                         <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                            <button type="button" class="action-btn-tactical" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => window.openUserDetail('${email}', '${fullName}'))">
+                            <button type="button" class="action-btn-tactical btn-status-toggle" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => window.openUserDetail('${email}', '${fullName}'))">
                                 <i class="ph ${msg.is_completed ? 'ph-arrow-counter-clockwise' : 'ph-check'}"></i> 
                                 ${msg.is_completed ? 'REOPEN_MISSION' : 'MARK_COMPLETED'}
                             </button>
-                            <button type="button" class="action-icon-btn" onclick="window.deleteDbRecordMsg(${msg.id})">
+                            <button type="button" class="action-btn-tactical btn-danger-tactical" onclick="window.deleteDbRecordMsg(${msg.id})">
                                 <i class="ph ph-trash"></i> PURGE_RECORD
                             </button>
                         </div>
@@ -449,17 +449,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="meta-item"><span>DATE_RECEIVED</span><strong>${date}</strong></div>
                         <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
                         <div class="meta-item"><span>BUDGET_VAL</span><strong>${msg.budget || 'N/A'}</strong></div>
-                        <div class="meta-item"><span>MISSION_STATUS</span><strong style="color:${msg.is_completed ? '#4CAF50' : 'var(--accent)'};">${msg.is_completed ? 'COMPLETED' : 'PENDING'}</strong></div>
+
                     </div>
                     <div class="msg-content" style="border:1px dashed rgba(255,255,255,0.1); padding: 1.5rem; background: rgba(0,0,0,0.3);">${msg.message}</div>
                     
                     <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
-                        <button type="button" class="action-btn-tactical" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => closeDbDetailPanel())">
+                        <button type="button" class="action-btn-tactical btn-status-toggle" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => closeDbDetailPanel())">
                             <i class="ph ${msg.is_completed ? 'ph-arrow-counter-clockwise' : 'ph-check'}"></i> 
                             ${msg.is_completed ? 'REOPEN_MISSION' : 'MARK_COMPLETED'}
                         </button>
                         <a href="mailto:${msg.email}" class="action-btn-tactical" style="text-decoration:none;"><i class="ph ph-envelope-simple"></i> REPLY_LINK</a>
-                        <button type="button" class="action-icon-btn" style="padding: 0.6rem 1rem;" onclick="window.deleteDbRecordMsg(${msg.id})">
+                        <button type="button" class="action-btn-tactical btn-danger-tactical" style="padding: 0.6rem 1rem;" onclick="window.deleteDbRecordMsg(${msg.id})">
                             <i class="ph ph-trash"></i> DELETE
                         </button>
                     </div>
@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.project_type}</td>
                         <td onclick="window.openMessageDetail('${encodedMsg}')" title="${item.message}" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.message.substring(0,30)}...</td>
                         <td style="display:flex; gap: 0.5rem; align-items: center;">
-                            <button class="action-icon-btn" onclick="window.toggleMessageStatus(${item.id}, ${!isComp})" title="${isComp ? 'REOPEN' : 'COMPLETE'}" style="color: ${isComp ? '#4CAF50' : 'var(--accent)'}">
+                            <button class="action-icon-btn btn-status-toggle" onclick="window.toggleMessageStatus(${item.id}, ${!isComp})" title="${isComp ? 'REOPEN' : 'COMPLETE'}" style="color: ${isComp ? '#4CAF50' : 'var(--accent)'}">
                                 <i class="ph ${isComp ? 'ph-check-circle' : 'ph-circle'}"></i>
                             </button>
                             <button class="action-icon-btn" onclick="window.deleteDbRecordMsg(${item.id})"><i class="ph ph-trash"></i></button>

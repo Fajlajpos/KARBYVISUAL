@@ -176,6 +176,49 @@ body.modal-open {
     font-size: 2rem;
     letter-spacing: -0.02em;
     margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.btn-tactical-subtle {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+}
+
+.btn-tactical-subtle:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.folder-rename-mini-menu {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tactical-input-sm {
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 8px 15px;
+    outline: none;
+    width: 180px;
+}
+
+.tactical-input-sm:focus {
+    border-color: var(--accent);
 }
 
 .registration-form {
@@ -2072,6 +2115,42 @@ body.admin-enabled .delete-btn {
     text-transform: none;
     letter-spacing: 0.12em;
     transition: color 0.3s;
+}
+
+.folder-grid-rename {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.tactical-input-xs {
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    padding: 4px 6px;
+    width: 130px;
+    text-align: center;
+    outline: none;
+}
+
+.save-grid-rename {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 4px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.save-grid-rename:hover {
+    background: var(--accent);
 }
 
 .folder-item:hover {
@@ -4743,19 +4822,29 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 .action-icon-btn {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.3rem 0.5rem;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: #ff4444;
     cursor: pointer;
     transition: all 0.3s;
     margin-left: 0.5rem;
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
 }
 
 .action-icon-btn:hover {
     background: #ff4444;
     color: #000;
     border-color: #ff4444;
+}
+
+.btn-status-toggle:hover {
+    background: #4CAF50 !important;
+    border-color: #4CAF50 !important;
+    color: #fff !important;
 }
 
 /* STANDALONE ADMIN DB MODAL */
@@ -5256,10 +5345,57 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     font-size: 0.7rem;
     cursor: pointer;
     transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
 }
 
 .action-btn-tactical:hover {
     background: var(--accent);
+}
+
+.btn-danger-tactical {
+    background: rgba(255, 68, 68, 0.1) !important;
+    color: #ff4444 !important;
+    border: 1px solid rgba(255, 68, 68, 0.2) !important;
+}
+
+.btn-danger-tactical:hover {
+    background: #ff4444 !important;
+    color: #000 !important;
+    border-color: #ff4444 !important;
+}
+
+.btn-logout-tactical {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    padding: 6px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0;
+}
+
+.btn-logout-tactical:hover {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: rgba(255, 68, 68, 0.4);
+    color: #ff4444;
+}
+
+.btn-logout-tactical i {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.btn-logout-tactical:hover i {
+    opacity: 1;
 }
 
 .settings-panel {

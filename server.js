@@ -250,6 +250,8 @@ app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
 });
 
 
+
+
 // 4. Testimonials (Public)
 app.get('/api/testimonials', async (req, res) => {
     try {
@@ -417,6 +419,25 @@ app.patch('/api/admin/messages/:id/status', verifyToken, requireAdmin, async (re
         );
         res.json({ message: 'Message status updated successfully' });
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/folders/update/:id', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { titleCS, titleEN } = req.body;
+        if (!titleCS || !titleEN) return res.status(400).json({ error: 'Titles are required' });
+        
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+
+        await dbAsync.run(
+            'UPDATE folders SET title_cs = ?, title_en = ? WHERE id = ?',
+            [titleCS, titleEN, id]
+        );
+        res.json({ message: 'Folder updated successfully' });
+    } catch (err) {
+        console.error('FOLDER_UPDATE_ERROR:', err);
         res.status(500).json({ error: err.message });
     }
 });
