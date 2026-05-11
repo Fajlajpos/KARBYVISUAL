@@ -210,7 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.deleteFolder = async function(id) {
-        if (!confirm('DELETE THIS FOLDER ENTIRELY?')) return;
+        const confirmed = await window.customConfirm('OPRAVDU SMAZAT TUTO SLOŽKU I S JEJÍM OBSAHEM?');
+        if (!confirmed) return;
         try {
             const res = await fetch(`/api/folders/${id}`, { method: 'DELETE' });
             if (res.ok) {
@@ -364,7 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleMessageStatus = toggleMessageStatus;
 
     async function deleteDbRecord(type, id) {
-        if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS ${type.toUpperCase()}?`)) return;
+        const confirmed = await window.customConfirm(`OPRAVDU SMAZAT TENTO ZÁZNAM (${type.toUpperCase()})?`);
+        if (!confirmed) return;
         try {
             const res = await fetch(`/api/admin/${type}/${id}`, { 
                 method: 'DELETE',
@@ -703,7 +705,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add delete listeners
             list.querySelectorAll('.delete-review-btn').forEach(btn => {
                 btn.onclick = async () => {
-                    if (!confirm('PERMANENTLY DELETE THIS REVIEW?')) return;
+                    const confirmed = await window.customConfirm('OPRAVDU SMAZAT TUTO RECENZI?');
+                    if (!confirmed) return;
                     const id = btn.dataset.id;
                     try {
                         const delRes = await fetch(`/api/testimonials/${id}`, { 

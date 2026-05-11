@@ -93,6 +93,7 @@ body.modal-open {
     filter: blur(150px);
     border-radius: 50%;
     animation: floating-blur 20s ease-in-out infinite alternate;
+    will-change: transform;
 }
 
 .bb-1 {
@@ -693,10 +694,8 @@ body.modal-open {
     flex-direction: column;
     gap: 1.2rem;
     padding: 1.5rem 1.2rem;
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
     opacity: 0;
     animation: simple-reveal 1s ease forwards;
@@ -1330,12 +1329,11 @@ body.modal-open {
 
 .node-element {
     position: absolute;
-    background: rgba(10, 10, 10, 0.8);
+    background: rgba(10, 10, 10, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 4px;
     padding: 0.8rem;
     min-width: 140px;
-    backdrop-filter: blur(5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
@@ -3399,7 +3397,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
             transparent 100%);
 }
 
-/* Luxury Blur Transition with smooth mask-based falloff */
+/* Optimized: Removed backdrop-filter for performance, using simple gradients instead */
 .reviews-marquee-viewport::before,
 .reviews-marquee-viewport::after {
     content: '';
@@ -3407,24 +3405,16 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     left: 0;
     right: 0;
     height: 250px;
-    /* Increased height for smoother transition */
     z-index: 20;
     pointer-events: none;
-    backdrop-filter: blur(12px);
-    /* Slightly stronger blur for premium feel */
-    -webkit-backdrop-filter: blur(12px);
 }
 
 .reviews-marquee-viewport::before {
     top: 0;
-    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
-    mask-image: linear-gradient(to bottom, black, transparent);
 }
 
 .reviews-marquee-viewport::after {
     bottom: 0;
-    -webkit-mask-image: linear-gradient(to top, black, transparent);
-    mask-image: linear-gradient(to top, black, transparent);
 }
 
 #reviews-grid {
@@ -3436,7 +3426,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     margin-left: auto;
     margin-right: auto;
     padding: 2rem 0;
-    /* Minimal padding for continuous flow in marquee */
+    will-change: transform;
 }
 
 .insta-dm-card {
@@ -3486,14 +3476,10 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 }
 
 .dm-bubble {
-    background: rgba(255, 255, 255, 0.12);
-    /* Increased contrast further */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    /* Crisper border */
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 1.2rem 1.8rem;
     border-radius: 22px 22px 22px 4px;
-    backdrop-filter: blur(15px);
-    /* Stronger blur for luxury feel */
     position: relative;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
@@ -3732,6 +3718,80 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     flex-direction: column;
     overflow: hidden;
     position: relative;
+}
+
+/* CUSTOM CONFIRM MODAL */
+.confirm-modal .modal-overlay {
+    background: rgba(0,0,0,0.9);
+}
+
+/* SIMPLE CONFIRM MODAL */
+.confirm-panel-simple {
+    max-width: 400px !important;
+    padding: 0 !important;
+    border: 1px solid #333;
+    background: #000 !important;
+    border-radius: 0;
+}
+
+.confirm-header-simple {
+    padding: 1.5rem;
+    border-bottom: 1px solid #111;
+    text-align: center;
+}
+
+.confirm-title {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: #888;
+}
+
+.confirm-body-simple {
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.confirm-body-simple p {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: #fff;
+    margin: 0;
+}
+
+.confirm-footer-simple {
+    display: flex;
+    border-top: 1px solid #111;
+}
+
+.confirm-footer-simple button {
+    flex: 1;
+    padding: 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: transparent;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+.confirm-btn-secondary {
+    border-right: 1px solid #111 !important;
+}
+
+.confirm-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.confirm-btn-primary {
+    color: var(--accent) !important;
+}
+
+.confirm-btn-primary:hover {
+    background: #fff;
+    color: #000 !important;
 }
 
 .dashboard-modal .modal-header {
@@ -4021,7 +4081,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 .auth-modal {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 30000;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -4120,7 +4180,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 .auth-modal {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 30000;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -28,7 +28,6 @@ lenis.on('scroll', ScrollTrigger.update)
 gsap.ticker.add((time)=>{
   lenis.raf(time * 1000)
 })
-gsap.ticker.lagSmoothing(0)
 
 
 // ==========================================================================
@@ -195,7 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 y: -totalHeight,
                 duration: 25, 
                 ease: "none",
-                repeat: -1
+                repeat: -1,
+                force3D: true, // GPU Acceleration
+                lazy: true
             });
 
             // Interactive control - using more direct control

@@ -630,7 +630,8 @@ function openFolderModal(category, titles, originEl) {
             if (window.isAdmin) {
                 div.querySelector('.delete-btn').addEventListener('click', async (e) => {
                     e.stopPropagation();
-                    if (!confirm('DELETE THIS ITEM PERMANENTLY?')) return;
+                    const confirmed = await window.customConfirm('OPRAVDU SMAZAT TENTO ZÁZNAM?');
+                    if (!confirmed) return;
                     
                     try {
                         const res = await fetch(`/api/portfolio/${item.id}`, { method: 'DELETE' });
@@ -1104,11 +1105,16 @@ function initAuthUI() {
         // --- DELETE ACTIONS ---
         const deleteBtn = target.closest('.delete-btn');
         if (deleteBtn && window.isAdmin) {
+            e.preventDefault();
+            e.stopPropagation();
             const itemId = deleteBtn.dataset.id;
-            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'PERMANENTLY DELETE THIS RECORD?';
-            if (confirm(confirmMsg)) {
-                deletePortfolioItem(itemId, deleteBtn.closest('.port-item'));
-            }
+            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'REALLY DELETE THIS RECORD?';
+            
+            window.customConfirm(confirmMsg).then(confirmed => {
+                if (confirmed) {
+                    deletePortfolioItem(itemId, deleteBtn.closest('.port-item'));
+                }
+            });
         }
     });
 
@@ -1179,6 +1185,42 @@ function closeAuthModal(id) {
     }
 }
 window.closeAuthModal = closeAuthModal;
+
+function customConfirm(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('custom-confirm-modal');
+        const msgEl = document.getElementById('confirm-message');
+        const confirmBtn = document.getElementById('confirm-action');
+        const cancelBtn = document.getElementById('confirm-cancel');
+        const overlay = modal.querySelector('.modal-overlay');
+
+        if (!modal) {
+            resolve(confirm(message));
+            return;
+        }
+
+        msgEl.textContent = message.toUpperCase();
+        modal.classList.add('active');
+        if (window.toggleBodyLock) window.toggleBodyLock(true);
+
+        const cleanup = (result) => {
+            modal.classList.remove('active');
+            if (window.toggleBodyLock) window.toggleBodyLock(false);
+            confirmBtn.removeEventListener('click', onConfirm);
+            cancelBtn.removeEventListener('click', onCancel);
+            overlay.removeEventListener('click', onCancel);
+            resolve(result);
+        };
+
+        function onConfirm() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+
+        confirmBtn.addEventListener('click', onConfirm);
+        cancelBtn.addEventListener('click', onCancel);
+        overlay.addEventListener('click', onCancel);
+    });
+}
+window.customConfirm = customConfirm;
 
 function switchModals(from, to) {
     if (window.transitionAuthPanels) {
