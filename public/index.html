@@ -867,9 +867,17 @@
                                                         data-en="FILE_DEPOSITORY">DEPOZITÁŘ_SOUBORŮ</span>
                                                 </div>
                                                 <div id="p-preview-container" class="preview-container hidden">
-                                                    <div class="scanner-line"></div>
-                                                    <img id="p-preview-img" src="" alt="Preview">
+                                                    <div id="p-preview-stack" class="preview-stack">
+                                                        <!-- Stacked items injected via JS -->
+                                                    </div>
                                                 </div>
+                                            </div>
+                                            <div id="manage-files-btn-wrap" class="hidden" style="margin-top: 1rem;">
+                                                <button type="button" id="open-file-manager-btn" class="mini-manage-btn" style="width: 100%;">
+                                                    <i class="ph ph-squares-four"></i>
+                                                    <span data-cs="[ SPRÁVA_MÉDIÍ ]" data-en="[ MANAGE_MEDIA ]">[ SPRÁVA_MÉDIÍ ]</span>
+                                                    <span id="p-stack-badge" class="mono-label" style="margin-left: 10px; color: #000; background: rgba(0,0,0,0.1); padding: 1px 6px; border-radius: 2px;">0</span>
+                                                </button>
                                             </div>
                                         </div>
 
@@ -1167,6 +1175,39 @@
             <div class="confirm-footer-simple">
                 <button id="confirm-cancel" class="confirm-btn-secondary">ZRUŠIT</button>
                 <button id="confirm-action" class="confirm-btn-primary">POTVRDIT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simplified Large File Manager Modal -->
+    <div id="file-manager-modal" class="auth-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content bento-modal textured-bg" style="max-width: 1000px; width: 90vw; height: 80vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div class="header-main">
+                    <span class="mono-label">[ BATCH_MANAGER ]</span>
+                    <h2 data-cs="VYBRANÉ_SOUBORY" data-en="SELECTED_FILES">VYBRANÉ_SOUBORY</h2>
+                </div>
+                <div class="header-status">
+                    <span class="close-btn" onclick="closeFileManager()"><i class="ph ph-x"></i></span>
+                </div>
+            </div>
+            
+            <div class="fm-body scrollbar-minimal" style="flex: 1; padding: 1.5rem; overflow-y: auto;" data-lenis-prevent>
+                <div id="fm-gallery-grid" class="preview-gallery grid-simple">
+                    <!-- Items injected via JS -->
+                </div>
+            </div>
+            
+            <div class="fm-footer-simple" style="padding: 1.5rem 2.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05);">
+                <button type="button" class="btn-purge-all" onclick="clearAllFiles()">
+                    <i class="ph ph-trash"></i>
+                    <span data-cs="VYMAZAT VŠE" data-en="CLEAR ALL">VYMAZAT VŠE</span>
+                </button>
+                <button type="button" class="btn-cad-secondary" onclick="closeFileManager()" style="padding: 1rem 4rem;">
+                    <div class="cad-focus-frame"><span></span><span></span><span></span><span></span></div>
+                    <span class="cad-label" data-cs="HOTOVO" data-en="DONE">HOTOVO</span>
+                </button>
             </div>
         </div>
     </div>

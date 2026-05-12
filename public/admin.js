@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Settings elements
     const heroVidInput = document.getElementById('hero-vid-url');
     const saveHeroBtn = document.getElementById('save-hero-vid-btn');
+    
+    // Global state for portfolio uploads
+    let selectedFiles = [];
 
     // Portfolio Form toggles
     const mediaTypeSelect = document.getElementById('p-media-type');
@@ -24,6 +27,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Expose functions to window for global access
     window.openDashboard = openDashboard;
     window.closeDashboard = closeDashboard;
+    window.openFileManager = openFileManager;
+    window.closeFileManager = closeFileManager;
+    window.clearAllFiles = clearAllFiles;
+
+    // Global ESC key listener to close modals
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const fmModal = document.getElementById('file-manager-modal');
+            if (fmModal && fmModal.classList.contains('active')) {
+                closeFileManager();
+            }
+        }
+    });
+
+    function clearAllFiles() {
+        selectedFiles = [];
+        renderPortfolioPreview();
+        closeFileManager();
+    }
+
+    function openFileManager() {
+        const modal = document.getElementById('file-manager-modal');
+        if (modal) {
+            modal.classList.add('active');
+            renderPortfolioPreview(); // Refresh view
+        }
+    }
+
+    function closeFileManager() {
+        const modal = document.getElementById('file-manager-modal');
+        if (modal) modal.classList.remove('active');
+    }
 
     function openDashboard() {
         const modal = document.getElementById('admin-dashboard-modal');
@@ -235,6 +270,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 vimeoUploadSection.classList.remove('hidden');
                 document.getElementById('p-media').required = false;
                 document.getElementById('p-vimeo').required = true;
+                selectedFiles = []; // Clear local file selection when switching to URL mode
+                clearPortfolioPreview();
             } else {
                 vimeoUploadSection.classList.add('hidden');
                 fileUploadSection.classList.remove('hidden');
@@ -253,6 +290,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const formData = new FormData(portfolioForm);
             
+            // Handle multiple files from local state if using file upload
+            if (mediaTypeSelect.value !== 'vimeo') {
+                formData.delete('media'); // Remove the standard file input data
+                selectedFiles.forEach(file => {
+                    formData.append('media', file);
+                });
+            }
+            
             try {
                 const res = await fetch('/api/portfolio', {
                     method: 'POST',
@@ -266,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showSuccessAnimation(successMsg);
                     
                     portfolioForm.reset();
+                    selectedFiles = []; // Clear local state
                     clearPortfolioPreview();
                     if (typeof loadPortfolio === 'function') loadPortfolio();
                 } else {
@@ -544,72 +590,132 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropzone = document.getElementById('p-dropzone');
     const mediaInput = document.getElementById('p-media');
     const portfolioPreviewContainer = document.getElementById('p-preview-container');
-    const previewImg = document.getElementById('p-preview-img');
 
-    const metaInfo = document.getElementById('p-meta-info');
+
+
+
 
     if (dropzone && mediaInput) {
-        // Drag feedback
+        // ... drag feedback code remains same ...
         mediaInput.addEventListener('dragenter', () => dropzone.classList.add('drag-over'));
         mediaInput.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
         mediaInput.addEventListener('drop', () => dropzone.classList.remove('drag-over'));
 
         mediaInput.addEventListener('change', (e) => {
-            const files = e.target.files;
+            const files = Array.from(e.target.files);
             if (files && files.length > 0) {
-                // Metadata
-                let totalSize = 0;
-                let imageCount = 0;
-                let videoCount = 0;
-                
-                portfolioPreviewContainer.innerHTML = '<div class="scanner-line"></div>'; // Reset
-                const galleryWrapper = document.createElement('div');
-                galleryWrapper.className = 'preview-gallery';
-                portfolioPreviewContainer.appendChild(galleryWrapper);
-
-                Array.from(files).forEach((file, index) => {
-                    totalSize += file.size;
-                    if (file.type.startsWith('image/')) imageCount++;
-                    else videoCount++;
-
-                    // Create Small Preview
-                    const thumb = document.createElement('div');
-                    thumb.className = 'preview-thumb';
-                    if (file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = (re) => { thumb.innerHTML = `<img src="${re.target.result}">`; };
-                        reader.readAsDataURL(file);
-                    } else {
-                        thumb.innerHTML = `<div class="video-placeholder"><i class="ph ph-video-camera"></i></div>`;
-                    }
-                    galleryWrapper.appendChild(thumb);
+                // Add unique ID to each file to track them in DOM without flicker
+                const filesWithId = files.map(f => {
+                    f._id = Math.random().toString(36).substr(2, 9);
+                    return f;
                 });
-
-                const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
-                if (metaInfo) {
-                    metaInfo.innerHTML = `<span>BATCH: ${files.length} ITEMS</span><span>TOTAL: ${totalSizeMB} MB</span>`;
-                }
-
-                portfolioPreviewContainer.classList.remove('hidden');
-                
-                // Re-add status overlay
-                const statusOverlay = document.createElement('div');
-                statusOverlay.className = 'preview-overlay';
-                statusOverlay.innerHTML = `
-                    <div class="meta-info">${metaInfo.innerHTML}</div>
-                    <div class="status-ready"><i class="ph ph-check-circle"></i> DATA_ARRAY_READY</div>
-                `;
-                portfolioPreviewContainer.appendChild(statusOverlay);
-
-            } else {
-                clearPortfolioPreview();
+                selectedFiles = [...selectedFiles, ...filesWithId];
+                renderPortfolioPreview();
+                mediaInput.value = '';
             }
         });
+
+        const openFmBtn = document.getElementById('open-file-manager-btn');
+        if (openFmBtn) openFmBtn.onclick = openFileManager;
+    }
+
+    function renderPortfolioPreview() {
+        if (!portfolioPreviewContainer) return;
+        
+        const previewStack = document.getElementById('p-preview-stack');
+        const stackBadge = document.getElementById('p-stack-badge');
+        const manageBtnWrap = document.getElementById('manage-files-btn-wrap');
+        const fmGrid = document.getElementById('fm-gallery-grid');
+
+        if (selectedFiles.length === 0) {
+            clearPortfolioPreview();
+            closeFileManager();
+            if (fmGrid) fmGrid.innerHTML = '';
+            return;
+        }
+
+        // 1. Update Dropzone Stack (This is small, full re-render is fine and avoids complexity)
+        portfolioPreviewContainer.classList.remove('hidden');
+        if (manageBtnWrap) manageBtnWrap.classList.remove('hidden');
+        if (stackBadge) stackBadge.textContent = selectedFiles.length;
+
+        if (previewStack) {
+            previewStack.innerHTML = '';
+            const stackFiles = selectedFiles.slice(-3);
+            stackFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'stack-item';
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    const reader = new FileReader();
+                    reader.onload = (re) => { img.src = re.target.result; };
+                    reader.readAsDataURL(file);
+                    item.appendChild(img);
+                } else {
+                    item.innerHTML = '<i class="ph ph-video-camera"></i>';
+                }
+                previewStack.appendChild(item);
+                const offset = (index - 1) * 10;
+                const rot = (index - 1) * 3;
+                gsap.set(item, { x: offset, rotation: rot, zIndex: index + 10 });
+            });
+        }
+
+        // 2. Smart Update for Full Grid (Avoids Flicker)
+        if (fmGrid) {
+            // Remove items that are no longer in selectedFiles
+            const currentIds = selectedFiles.map(f => f._id);
+            Array.from(fmGrid.children).forEach(child => {
+                if (!currentIds.includes(child.dataset.fileId)) {
+                    child.remove();
+                }
+            });
+
+            // Add new items
+            selectedFiles.forEach((file, index) => {
+                let existing = fmGrid.querySelector(`[data-file-id="${file._id}"]`);
+                
+                if (!existing) {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'preview-thumb';
+                    thumb.dataset.fileId = file._id;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'preview-remove';
+                    removeBtn.innerHTML = '<i class="ph ph-x"></i>';
+                    removeBtn.onclick = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        thumb.classList.add('removing');
+                        setTimeout(() => {
+                            selectedFiles = selectedFiles.filter(f => f._id !== file._id);
+                            renderPortfolioPreview();
+                        }, 200);
+                    };
+                    thumb.appendChild(removeBtn);
+
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        const reader = new FileReader();
+                        reader.onload = (re) => { img.src = re.target.result; };
+                        reader.readAsDataURL(file);
+                        thumb.appendChild(img);
+                    } else {
+                        thumb.innerHTML += `<div class="video-placeholder-lg"><i class="ph ph-video-camera"></i></div>`;
+                    }
+                    fmGrid.appendChild(thumb);
+                }
+            });
+        }
     }
 
     function clearPortfolioPreview() {
+        selectedFiles = [];
+        const manageBtnWrap = document.getElementById('manage-files-btn-wrap');
+        if (manageBtnWrap) manageBtnWrap.classList.add('hidden');
         if (portfolioPreviewContainer) {
-            portfolioPreviewContainer.innerHTML = '<div class="scanner-line"></div>';
             portfolioPreviewContainer.classList.add('hidden');
         }
     }
