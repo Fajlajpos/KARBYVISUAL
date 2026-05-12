@@ -65,21 +65,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // Smoothly fade out the items first for extra polish
             tl.to("#folder-items-grid .reveal-fade", {
                 opacity: 0,
-                y: 10,
-                duration: 0.2,
-                stagger: 0.03,
+                y: 15,
+                scale: 0.95,
+                duration: 0.3,
+                stagger: {
+                    each: 0.02,
+                    from: "end"
+                },
                 ease: "power2.in"
             })
             .to(modalContent, {
-                scale: 0.8,
+                scale: 0.9,
                 opacity: 0,
-                duration: 0.55,
-                ease: "back.in(1.2)"
-            }, "-=0.1")
+                duration: 0.5,
+                ease: "expo.in"
+            }, "-=0.15")
             .to(folderModal.querySelector('.modal-overlay'), {
                 opacity: 0,
                 duration: 0.4
-            }, "-=0.45");
+            }, "-=0.4");
         }
     };
 
@@ -563,13 +567,16 @@ function openFolderModal(category, titles, originEl) {
     });
 
     currentFolderItems = filtered;
-    grid.innerHTML = '';
+    
+    // Use DocumentFragment for better performance and fluidity
+    const fragment = document.createDocumentFragment();
 
     if (filtered.length > 0) {
         filtered.forEach(item => {
             const div = document.createElement('div');
             div.className = 'port-item reveal-fade active';
             div.style.opacity = 0;
+            div.style.transform = 'translateY(30px) scale(0.92)'; // Prepare for GSAP fluid entry
             
             let adminHtml = '';
             if (window.isAdmin) {
@@ -585,8 +592,8 @@ function openFolderModal(category, titles, originEl) {
 
             if (isVideo && !url.includes('vimeo') && !url.includes('youtube') && !url.includes('youtu.be')) {
                 mediaHtml = `
-                    <div class="port-video-wrap">
-                        <video src="${item.media_url}" muted loop playsinline class="port-video-preview"></video>
+                    <div class="port-video-wrap img-loading-trigger">
+                        <video src="${item.media_url}" muted loop playsinline class="port-video-preview img-reveal-hidden" onloadeddata="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')"></video>
                         <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
                     </div>
                 `;
@@ -605,8 +612,10 @@ function openFolderModal(category, titles, originEl) {
                 }
 
                 mediaHtml = `
-                    <div class="port-img-wrap">
-                        <img src="${displayThumb}" alt="${item.title}" class="port-img" loading="lazy" onerror="this.src='/assets/kolaz_v5.jpg'">
+                    <div class="port-img-wrap img-loading-trigger">
+                        <img src="${displayThumb}" alt="${item.title}" class="port-img img-reveal-hidden" loading="lazy" 
+                             onload="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')" 
+                             onerror="this.src='/assets/kolaz_v5.jpg'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
                         ${isVideo ? '<div class="video-grid-overlay"><i class="ph ph-video-camera"></i></div>' : ''}
                     </div>
                 `;
@@ -625,8 +634,6 @@ function openFolderModal(category, titles, originEl) {
                 </div>
             `;
 
-            
-            // Add delete listener if admin
             if (window.isAdmin) {
                 div.querySelector('.delete-btn').addEventListener('click', async (e) => {
                     e.stopPropagation();
@@ -649,7 +656,7 @@ function openFolderModal(category, titles, originEl) {
                 currentLightboxIndex = filtered.indexOf(item);
                 openLightbox(item);
             });
-            grid.appendChild(div);
+            fragment.appendChild(div);
         });
     } else {
         for (let i = 0; i < 3; i++) {
@@ -657,35 +664,44 @@ function openFolderModal(category, titles, originEl) {
             card.className = 'placeholder-card reveal-fade active';
             card.style.opacity = 0;
             card.innerHTML = `<i class="ph ph-file-dashed"></i><span class="mono-label" data-cs="PRÁZDNÝ ZÁZNAM" data-en="EMPTY RECORD">PRÁZDNÝ ZÁZNAM</span>`;
-            grid.appendChild(card);
+            fragment.appendChild(card);
         }
         updateLanguageUI(currentLang);
     }
+
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
 
     // macOS Opening Animation Logic
     modal.classList.add('active');
     window.toggleBodyLock(true);
 
     // Start modal hidden and scaled down
-    gsap.set(modalContent, { scale: 0.88, opacity: 0 });
+    gsap.set(modalContent, { scale: 0.92, opacity: 0, y: 30 });
     gsap.set(modal.querySelector('.modal-overlay'), { opacity: 0 });
 
     const tl = gsap.timeline();
-    tl.to(modal.querySelector('.modal-overlay'), { opacity: 1, duration: 0.3 })
+    tl.to(modal.querySelector('.modal-overlay'), { opacity: 1, duration: 0.5, ease: "power2.out" })
       .to(modalContent, {
           scale: 1,
           opacity: 1,
-          duration: 0.45,
-          ease: "back.out(1.5)",
+          y: 0,
+          duration: 0.6,
+          ease: "expo.out", // Smoother than back.out for large windows
           clearProps: "transform"
-      }, "-=0.15")
+      }, "-=0.35")
       .to("#folder-items-grid .reveal-fade", {
           opacity: 1,
           y: 0,
-          duration: 0.4,
-          stagger: 0.05,
-          ease: "power2.out"
-      }, "-=0.25");
+          scale: 1,
+          duration: 1,
+          stagger: {
+              each: 0.06,
+              grid: "auto",
+              from: "start"
+          },
+          ease: "expo.out"
+      }, "-=0.45");
 }
 
 function openLightbox(item) {

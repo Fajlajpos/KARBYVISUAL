@@ -1950,6 +1950,9 @@ body.modal-open {
     display: flex;
     flex-direction: column;
     width: 100%;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .port-item:hover {
@@ -1976,7 +1979,34 @@ body.modal-open {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                opacity 1s ease,
+                filter 1.2s ease;
+}
+
+/* Fluid Loading States */
+.img-reveal-hidden {
+    opacity: 0;
+    transform: scale(1.1);
+    filter: blur(15px);
+}
+
+.img-reveal-visible {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    filter: blur(0) !important;
+}
+
+.img-loading-trigger {
+    background: linear-gradient(90deg, #050505 25%, #0a0a0a 50%, #050505 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s infinite linear;
+    position: relative;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 .port-item:hover .port-img,
@@ -4210,20 +4240,22 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 .modal-panel {
     position: relative;
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     max-height: 90vh;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-    padding: 2.5rem;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 3.5rem 3rem;
     display: flex;
     flex-direction: column;
     z-index: 2;
     overflow-y: auto;
     scrollbar-width: none;
     opacity: 0;
-    transform: scale(0.95) translateY(20px);
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: scale(0.98) translateY(30px);
+    transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-radius: 0;
 }
 
 .auth-modal.active .modal-panel {
@@ -4235,18 +4267,16 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     display: none;
 }
 
+/* Technical corner details for modal */
 .modal-panel::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: var(--noise-bg);
-    opacity: 0.12;
-    mix-blend-mode: overlay;
+    inset: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
     pointer-events: none;
     z-index: 0;
 }
 
-/* Micro-scanner effect for the modal */
 .modal-panel::after {
     content: '';
     position: absolute;
@@ -4254,31 +4284,17 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
-    animation: auth-scan 4s cubic-bezier(0.19, 1, 0.22, 1) infinite;
-    z-index: 1;
+    background: linear-gradient(to right, transparent, #fff, transparent);
+    opacity: 0.2;
+    animation: auth-scan 8s cubic-bezier(0.19, 1, 0.22, 1) infinite;
+    z-index: 5;
     pointer-events: none;
 }
 
 @keyframes auth-scan {
-    0% {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateY(500px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(500px);
-        opacity: 0;
-    }
+    0%, 100% { transform: translateY(0); opacity: 0; }
+    5% { opacity: 0.5; }
+    50% { transform: translateY(500px); opacity: 0; }
 }
 
 .auth-content {
@@ -4315,28 +4331,33 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 .auth-logo {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 1.8rem;
-    letter-spacing: -0.04em;
-    margin-bottom: 0.8rem;
-    color: var(--text-primary);
+    font-size: 1.2rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 2rem;
+    color: var(--text-sec);
     text-align: center;
     text-transform: uppercase;
-    line-height: 1;
+    opacity: 0.5;
 }
 
 .auth-title {
-    font-size: clamp(1.4rem, 4vw, 1.8rem);
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 0.3rem;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.8rem;
     text-align: center;
+    letter-spacing: -0.02em;
+    font-family: var(--font-heading);
 }
 
 .auth-subtitle {
-    color: var(--text-sec);
-    margin-bottom: 1.2rem;
-    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    font-size: 0.7rem;
     text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .auth-form {
@@ -4363,14 +4384,23 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
 .auth-form input[type="email"],
 .auth-form input[type="password"] {
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 1rem 1.5rem;
+    padding: 1.2rem 1.5rem;
     color: #fff;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    transition: all 0.3s;
+    font-size: 0.85rem;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    outline: none;
+    border-radius: 0;
 }
+
+.auth-form input:focus {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
 
 .auth-form input[type="text"]:focus,
 .auth-form input[type="email"]:focus,

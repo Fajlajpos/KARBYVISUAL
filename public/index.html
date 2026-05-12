@@ -277,7 +277,7 @@
         </section>
 
         <!-- 3. PORTFOLIO SECTION (Folders Grid) -->
-        <section id="portfolio" class="portfolio-section bordered-section">
+        <section id="portfolio" class="portfolio-section bordered-section" style="border-top: none;">
             <div class="container container-tight">
                 <div class="portfolio-header">
                     <div class="ph-left">
@@ -360,8 +360,6 @@
                     </div>
                     <div class="window-title" id="folder-modal-title">SYSTEM_EXPLORER</div>
                     <div class="window-controls-right">
-                        <i class="ph ph-minus win-btn"></i>
-                        <i class="ph ph-corners-out win-btn"></i>
                         <i class="ph ph-x win-btn" id="close-folder-modal"></i>
                     </div>
                 </div>
@@ -375,7 +373,7 @@
 
 
         <!-- 7. CONTACT SECTION REDESIGNED (V2) -->
-        <section id="contact" class="contact-section bordered-section">
+        <section id="contact" class="contact-section bordered-section" style="border-top: none;">
             <div class="container container-tight contact-v2-wrapper">
                 <div class="section-top-label" style="margin-bottom: 3rem;">
                     <span class="mono-label" data-cs="KONTAKT // 04" data-en="CONTACT // 04">KONTAKT // 04</span>
@@ -747,15 +745,8 @@
                         <div class="error-msg"></div>
                     </div>
 
-                    <div class="auth-extras">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="remember">
-                            <span class="checkmark"></span>
-                            <span data-cs="Zapamatovat" data-en="Remember me">Remember me</span>
-                        </label>
-                        <a href="#" class="forgot-link" data-cs="Zapomenuté heslo?" data-en="Forgot password?">Forgot
-                            password?</a>
-                    </div>
+                    <!-- Removed auth-extras (Remember me & Forgot password) -->
+
 
                     <button type="submit" class="btn-cad-primary auth-submit" style="width: 100%; padding: 1.2rem;">
                         <div class="cad-grid-bg"></div>
