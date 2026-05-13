@@ -240,11 +240,41 @@ app.post('/api/folders', verifyToken, requireAdmin, async (req, res) => {
 app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
         const id = req.params.id;
-        // Optionally, check if folder has portfolio items before deleting
-        // But for now, allow deletion
+        
+        // 1. Get folder info to find category_id
+        const folder = await dbAsync.get('SELECT category_id FROM folders WHERE id = ?', [id]);
+        if (!folder) return res.status(404).json({ error: 'Folder not found' });
+
+        const categoryId = folder.category_id;
+
+        // 2. Find all items in this category
+        const items = await dbAsync.all('SELECT id, media_url, thumbnail_url FROM portfolio_items WHERE category = ?', [categoryId]);
+
+        // 3. Delete files for each item
+        for (const item of items) {
+            if (item.media_url && item.media_url.startsWith('/uploads/')) {
+                const filePath = path.join(__dirname, 'public', item.media_url);
+                if (fs.existsSync(filePath)) {
+                    try { fs.unlinkSync(filePath); } catch (e) { console.error(`Failed to delete file: ${filePath}`, e); }
+                }
+            }
+            if (item.thumbnail_url && item.thumbnail_url.startsWith('/uploads/') && item.thumbnail_url !== item.media_url) {
+                const thumbPath = path.join(__dirname, 'public', item.thumbnail_url);
+                if (fs.existsSync(thumbPath)) {
+                    try { fs.unlinkSync(thumbPath); } catch (e) { console.error(`Failed to delete thumbnail: ${thumbPath}`, e); }
+                }
+            }
+        }
+
+        // 4. Delete items from DB
+        await dbAsync.run('DELETE FROM portfolio_items WHERE category = ?', [categoryId]);
+
+        // 5. Finally delete the folder
         await dbAsync.run('DELETE FROM folders WHERE id = ?', [id]);
-        res.json({ message: 'Folder deleted successfully' });
+
+        res.json({ message: 'Folder and all its content deleted successfully' });
     } catch (err) {
+        console.error('CASCADE_DELETE_ERROR:', err);
         res.status(500).json({ error: err.message });
     }
 });
