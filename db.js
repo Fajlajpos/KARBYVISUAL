@@ -63,6 +63,7 @@ function initDb() {
             thumbnail_url TEXT,
             tags TEXT,
             is_featured INTEGER DEFAULT 0,
+            sort_order INTEGER DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 

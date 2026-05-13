@@ -19,6 +19,11 @@ let portfolioData = [];
 let currentFolderItems = [];
 let currentLightboxIndex = -1;
 
+// Admin Selection & Reordering State
+let isSelectionMode = false;
+let selectedItems = new Set();
+let sortableInstance = null;
+
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     // (Removed old modal logic)
@@ -56,6 +61,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 onComplete: () => {
                     folderModal.classList.remove('active');
                     if (window.toggleBodyLock) window.toggleBodyLock(false);
+                    
+                    // Reset admin modes
+                    isSelectionMode = false;
+                    selectedItems.clear();
+                    if (typeof updateBatchBar === 'function') updateBatchBar();
+                    if (sortableInstance) {
+                        sortableInstance.destroy();
+                        sortableInstance = null;
+                    }
+
                     // Reset to initial state for next open
                     gsap.set(modalContent, { scale: 0.85, opacity: 0 });
                     gsap.set(folderModal.querySelector('.modal-overlay'), { opacity: 0 });
@@ -161,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = {
                 title: 'KARBYVISUALS SHOWREEL',
                 category: 'SHOWREEL',
-                description: 'Vizuální produkce bez kompromisů.',
+                description: 'VizuĂˇlnĂ­ produkce bez kompromisĹŻ.',
                 media_url: src
             };
             
@@ -469,6 +484,38 @@ function openFolderModal(category, titles, originEl) {
     // Update Title
     const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
     titleEl.innerHTML = `<span class="title-text">[ ${displayTitle} ]</span>`;
+
+    // Admin Controls (Selection & Reorder)
+    if (window.isAdmin) {
+        // Remove existing controls to avoid duplicates
+        const existingControls = modal.querySelector('.folder-admin-controls');
+        if (existingControls) existingControls.remove();
+
+        const controlsWrap = document.createElement('div');
+        controlsWrap.className = 'folder-admin-controls';
+        
+        const selectionBtn = document.createElement('button');
+        selectionBtn.className = `btn-admin-mode btn-toggle-selection ${isSelectionMode ? 'active' : ''}`;
+        selectionBtn.innerHTML = `<i class="ph ph-check-square"></i> ${isSelectionMode ? 'STOP SELECTION' : 'SELECT ITEMS'}`;
+        selectionBtn.onclick = () => toggleSelectionMode();
+        
+        const selectAllBtn = document.createElement('button');
+        selectAllBtn.className = `btn-admin-mode btn-select-all ${isSelectionMode ? '' : 'hidden'}`;
+        selectAllBtn.innerHTML = '<i class="ph ph-list-checks"></i> SELECT ALL';
+        selectAllBtn.onclick = () => toggleSelectAll();
+
+        const reorderBtn = document.createElement('button');
+        reorderBtn.className = `btn-admin-mode ${sortableInstance ? 'active' : ''}`;
+        reorderBtn.id = 'reorder-btn';
+        reorderBtn.innerHTML = sortableInstance ? '<i class="ph ph-check"></i> SAVE ORDER' : '<i class="ph ph-arrows-out-cardinal"></i> ENABLE SORTING';
+        reorderBtn.onclick = () => toggleSortingMode(grid);
+        
+        controlsWrap.appendChild(selectionBtn);
+        controlsWrap.appendChild(selectAllBtn);
+        controlsWrap.appendChild(reorderBtn);
+        
+        grid.parentNode.insertBefore(controlsWrap, grid);
+    }
     
     // Admin Rename Feature (Double Click & Pencil Icon)
     if (window.isAdmin && titles.id) {
@@ -574,13 +621,15 @@ function openFolderModal(category, titles, originEl) {
     if (filtered.length > 0) {
         filtered.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'port-item reveal-fade active';
+            div.className = `port-item reveal-fade active ${isSelectionMode ? 'selecting' : ''} ${selectedItems.has(item.id) ? 'selected' : ''}`;
+            div.dataset.id = item.id;
             div.style.opacity = 0;
-            div.style.transform = 'translateY(30px) scale(0.92)'; // Prepare for GSAP fluid entry
+            div.style.transform = 'translateY(30px) scale(0.92)'; 
             
             let adminHtml = '';
             if (window.isAdmin) {
                  adminHtml = `<div class="admin-badge-container">
+                     <button class="promote-btn" title="Move to Top" data-id="${item.id}"><i class="ph ph-arrow-fat-up"></i></button>
                      <button class="delete-btn" title="Delete Item" data-id="${item.id}"><i class="ph ph-trash"></i></button>
                  </div>`;
             }
@@ -618,6 +667,7 @@ function openFolderModal(category, titles, originEl) {
                              onerror="this.src='/assets/kolaz_v5.jpg'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
                         ${isVideo ? '<div class="video-grid-overlay"><i class="ph ph-video-camera"></i></div>' : ''}
                     </div>
+                    ${window.isAdmin && !isSelectionMode ? `<div class="drag-handle" style="position:absolute; top:10px; left:10px; cursor:grab; opacity:${sortableInstance ? '1' : '0'}; transition:opacity 0.3s; color:#fff; z-index:5;"><i class="ph ph-dots-six-vertical"></i></div>` : ''}
                 `;
             }
 
@@ -635,26 +685,60 @@ function openFolderModal(category, titles, originEl) {
             `;
 
             if (window.isAdmin) {
+                div.addEventListener('click', (e) => {
+                    if (isSelectionMode) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleItemSelection(item.id, div);
+                        return;
+                    }
+                });
+
                 div.querySelector('.delete-btn').addEventListener('click', async (e) => {
                     e.stopPropagation();
-                    const confirmed = await window.customConfirm('OPRAVDU SMAZAT TENTO ZÁZNAM?');
+                    const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'REALLY DELETE THIS RECORD?';
+                    const confirmed = await window.customConfirm(confirmMsg);
                     if (!confirmed) return;
                     
-                    try {
-                        const res = await fetch(`/api/portfolio/${item.id}`, { method: 'DELETE' });
-                        if (res.ok) {
-                            showToast('ITEM DELETED', 'success');
-                            loadPortfolio().then(() => openFolderModal(category, titles, originEl));
+                    deletePortfolioItem(item.id, div);
+                });
+
+                div.querySelector('.promote-btn')?.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    // Move this item to the front of the filtered list and save
+                    const currentIndex = filtered.indexOf(item);
+                    if (currentIndex > 0) {
+                        filtered.splice(currentIndex, 1);
+                        filtered.unshift(item);
+                        // Force a re-order save
+                        const orders = filtered.map((it, idx) => ({ id: it.id, sort_order: idx }));
+                        try {
+                            const res = await fetch('/api/portfolio/reorder', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ orders })
+                            });
+                            if (res.ok) {
+                                showToast('ITEM_PROMOTED_TO_TOP', 'success');
+                                portfolioData = await fetch('/api/portfolio').then(r => r.json());
+                                openFolderModal(category, titles, originEl);
+                            }
+                        } catch (err) {
+                            showToast('PROMOTION_FAILED', 'error');
                         }
-                    } catch (err) {
-                        showToast('DELETE FAILED', 'error');
                     }
                 });
             }
 
-            div.querySelector('.port-img-wrap, .port-video-wrap').addEventListener('click', () => {
-                currentLightboxIndex = filtered.indexOf(item);
-                openLightbox(item);
+            div.querySelector('.port-img-wrap, .port-video-wrap').addEventListener('click', (e) => {
+                if (isSelectionMode) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleItemSelection(item.id, div);
+                } else {
+                    currentLightboxIndex = filtered.indexOf(item);
+                    openLightbox(item);
+                }
             });
             fragment.appendChild(div);
         });
@@ -663,7 +747,7 @@ function openFolderModal(category, titles, originEl) {
             const card = document.createElement('div');
             card.className = 'placeholder-card reveal-fade active';
             card.style.opacity = 0;
-            card.innerHTML = `<i class="ph ph-file-dashed"></i><span class="mono-label" data-cs="PRÁZDNÝ ZÁZNAM" data-en="EMPTY RECORD">PRÁZDNÝ ZÁZNAM</span>`;
+            card.innerHTML = `<i class="ph ph-file-dashed"></i><span class="mono-label" data-cs="PRĂZDNĂť ZĂZNAM" data-en="EMPTY RECORD">PRĂZDNĂť ZĂZNAM</span>`;
             fragment.appendChild(card);
         }
         updateLanguageUI(currentLang);
@@ -717,7 +801,7 @@ function openLightbox(item) {
         editBtn.classList.add('hidden');
     }
     
-    title.textContent = item.title || 'Bez názvu';
+    title.textContent = item.title || 'Bez nĂˇzvu';
     
     // Inject localized description (or plain string)
     let descriptionText = getLocalizedDesc(item.description);
@@ -848,7 +932,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
             if (res.ok) {
-                if (window.showToast) window.showToast('ZÁZNAM AKTUALIZOVÁN', 'success');
+                if (window.showToast) window.showToast('ZĂZNAM AKTUALIZOVĂN', 'success');
                 document.getElementById('edit-portfolio-modal').classList.remove('active');
                 await loadPortfolio();
                 
@@ -942,7 +1026,7 @@ async function handleContactSubmit(e) {
         const result = await res.json();
         
         if (res.ok) {
-            const msg = currentLang === 'cs' ? 'DIREKTIVA ODESLÁNA.' : 'MESSAGE TRANSMITTED.';
+            const msg = currentLang === 'cs' ? 'DIREKTIVA ODESLĂNA.' : 'MESSAGE TRANSMITTED.';
             formStatus.innerHTML = `<div style="color: #4CAF50; margin-top: 15px;">${msg}</div>`;
             contactForm.reset();
         } else {
@@ -999,8 +1083,8 @@ function updateNavAuth(authenticated) {
         let adminBtns = '';
         if (isAdmin) {
             adminBtns = `
-                <button id="nav-db-btn" class="btn-admin-db" data-cs="DATABÁZE" data-en="DATABASE" title="View Records"><i class="ph ph-database"></i> DATABASE</button>
-                <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PŘIDAT" data-en="ADD">ADD</span></button>
+                <button id="nav-db-btn" class="btn-admin-db" data-cs="DATABĂZE" data-en="DATABASE" title="View Records"><i class="ph ph-database"></i> DATABASE</button>
+                <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PĹIDAT" data-en="ADD">ADD</span></button>
             `;
         }
         
@@ -1124,7 +1208,7 @@ function initAuthUI() {
             e.preventDefault();
             e.stopPropagation();
             const itemId = deleteBtn.dataset.id;
-            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'REALLY DELETE THIS RECORD?';
+            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZĂZNAM?' : 'REALLY DELETE THIS RECORD?';
             
             window.customConfirm(confirmMsg).then(confirmed => {
                 if (confirmed) {
@@ -1372,18 +1456,33 @@ async function deletePortfolioItem(id, element) {
         });
         
         if (res.ok) {
-            showToast(currentLang === 'cs' ? 'ZÁZNAM BYL SMAZÁN' : 'RECORD DELETED', 'success');
+            showToast(currentLang === 'cs' ? 'ZĂZNAM BYL SMAZĂN' : 'RECORD DELETED', 'success');
             
             // Animate removal
             if (element) {
                 gsap.to(element, {
                     opacity: 0,
-                    scale: 0.8,
-                    duration: 0.4,
+                    scale: 0.7,
+                    y: 20,
+                    duration: 0.3,
+                    ease: 'power2.in',
                     onComplete: () => {
-                        element.remove();
-                        // Reload portfolio data in memory
-                        loadPortfolio();
+                        // Collapse space smoothly
+                        gsap.to(element, {
+                            width: 0,
+                            margin: 0,
+                            padding: 0,
+                            duration: 0.3,
+                            ease: 'power2.inOut',
+                            onComplete: () => {
+                                element.remove();
+                                // Keep local state in sync for lightbox
+                                if (window.currentFolderItems) {
+                                    window.currentFolderItems = window.currentFolderItems.filter(i => i.id !== parseInt(id));
+                                }
+                                loadPortfolio();
+                            }
+                        });
                     }
                 });
             } else {
@@ -1391,10 +1490,177 @@ async function deletePortfolioItem(id, element) {
             }
         } else {
             const data = await res.json();
-            showToast('ERROR: ' + data.error, 'error');
         }
     } catch (err) {
         showToast('DELETE FAILED', 'error');
     }
 }
 
+
+/* ==========================================
+   BATCH ACTIONS & SORTING LOGIC
+   ========================================== */
+
+function toggleSelectionMode() {
+    isSelectionMode = !isSelectionMode;
+    const btn = document.querySelector('.btn-toggle-selection');
+    const allBtn = document.querySelector('.btn-select-all');
+    
+    if (btn) {
+        btn.classList.toggle('active', isSelectionMode);
+        btn.innerHTML = `<i class="ph ph-check-square"></i> ${isSelectionMode ? 'STOP SELECTION' : 'SELECT ITEMS'}`;
+    }
+    
+    if (allBtn) {
+        allBtn.classList.toggle('hidden', !isSelectionMode);
+    }
+    
+    const items = document.querySelectorAll('.port-item');
+    items.forEach(el => {
+        el.classList.toggle('selecting', isSelectionMode);
+        if (!isSelectionMode) {
+            el.classList.remove('selected');
+        }
+    });
+    
+    if (!isSelectionMode) {
+        selectedItems.clear();
+    }
+    updateBatchBar();
+}
+
+function toggleSelectAll() {
+    const items = document.querySelectorAll('.port-item');
+    const allSelected = Array.from(items).every(el => el.classList.contains('selected'));
+    
+    items.forEach(el => {
+        const id = parseInt(el.dataset.id);
+        if (allSelected) {
+            el.classList.remove('selected');
+            selectedItems.delete(id);
+        } else {
+            el.classList.add('selected');
+            selectedItems.add(id);
+        }
+    });
+    updateBatchBar();
+}
+
+function toggleItemSelection(id, element) {
+    if (selectedItems.has(id)) {
+        selectedItems.delete(id);
+        element.classList.remove('selected');
+    } else {
+        selectedItems.add(id);
+        element.classList.add('selected');
+    }
+    updateBatchBar();
+}
+
+function updateBatchBar() {
+    const bar = document.getElementById('batch-actions-bar');
+    if (!bar) return;
+    const countEl = bar.querySelector('.selection-count');
+    
+    if (isSelectionMode && selectedItems.size > 0) {
+        bar.classList.add('active');
+        countEl.textContent = `${selectedItems.size} ITEMS_SELECTED`;
+    } else {
+        bar.classList.remove('active');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const batchCancelBtn = document.getElementById('batch-cancel-btn');
+    if (batchCancelBtn) {
+        batchCancelBtn.onclick = () => {
+            isSelectionMode = false;
+            selectedItems.clear();
+            updateBatchBar();
+            const grid = document.getElementById('folder-items-grid');
+            if (grid) {
+                grid.querySelectorAll('.port-item').forEach(el => {
+                    el.classList.remove('selecting', 'selected');
+                });
+            }
+        };
+    }
+
+    const batchDeleteBtn = document.getElementById('batch-delete-btn');
+    if (batchDeleteBtn) {
+        batchDeleteBtn.onclick = async () => {
+            const ids = Array.from(selectedItems);
+            const confirmMsg = currentLang === 'cs' ? `OPRAVDU SMAZAT ${ids.length} POLOŽEK?` : `REALLY DELETE ${ids.length} ITEMS?`;
+            const confirmed = await window.customConfirm(confirmMsg);
+            if (!confirmed) return;
+
+            try {
+                const res = await fetch('/api/portfolio/batch-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids })
+                });
+                if (res.ok) {
+                    showToast('BATCH_DELETE_SUCCESS', 'success');
+                    selectedItems.clear();
+                    isSelectionMode = false;
+                    updateBatchBar();
+                    loadPortfolio().then(() => {
+                        const closeBtn = document.getElementById('close-folder-modal');
+                        if (closeBtn) closeBtn.click();
+                    });
+                }
+            } catch (err) {
+                showToast('BATCH_DELETE_FAILED', 'error');
+            }
+        };
+    }
+});
+
+function toggleSortingMode(grid) {
+    const btn = document.getElementById('reorder-btn');
+    if (sortableInstance) {
+        // Save and Disable
+        saveNewOrder(grid);
+        sortableInstance.destroy();
+        sortableInstance = null;
+        btn.innerHTML = '<i class="ph ph-arrows-out-cardinal"></i> ENABLE SORTING';
+        btn.classList.remove('active');
+        grid.querySelectorAll('.drag-handle').forEach(h => h.style.opacity = 0);
+    } else {
+        // Enable
+        sortableInstance = new Sortable(grid, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            dragClass: 'sortable-drag',
+            handle: '.drag-handle',
+            onEnd: () => { console.log('Item moved'); }
+        });
+        btn.innerHTML = '<i class="ph ph-check"></i> SAVE ORDER';
+        btn.classList.add('active');
+        grid.querySelectorAll('.drag-handle').forEach(h => h.style.opacity = 1);
+        showToast('SORTING_MODE_ACTIVE', 'info');
+    }
+}
+
+async function saveNewOrder(grid) {
+    const items = Array.from(grid.querySelectorAll('.port-item'));
+    const orders = items.map((el, index) => ({
+        id: parseInt(el.dataset.id),
+        sort_order: index
+    }));
+
+    try {
+        const res = await fetch('/api/portfolio/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orders })
+        });
+        if (res.ok) {
+            showToast('ORDER_SYNCHRONIZED', 'success');
+            loadPortfolio();
+        }
+    } catch (err) {
+        showToast('ORDER_SYNC_FAILED', 'error');
+    }
+}

@@ -35,6 +35,7 @@
 
     <!-- Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <link rel="stylesheet" href="/style.css">
 </head>
@@ -95,9 +96,9 @@
 
             <!-- Auth Buttons -->
             <div class="nav-auth" id="nav-auth">
-                <button class="auth-btn btn-admin-db" id="db-view-trigger" style="display:none;" data-cs="DATABÁZE"
+                <button class="auth-btn btn-admin-db" id="db-view-trigger" style="display:none;" data-cs="DATAB&#193;ZE"
                     data-en="DATABASE"><i class="ph ph-database"></i> DATABASE</button>
-                <button class="auth-btn btn-login" id="login-trigger" data-cs="PŘIHLÁSIT" data-en="LOGIN">LOGIN</button>
+                <button class="auth-btn btn-login" id="login-trigger" data-cs="P&#344;IHL&#193;SIT" data-en="LOGIN">LOGIN</button>
                 <button class="auth-btn btn-register btn-filled" id="register-trigger" data-cs="REGISTRACE"
                     data-en="REGISTER">REGISTER</button>
             </div>
@@ -786,7 +787,7 @@
             <div class="dashboard-layout">
                 <aside class="dashboard-sidebar">
                     <button class="db-nav-btn active" data-tab="upload"><i class="ph ph-plus-circle"></i> <span
-                            data-cs="PŘIDAT PRÁCI" data-en="ADD WORK">ADD WORK</span></button>
+                            data-cs="P&#344;IDAT PR&#193;CI" data-en="ADD WORK">ADD WORK</span></button>
                     <button class="db-nav-btn" data-tab="reviews"><i class="ph ph-chat-centered-dots"></i> <span
                             data-cs="RECENZE" data-en="REVIEWS">REVIEWS</span></button>
                     <button class="db-nav-btn" data-tab="folders"><i class="ph ph-folder"></i> <span data-cs="SLOŽKY"
@@ -1203,13 +1204,38 @@
         </div>
     </div>
 
+    <!-- Batch Actions Bar -->
+    <div id="batch-actions-bar" class="batch-actions-bar">
+        <span class="selection-count">0 ITEMS_SELECTED</span>
+        <div style="display:flex; gap:1rem;">
+            <button id="batch-delete-btn" class="btn-purge-all"><i class="ph ph-trash"></i> DELETE_SELECTED</button>
+            <button id="batch-cancel-btn" class="btn-admin-mode" style="padding: 0.8rem 1.5rem;">CANCEL</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/split-type"></script>
-    <script src="/main.js"></script>
     <script src="/animations.js"></script>
+    <!-- Batch Actions Bar -->
+    <div id="batch-actions-bar" class="batch-actions-bar">
+        <div class="selection-info">
+            <span class="selection-count">0 ITEMS_SELECTED</span>
+            <span class="mono-label" style="font-size: 0.6rem; opacity: 0.5;">ADMIN_BATCH_PROTOCOL</span>
+        </div>
+        <div class="batch-btns">
+            <button id="batch-delete-btn" class="btn-batch-delete">
+                <i class="ph ph-trash"></i> <span data-cs="SMAZAT VYBRANÉ" data-en="DELETE SELECTED">DELETE SELECTED</span>
+            </button>
+            <button id="batch-cancel-btn" class="btn-batch-cancel">
+                <span data-cs="ZRUŠIT" data-en="CANCEL">CANCEL</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="/main.js"></script>
     <script src="/admin.js"></script>
 </body>
 

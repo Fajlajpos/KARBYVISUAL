@@ -103,7 +103,7 @@ app.get('/api/check-auth', verifyToken, (req, res) => {
 // 2. Portfolio & Folders Endpoints (Public)
 app.get('/api/portfolio', async (req, res) => {
     try {
-        const items = await dbAsync.all('SELECT * FROM portfolio_items ORDER BY created_at DESC');
+        const items = await dbAsync.all('SELECT * FROM portfolio_items ORDER BY sort_order ASC, created_at DESC');
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -275,6 +275,54 @@ app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
         res.json({ message: 'Folder and all its content deleted successfully' });
     } catch (err) {
         console.error('CASCADE_DELETE_ERROR:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Batch Delete Portfolio Items
+app.post('/api/portfolio/batch-delete', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids)) return res.status(400).json({ error: 'Invalid IDs' });
+
+        for (const id of ids) {
+            const item = await dbAsync.get('SELECT media_url, thumbnail_url FROM portfolio_items WHERE id = ?', [id]);
+            if (item) {
+                if (item.media_url && item.media_url.startsWith('/uploads/')) {
+                    const filePath = path.join(__dirname, 'public', item.media_url);
+                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                }
+                if (item.thumbnail_url && item.thumbnail_url.startsWith('/uploads/') && item.thumbnail_url !== item.media_url) {
+                    const thumbPath = path.join(__dirname, 'public', item.thumbnail_url);
+                    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+                }
+            }
+            await dbAsync.run('DELETE FROM portfolio_items WHERE id = ?', [id]);
+        }
+        res.json({ message: `${ids.length} items deleted successfully` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Reorder Portfolio Items
+app.post('/api/portfolio/reorder', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { orders } = req.body; // Array of { id, sort_order }
+        if (!orders || !Array.isArray(orders)) return res.status(400).json({ error: 'Invalid order data' });
+
+        const stmt = await dbAsync.run('BEGIN TRANSACTION');
+        try {
+            for (const item of orders) {
+                await dbAsync.run('UPDATE portfolio_items SET sort_order = ? WHERE id = ?', [item.sort_order, item.id]);
+            }
+            await dbAsync.run('COMMIT');
+            res.json({ message: 'Order updated successfully' });
+        } catch (err) {
+            await dbAsync.run('ROLLBACK');
+            throw err;
+        }
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
