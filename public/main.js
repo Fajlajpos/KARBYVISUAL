@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = {
                 title: 'KARBYVISUALS SHOWREEL',
                 category: 'SHOWREEL',
-                description: 'VizuĂˇlnĂ­ produkce bez kompromisĹŻ.',
+                description: 'VizuÄËlnÄÂ­ produkce bez kompromisÄ¹Å».',
                 media_url: src
             };
             
@@ -747,7 +747,7 @@ function openFolderModal(category, titles, originEl) {
             const card = document.createElement('div');
             card.className = 'placeholder-card reveal-fade active';
             card.style.opacity = 0;
-            card.innerHTML = `<i class="ph ph-file-dashed"></i><span class="mono-label" data-cs="PRĂZDNĂť ZĂZNAM" data-en="EMPTY RECORD">PRĂZDNĂť ZĂZNAM</span>`;
+            card.innerHTML = `<i class="ph ph-file-dashed"></i><span class="mono-label" data-cs="PRÁZDNÝ ZÁZNAM" data-en="EMPTY RECORD">PRÁZDNÝ ZÁZNAM</span>`;
             fragment.appendChild(card);
         }
         updateLanguageUI(currentLang);
@@ -801,7 +801,7 @@ function openLightbox(item) {
         editBtn.classList.add('hidden');
     }
     
-    title.textContent = item.title || 'Bez nĂˇzvu';
+    title.textContent = item.title || 'Bez názvu';
     
     // Inject localized description (or plain string)
     let descriptionText = getLocalizedDesc(item.description);
@@ -932,7 +932,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
             if (res.ok) {
-                if (window.showToast) window.showToast('ZĂZNAM AKTUALIZOVĂN', 'success');
+                if (window.showToast) window.showToast('ZÁZNAM AKTUALIZOVÁN', 'success');
                 document.getElementById('edit-portfolio-modal').classList.remove('active');
                 await loadPortfolio();
                 
@@ -1026,7 +1026,7 @@ async function handleContactSubmit(e) {
         const result = await res.json();
         
         if (res.ok) {
-            const msg = currentLang === 'cs' ? 'DIREKTIVA ODESLĂNA.' : 'MESSAGE TRANSMITTED.';
+            const msg = currentLang === 'cs' ? 'DIREKTIVA ODESLÁNA.' : 'MESSAGE TRANSMITTED.';
             formStatus.innerHTML = `<div style="color: #4CAF50; margin-top: 15px;">${msg}</div>`;
             contactForm.reset();
         } else {
@@ -1083,8 +1083,8 @@ function updateNavAuth(authenticated) {
         let adminBtns = '';
         if (isAdmin) {
             adminBtns = `
-                <button id="nav-db-btn" class="btn-admin-db" data-cs="DATABĂZE" data-en="DATABASE" title="View Records"><i class="ph ph-database"></i> DATABASE</button>
-                <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PĹIDAT" data-en="ADD">ADD</span></button>
+                <button id="nav-db-btn" class="btn-admin-db" data-cs="DATABÁZE" data-en="DATABASE" title="View Records"><i class="ph ph-database"></i> DATABASE</button>
+                <button id="nav-admin-btn" class="nav-admin-btn" title="Add Work"><i class="ph ph-plus-circle"></i> <span data-cs="PŘIDAT" data-en="ADD">ADD</span></button>
             `;
         }
         
@@ -1111,7 +1111,7 @@ async function handleLogout() {
     try {
         const res = await fetch('/api/logout', { method: 'POST' });
         if (res.ok) {
-            showToast(currentLang === 'cs' ? 'Odhlášení úspěšné.' : 'Logged out successfully.', 'success');
+            showToast(currentLang === 'cs' ? 'OdhlÃ¡Å¡enÃ­ ÃºspÄÅ¡nÃ©.' : 'Logged out successfully.', 'success');
             checkAuth();
         }
     } catch (err) {
@@ -1208,7 +1208,7 @@ function initAuthUI() {
             e.preventDefault();
             e.stopPropagation();
             const itemId = deleteBtn.dataset.id;
-            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZĂZNAM?' : 'REALLY DELETE THIS RECORD?';
+            const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'REALLY DELETE THIS RECORD?';
             
             window.customConfirm(confirmMsg).then(confirmed => {
                 if (confirmed) {
@@ -1456,7 +1456,7 @@ async function deletePortfolioItem(id, element) {
         });
         
         if (res.ok) {
-            showToast(currentLang === 'cs' ? 'ZĂZNAM BYL SMAZĂN' : 'RECORD DELETED', 'success');
+            showToast(currentLang === 'cs' ? 'ZÁZNAM BYL SMAZÁN' : 'RECORD DELETED', 'success');
             
             // Animate removal
             if (element) {
@@ -1590,7 +1590,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (batchDeleteBtn) {
         batchDeleteBtn.onclick = async () => {
             const ids = Array.from(selectedItems);
-            const confirmMsg = currentLang === 'cs' ? `OPRAVDU SMAZAT ${ids.length} POLOŽEK?` : `REALLY DELETE ${ids.length} ITEMS?`;
+            const confirmMsg = currentLang === 'cs' ? `OPRAVDU SMAZAT ${ids.length} POLOÅ½EK?` : `REALLY DELETE ${ids.length} ITEMS?`;
             const confirmed = await window.customConfirm(confirmMsg);
             if (!confirmed) return;
 
