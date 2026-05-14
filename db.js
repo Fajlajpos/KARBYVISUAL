@@ -127,18 +127,26 @@ function initDb() {
             }
         });
 
-        // Seed Admin User
-        db.get(`SELECT * FROM users WHERE email = ?`, [process.env.ADMIN_EMAIL], async (err, row) => {
-            if (!row && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+        // Sync Admin User from .env
+        if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+            db.get(`SELECT * FROM users WHERE email = ?`, [process.env.ADMIN_EMAIL], async (err, row) => {
                 const salt = await bcrypt.genSalt(10);
                 const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD, salt);
-                db.run(`INSERT INTO users (email, full_name, password_hash, role) VALUES (?, ?, ?, ?)`, 
-                    [process.env.ADMIN_EMAIL, 'System Admin', hash, 'admin'], (err) => {
-                        if (err) console.error('Error seeding admin:', err.message);
-                        else console.log('Admin user seeded.');
-                    });
-            }
-        });
+                if (!row) {
+                    db.run(`INSERT INTO users (email, full_name, password_hash, role) VALUES (?, ?, ?, ?)`, 
+                        [process.env.ADMIN_EMAIL, 'System Admin', hash, 'admin'], (err) => {
+                            if (err) console.error('Error seeding admin:', err.message);
+                            else console.log('Admin user seeded from .env.');
+                        });
+                } else {
+                    db.run(`UPDATE users SET password_hash = ?, role = 'admin' WHERE email = ?`, 
+                        [hash, process.env.ADMIN_EMAIL], (err) => {
+                            if (err) console.error('Error syncing admin:', err.message);
+                            else console.log('Admin user password synced from .env.');
+                        });
+                }
+            });
+        }
 
         // Seed some dummy portfolio items if empty
         db.get(`SELECT COUNT(*) as count FROM portfolio_items`, (err, row) => {

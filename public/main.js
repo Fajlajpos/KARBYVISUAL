@@ -1412,8 +1412,9 @@ async function handleLogin(e) {
         
         if (res.ok) {
             showToast(`WELCOME BACK, ${data.fullName.toUpperCase()}!`, 'success');
-            closeAuthModal('login-modal');
-            checkAuth();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } else {
             showToast(data.error || 'Login failed', 'error');
         }
