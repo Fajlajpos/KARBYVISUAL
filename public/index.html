@@ -487,24 +487,37 @@
 
                         <form id="contact-form" class="transmission-form-v3">
                             <div class="form-section">
-                                <span class="mono-label section-tag">01_CORE_DATA</span>
+                                <span class="mono-label section-tag" data-cs="01_HLAVNÍ_ÚDAJE" data-en="01_CORE_DATA">01_CORE_DATA</span>
                                 <div class="form-row-v3">
                                     <div class="tactical-input">
-                                        <label class="mono-label">UID / NAME</label>
-                                        <input type="text" id="name" name="name" required placeholder="IDENTIFY_NAME">
+                                        <label class="mono-label" data-cs="Vaše jméno" data-en="Your name">Your name</label>
+                                        <input type="text" id="name" name="name" required 
+                                            data-placeholder-cs="Vaše jméno" 
+                                            data-placeholder-en="Your name" 
+                                            placeholder="Your name">
                                     </div>
                                     <div class="tactical-input">
-                                        <label class="mono-label">ADDR / EMAIL</label>
-                                        <input type="email" id="email" name="email" required placeholder="ROUTE_EMAIL">
+                                        <label class="mono-label" data-cs="@Instagram" data-en="@Instagram">@Instagram</label>
+                                        <input type="text" id="instagram" name="instagram" 
+                                            data-placeholder-cs="@Instagram" 
+                                            data-placeholder-en="@Instagram" 
+                                            placeholder="@Instagram">
                                     </div>
+                                </div>
+                                <div class="tactical-input mt-1">
+                                    <label class="mono-label" data-cs="KONTAKT / E-MAIL" data-en="ADDR / EMAIL">ADDR / EMAIL</label>
+                                    <input type="email" id="email" name="email" required 
+                                        data-placeholder-cs="vas@email.cz" 
+                                        data-placeholder-en="your@email.com" 
+                                        placeholder="ROUTE_EMAIL">
                                 </div>
                             </div>
 
                             <div class="form-section mt-1">
-                                <span class="mono-label section-tag">02_MISSION_SPEC</span>
+                                <span class="mono-label section-tag" data-cs="02_SPECIFIKACE_PROJEKTU" data-en="02_MISSION_SPEC">02_MISSION_SPEC</span>
                                 <div class="options-matrix">
                                     <div class="option-col">
-                                        <span class="mono-label small">TYPE_SELECT</span>
+                                        <span class="mono-label small" data-cs="VÝBĚR_TYPU" data-en="TYPE_SELECT">TYPE_SELECT</span>
                                         <div class="matrix-grid">
                                             <input type="radio" name="project_type" id="type-videoklipy"
                                                 value="Videoklipy" checked>
@@ -534,7 +547,7 @@
                                         </div>
                                     </div>
                                     <div class="option-col">
-                                        <span class="mono-label small">BUDGET_VAL</span>
+                                        <span class="mono-label small" data-cs="ROZPOČET" data-en="BUDGET_VAL">BUDGET_VAL</span>
                                         <div class="matrix-grid">
                                             <input type="radio" name="budget" id="b-low" value="< 20k" checked>
                                             <label for="b-low">&lt; 20K</label>
@@ -550,9 +563,11 @@
                             </div>
 
                             <div class="form-section mt-1">
-                                <span class="mono-label section-tag">03_TRANSMISSION_TEXT</span>
+                                <span class="mono-label section-tag" data-cs="03_ZPRÁVA" data-en="03_TRANSMISSION_TEXT">03_TRANSMISSION_TEXT</span>
                                 <div class="tactical-input">
                                     <textarea id="message" name="message" rows="3" required
+                                        data-placeholder-cs="Specifikujte váš projekt, termín, lokalitu..." 
+                                        data-placeholder-en="Specify your project, deadline, location..." 
                                         placeholder="INPUT_DATA_SPECIFICATIONS..."></textarea>
                                 </div>
                             </div>

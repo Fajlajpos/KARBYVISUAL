@@ -406,16 +406,16 @@ app.delete('/api/testimonials/:id', verifyToken, requireAdmin, async (req, res) 
 // 5. Contact Form (Public)
 app.post('/api/contact', async (req, res) => {
     try {
-        const { name, email, project_type, budget, message } = req.body;
+        const { name, email, instagram, project_type, budget, message } = req.body;
         
         // Save to DB
         await dbAsync.run(
-            `INSERT INTO messages (name, email, project_type, budget, message) VALUES (?, ?, ?, ?, ?)`,
-            [name, email, project_type, budget, message]
+            `INSERT INTO messages (name, email, instagram, project_type, budget, message) VALUES (?, ?, ?, ?, ?, ?)`,
+            [name, email, instagram, project_type, budget, message]
         );
 
         // Send Emails (Non-blocking)
-        notifyAdmin(name, email, project_type, budget, message).catch(err => console.error("Admin mail fail:", err));
+        notifyAdmin(name, email, project_type, budget, message, instagram).catch(err => console.error("Admin mail fail:", err));
         sendAutoReply(email, name).catch(err => console.error("Auto-reply mail fail:", err));
 
         res.json({ message: 'Message received successfully.' });

@@ -21,6 +21,11 @@ db.serialize(() => {
             console.log('Migration info:', err.message);
         }
     });
+    db.run("ALTER TABLE messages ADD COLUMN instagram TEXT", (err) => {
+        if (err && !err.message.includes("duplicate column name")) {
+            console.log('Migration info:', err.message);
+        }
+    });
 });
 
 function initDb() {
@@ -96,6 +101,7 @@ function initDb() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT NOT NULL,
+            instagram TEXT,
             project_type TEXT,
             budget TEXT,
             message TEXT NOT NULL,

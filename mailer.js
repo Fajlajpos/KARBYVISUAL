@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Sends notification to Admin
-async function notifyAdmin(contactName, contactEmail, projectType, budget, message) {
+async function notifyAdmin(contactName, contactEmail, projectType, budget, message, instagram) {
     if(!process.env.SMTP_USER) {
         console.warn("SMTP_USER empty, skipping admin notification email.");
         return;
@@ -28,6 +28,7 @@ async function notifyAdmin(contactName, contactEmail, projectType, budget, messa
                 <hr style="border: 1px solid #333;" />
                 <p><strong>Jméno:</strong> ${contactName}</p>
                 <p><strong>E-mail:</strong> ${contactEmail}</p>
+                <p><strong>Instagram:</strong> ${instagram || '---'}</p>
                 <p><strong>Typ Projektu:</strong> ${projectType}</p>
                 <p><strong>Rozpočet:</strong> ${budget}</p>
                 <p><strong>Zpráva:</strong></p>

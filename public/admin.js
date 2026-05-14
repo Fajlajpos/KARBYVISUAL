@@ -494,6 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="meta-grid">
                         <div class="meta-item"><span>SENDER_NAME</span><strong>${msg.name}</strong></div>
                         <div class="meta-item"><span>SENDER_EMAIL</span><strong>${msg.email}</strong></div>
+                        <div class="meta-item"><span>INSTAGRAM</span><strong>${msg.instagram || 'N/A'}</strong></div>
                         <div class="meta-item"><span>DATE_RECEIVED</span><strong>${date}</strong></div>
                         <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
                         <div class="meta-item"><span>BUDGET_VAL</span><strong>${msg.budget || 'N/A'}</strong></div>

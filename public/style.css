@@ -3084,14 +3084,14 @@ cursor: pointer;
 
 .form-row-v3 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
 }
 
 .tactical-input {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1rem 1.5rem;
+    padding: 1.2rem 1.8rem;
     transition: all 0.3s;
     position: relative;
 }
@@ -3115,7 +3115,7 @@ cursor: pointer;
     border: none;
     color: #fff;
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 1rem;
     outline: none;
 }
 
