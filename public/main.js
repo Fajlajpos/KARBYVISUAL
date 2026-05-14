@@ -1223,6 +1223,37 @@ function initAuthUI() {
         if (e.target.id === 'login-form') handleLogin(e);
     });
 
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            console.log('Enter pressed! Target:', e.target);
+            const loginForm = e.target.closest('#login-form');
+            if (loginForm) {
+                console.log('loginForm found!');
+                e.preventDefault();
+                if (loginForm.reportValidity()) {
+                    console.log('Form is valid, calling handleLogin manually.');
+                    handleLogin({
+                        preventDefault: () => {},
+                        target: loginForm
+                    });
+                } else {
+                    console.log('Form invalid');
+                }
+            } else {
+                console.log('loginForm NOT found from target.');
+                // Fallback: If focus is anywhere in the modal, try to find the active login form
+                const activeModal = document.getElementById('login-modal');
+                if (activeModal && activeModal.classList.contains('active')) {
+                    const form = document.getElementById('login-form');
+                    if (form && form.reportValidity()) {
+                        e.preventDefault();
+                        handleLogin({ preventDefault: () => {}, target: form });
+                    }
+                }
+            }
+        }
+    });
+
     // Secret Login Shortcut (Shift + K + V)
     let secretKeys = { k: false, v: false };
     document.addEventListener('keydown', (e) => {
