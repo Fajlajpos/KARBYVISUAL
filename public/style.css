@@ -3117,6 +3117,7 @@ cursor: pointer;
     font-family: var(--font-mono);
     font-size: 1rem;
     outline: none;
+    resize: none;
 }
 
 /* Options Matrix */
@@ -4077,6 +4078,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     overflow: hidden;
     position: relative;
     background: #000;
+    min-height: 0;
 }
 
 #lightbox-media-container img {
@@ -5519,6 +5521,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     font-size: 0.8rem;
     border-radius: 0;
     transition: all 0.3s;
+    resize: none;
 }
 
 .brut-input:focus,

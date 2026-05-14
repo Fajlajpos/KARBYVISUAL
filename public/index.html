@@ -657,26 +657,36 @@
     <!-- Modern Auth Modals -->
     <!-- Portfolio Item Modal (Lightbox) -->
     <div id="lightbox-modal" class="modal lightbox">
-        <div class="lightbox-content">
-            <div class="lightbox-header">
-                <span class="mono-label lightbox-index" data-cs="[ PROHLÍŽENÍ ZÁZNAMU ]" data-en="[ VIEWING RECORD ]">[
-                    PROHLÍŽENÍ ZÁZNAMU ]</span>
-                <span class="close-btn"><i class="ph ph-x"></i></span>
+        <div class="modal-overlay"></div>
+        <div class="modal-content textured-bg folder-content-modal">
+            <div class="window-title-bar">
+                <div class="window-controls-left">
+                    <div class="win-dot close close-btn" id="close-lightbox-modal-dot"><i class="ph ph-x"></i></div>
+                    <div class="win-dot minimize"><i class="ph ph-minus"></i></div>
+                    <div class="win-dot maximize"><i class="ph ph-plus"></i></div>
+                </div>
+                <div class="window-title" id="lightbox-window-title" data-cs="PROHLÍŽEČ_ZÁZNAMŮ" data-en="RECORD_VIEWER">PROHLÍŽEČ_ZÁZNAMŮ</div>
+                <div class="window-controls-right">
+                    <i class="ph ph-x win-btn close-btn" id="close-lightbox-btn"></i>
+                </div>
             </div>
-            <div id="lightbox-media-container"></div>
-            <div class="lightbox-nav-btns">
-                <button class="lb-nav-btn prev" id="lb-prev"><i class="ph ph-caret-left"></i></button>
-                <button class="lb-nav-btn next" id="lb-next"><i class="ph ph-caret-right"></i></button>
-            </div>
-            <div class="lightbox-info">
-                <h3 id="lightbox-title">RECORD_NAME</h3>
-                <span id="lightbox-category" class="mono-label cat-tag">TYPE</span>
-                <span class="mono-label" style="float:right; opacity:0.5;">[ARCHIVE_ITEM]</span>
-                <button id="lightbox-edit-btn" class="hidden"
-                    style="float:right; margin-right:1rem; border:1px solid rgba(255,255,255,0.2); padding: 0.2rem 0.5rem; background:transparent; color:#fff; cursor:pointer; font-family:var(--font-mono); font-size:0.7rem; border-radius:4px; transition:all 0.3s;"
-                    onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='#fff'"
-                    onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.2)'"><i
-                        class="ph ph-pencil-simple"></i> EDIT_DATA</button>
+            
+            <div class="lightbox-inner-content" style="flex-grow: 1; display: flex; flex-direction: column; position: relative; padding: 2.5rem; min-height: 0;">
+                <div id="lightbox-media-container"></div>
+                <div class="lightbox-nav-btns">
+                    <button class="lb-nav-btn prev" id="lb-prev"><i class="ph ph-caret-left"></i></button>
+                    <button class="lb-nav-btn next" id="lb-next"><i class="ph ph-caret-right"></i></button>
+                </div>
+                <div class="lightbox-info">
+                    <h3 id="lightbox-title">RECORD_NAME</h3>
+                    <span id="lightbox-category" class="mono-label cat-tag">TYPE</span>
+                    <span class="mono-label lightbox-index" data-cs="[ PROHLÍŽENÍ ZÁZNAMU ]" data-en="[ VIEWING RECORD ]" style="margin-left:1rem; opacity:0.5;">[ PROHLÍŽENÍ ZÁZNAMU ]</span>
+                    <button id="lightbox-edit-btn" class="hidden"
+                        style="float:right; margin-right:1rem; border:1px solid rgba(255,255,255,0.2); padding: 0.2rem 0.5rem; background:transparent; color:#fff; cursor:pointer; font-family:var(--font-mono); font-size:0.7rem; border-radius:4px; transition:all 0.3s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='#fff'"
+                        onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.2)'"><i
+                            class="ph ph-pencil-simple"></i> EDIT_DATA</button>
+                </div>
             </div>
         </div>
     </div>

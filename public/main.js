@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Lightbox Close
     if(lightboxModal) {
-        lightboxModal.querySelector('.close-btn').addEventListener('click', closeLightbox);
+        lightboxModal.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closeLightbox));
         lightboxModal.querySelector('.modal-overlay')?.addEventListener('click', closeLightbox);
         
         // Navigation
@@ -131,12 +131,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeLightbox() {
-        lightboxModal.classList.remove('active');
-        lightboxMedia.innerHTML = '';
-        if (window.toggleBodyLock) window.toggleBodyLock(false);
-        if (window.location.hash.startsWith('#work-')) {
-            history.replaceState(null, null, window.location.pathname);
-        }
+        if (!lightboxModal.classList.contains('active')) return;
+        const modalContent = lightboxModal.querySelector('.modal-content');
+        
+        const tl = gsap.timeline({
+            onComplete: () => {
+                lightboxModal.classList.remove('active');
+                lightboxMedia.innerHTML = '';
+                if (window.toggleBodyLock) window.toggleBodyLock(false);
+                if (window.location.hash.startsWith('#work-')) {
+                    history.replaceState(null, null, window.location.pathname);
+                }
+                gsap.set(modalContent, { scale: 0.92, opacity: 0 });
+                gsap.set(lightboxModal.querySelector('.modal-overlay'), { opacity: 0 });
+            }
+        });
+        
+        tl.to(modalContent, {
+            scale: 0.92,
+            opacity: 0,
+            duration: 0.5,
+            ease: "expo.in"
+        })
+        .to(lightboxModal.querySelector('.modal-overlay'), {
+            opacity: 0,
+            duration: 0.4
+        }, "-=0.4");
     }
 
     // Body Scroll Lock Helper
@@ -871,11 +891,29 @@ function openLightbox(item) {
         lightboxMedia.innerHTML = `<img src="${displayThumb}" alt="${item.title}" style="max-height:100%; object-fit: contain;" onerror="this.src='/assets/kolaz_v5.jpg'">`;
     }
     
+    const isAlreadyActive = lightboxModal.classList.contains('active');
     lightboxModal.classList.add('active');
     window.toggleBodyLock(true);
     
     // Update URL Hash for sharing and SEO
     window.location.hash = 'work-' + item.id;
+
+    if (!isAlreadyActive) {
+        const modalContent = lightboxModal.querySelector('.modal-content');
+        gsap.set(modalContent, { scale: 0.92, opacity: 0, y: 30 });
+        gsap.set(lightboxModal.querySelector('.modal-overlay'), { opacity: 0 });
+
+        const tl = gsap.timeline();
+        tl.to(lightboxModal.querySelector('.modal-overlay'), { opacity: 1, duration: 0.5, ease: "power2.out" })
+          .to(modalContent, {
+              scale: 1,
+              opacity: 1,
+              y: 0,
+              duration: 0.6,
+              ease: "expo.out",
+              clearProps: "transform"
+          }, "-=0.35");
+    }
 }
 
 function navigateLightbox(direction) {
