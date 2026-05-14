@@ -189,25 +189,40 @@ document.addEventListener("DOMContentLoaded", () => {
             const firstClone = grid.querySelector('.is-clone');
             const totalHeight = firstClone.offsetTop - grid.offsetTop;
             
-            // Vertical animation (UPWARDS)
+            // Kill previous marquee if exists to prevent stacking
+            if (grid._marquee) grid._marquee.kill();
+
             const marquee = gsap.to(grid, {
                 y: -totalHeight,
                 duration: 25, 
                 ease: "none",
                 repeat: -1,
-                force3D: true, // GPU Acceleration
+                force3D: true,
                 lazy: true
             });
+            grid._marquee = marquee;
 
-            // Interactive control - using more direct control
-            viewport.addEventListener('mouseenter', () => {
-                marquee.pause();
-                gsap.to(grid, { opacity: 0.8, duration: 0.3 }); // Subtle visual feedback
-            });
-            viewport.addEventListener('mouseleave', () => {
-                marquee.play();
-                gsap.to(grid, { opacity: 1, duration: 0.3 });
-            });
+            // Use named functions to allow removal
+            if (grid._marqueeOver) grid.removeEventListener('mouseover', grid._marqueeOver);
+            if (grid._marqueeOut) grid.removeEventListener('mouseout', grid._marqueeOut);
+
+            grid._marqueeOver = (e) => {
+                if (e.target.closest('.insta-dm-card')) {
+                    marquee.pause();
+                    gsap.to(grid, { opacity: 0.8, duration: 0.3 });
+                }
+            };
+            grid._marqueeOut = (e) => {
+                const currentCard = e.target.closest('.insta-dm-card');
+                const relatedCard = e.relatedTarget ? e.relatedTarget.closest('.insta-dm-card') : null;
+                if (currentCard && currentCard !== relatedCard) {
+                    marquee.play();
+                    gsap.to(grid, { opacity: 1, duration: 0.3 });
+                }
+            };
+
+            grid.addEventListener('mouseover', grid._marqueeOver);
+            grid.addEventListener('mouseout', grid._marqueeOut);
         }, 100);
     }
 
