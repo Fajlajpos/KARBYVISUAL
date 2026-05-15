@@ -7032,3 +7032,46 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     color: #000;
 }
 
+body.is-dragging, body.is-dragging * {
+    cursor: grabbing !important;
+}
+
+.sortable-fallback,
+.sortable-drag {
+    transition: none !important;
+}
+
+/* Retain square aspect ratio and inner layout for the drag clone when appended to body */
+body > .sortable-fallback.port-item {
+    background: #000 !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    aspect-ratio: 1 !important;
+    overflow: hidden !important;
+}
+
+body > .sortable-fallback.port-item .port-media-container {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+body > .sortable-fallback.port-item .port-img-wrap,
+body > .sortable-fallback.port-item .port-video-wrap {
+    height: 100% !important;
+    min-height: unset !important;
+    border: none !important;
+    aspect-ratio: unset !important;
+}
+
+body > .sortable-fallback.port-item .port-info {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 1.5rem !important;
+    opacity: 0 !important;
+}

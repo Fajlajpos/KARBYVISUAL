@@ -687,13 +687,12 @@ function openFolderModal(category, titles, originEl) {
                              onerror="this.src='/assets/kolaz_v5.jpg'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
                         ${isVideo ? '<div class="video-grid-overlay"><i class="ph ph-video-camera"></i></div>' : ''}
                     </div>
-                    ${window.isAdmin && !isSelectionMode ? `<div class="drag-handle" style="position:absolute; top:10px; left:10px; cursor:grab; opacity:${sortableInstance ? '1' : '0'}; transition:opacity 0.3s; color:#fff; z-index:5;"><i class="ph ph-dots-six-vertical"></i></div>` : ''}
                 `;
             }
 
             div.innerHTML = `
                 ${adminHtml}
-                <div class="port-media-container">
+                <div class="port-media-container" ${sortableInstance ? 'style="cursor: grab;"' : ''}>
                     ${mediaHtml}
                     <div class="item-overlay-icon"><i class="ph ph-plus"></i></div>
                 </div>
@@ -1696,19 +1695,26 @@ function toggleSortingMode(grid) {
         sortableInstance = null;
         btn.innerHTML = '<i class="ph ph-arrows-out-cardinal"></i> ENABLE SORTING';
         btn.classList.remove('active');
-        grid.querySelectorAll('.drag-handle').forEach(h => h.style.opacity = 0);
+        grid.querySelectorAll('.port-media-container').forEach(h => h.style.cursor = '');
     } else {
         // Enable
         sortableInstance = new Sortable(grid, {
             animation: 150,
             ghostClass: 'sortable-ghost',
             dragClass: 'sortable-drag',
-            handle: '.drag-handle',
-            onEnd: () => { console.log('Item moved'); }
+            handle: '.port-media-container',
+            forceFallback: true,
+            fallbackOnBody: true,
+            fallbackClass: 'sortable-fallback',
+            onStart: () => { document.body.classList.add('is-dragging'); },
+            onEnd: () => { 
+                document.body.classList.remove('is-dragging');
+                console.log('Item moved'); 
+            }
         });
         btn.innerHTML = '<i class="ph ph-check"></i> SAVE ORDER';
         btn.classList.add('active');
-        grid.querySelectorAll('.drag-handle').forEach(h => h.style.opacity = 1);
+        grid.querySelectorAll('.port-media-container').forEach(h => h.style.cursor = 'grab');
         showToast('SORTING_MODE_ACTIVE', 'info');
     }
 }
