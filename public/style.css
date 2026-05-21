@@ -6885,3 +6885,224 @@ body > .sortable-fallback.port-item .port-info {
     padding: 1.5rem !important;
     opacity: 0 !important;
 }
+
+/* ==========================================
+   INSTAGRAM REEL EMBED STYLES
+   ========================================== */
+
+/* --- Grid Thumbnail Card --- */
+.ig-reel-thumb {
+    background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+    border-radius: 4px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* Subtle shimmer effect on hover */
+.ig-reel-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.port-item:hover .ig-reel-thumb::before {
+    opacity: 1;
+}
+
+.ig-thumb-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    z-index: 1;
+    text-align: center;
+    padding: 1rem;
+}
+
+.ig-thumb-icon {
+    font-size: 2.8rem;
+    color: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.port-item:hover .ig-thumb-icon {
+    transform: scale(1.1);
+}
+
+.ig-thumb-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* --- Lightbox Embed Container --- */
+.ig-embed-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, rgba(131,58,180,0.08) 0%, rgba(0,0,0,0) 70%);
+    position: relative;
+}
+
+/* Loading state shown until iframe fires onload */
+.ig-embed-loading {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.ig-embed-loading i {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: ig-pulse 1.5s ease-in-out infinite;
+}
+
+.ig-embed-loading .mono-label {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    opacity: 0.5;
+}
+
+@keyframes ig-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.95); }
+}
+
+/* The actual Instagram iframe */
+.ig-embed-iframe {
+    max-width: 400px;
+    width: 100%;
+    min-height: 600px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+/* Error state */
+.ig-error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--accent);
+    height: 100%;
+}
+
+.ig-error-state i {
+    font-size: 3rem;
+    opacity: 0.7;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .ig-embed-iframe {
+        max-width: 340px;
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ig-embed-iframe {
+        max-width: 100%;
+        min-height: 450px;
+    }
+}
+
+/* INSTAGRAM REEL EMBED & REDIRECT CARD STYLES */
+.ig-lightbox-redirect-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 80vh;
+    max-width: 450px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    background: #000;
+}
+.ig-lightbox-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.ig-lightbox-redirect-card:hover .ig-lightbox-cover {
+    transform: scale(1.05);
+}
+.ig-lightbox-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    transition: background 0.3s;
+}
+.ig-lightbox-redirect-card:hover .ig-lightbox-overlay {
+    background: rgba(0, 0, 0, 0.2);
+}
+.ig-play-button-pulsing {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: igPulse 2s infinite;
+}
+.ig-lightbox-redirect-card:hover .ig-play-button-pulsing {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+}
+@keyframes igPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+    70% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+.ig-redirect-cta {
+    color: #fff;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+

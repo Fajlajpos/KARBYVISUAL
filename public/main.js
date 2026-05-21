@@ -655,12 +655,25 @@ function openFolderModal(category, titles, originEl) {
             let mediaHtml = '';
             const rawUrl = (item.media_url || '');
             const url = rawUrl.toLowerCase();
-            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube') || url.includes('youtu.be');
+            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube') || url.includes('youtu.be') || url.includes('instagram.com');
 
-            if (isVideo && !url.includes('vimeo') && !url.includes('youtube') && !url.includes('youtu.be')) {
+            if (isVideo && !url.includes('vimeo') && !url.includes('youtube') && !url.includes('youtu.be') && !url.includes('instagram.com')) {
                 mediaHtml = `
                     <div class="port-video-wrap img-loading-trigger">
                         <video src="${item.media_url}" muted loop playsinline class="port-video-preview img-reveal-hidden" onloadeddata="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')"></video>
+                        <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
+                    </div>
+                `;
+            } else if (url.includes('instagram.com')) {
+                const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
+                const igShortcode = igMatch ? igMatch[1] : null;
+                const isPost = url.includes('/p/');
+                const displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg';
+                mediaHtml = `
+                    <div class="port-img-wrap img-loading-trigger">
+                        <img src="${displayThumb}" alt="${item.title}" class="port-img img-reveal-hidden" loading="lazy" 
+                             onload="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')" 
+                             onerror="this.src='/assets/kolaz_v5.jpg'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
                         <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
                     </div>
                 `;
@@ -850,6 +863,23 @@ function openLightbox(item) {
             }
             const embedUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1`;
             lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="width:100%; height:100%;"></iframe>`;
+        } else if (url.includes('instagram.com')) {
+            const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
+            const igShortcode = igMatch ? igMatch[1] : null;
+            const isPost = url.includes('/p/');
+            const thumbUrl = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg';
+            lightboxMedia.innerHTML = `
+                <a href="${rawUrl}" target="_blank" class="ig-lightbox-redirect-card">
+                    <img src="${thumbUrl}" class="ig-lightbox-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
+                    <div class="ig-lightbox-overlay">
+                        <div class="ig-play-button-pulsing">
+                            <i class="ph ph-instagram-logo"></i>
+                        </div>
+                        <span class="mono-label ig-redirect-cta" data-cs="[ ZOBRAZIT NA INSTAGRAMU ]" data-en="[ VIEW ON INSTAGRAM ]">[ VIEW ON INSTAGRAM ]</span>
+                    </div>
+                </a>
+            `;
+            updateLanguageUI(currentLang); // Sync translations
         } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
             // Extract YouTube ID (Case sensitive)
             let ytId = '';

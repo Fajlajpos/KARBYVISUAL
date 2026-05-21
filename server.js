@@ -125,14 +125,22 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
         const { title, category, mediaType, vimeoUrl, descriptionCS, descriptionEN, tags } = req.body;
         const finalTitle = title || '';
         
-        // Handle Video/Vimeo Link (Single item as it's a link)
+        // Handle External URL (YouTube, Vimeo, Instagram, etc.)
         if (mediaType === 'vimeo' && vimeoUrl) {
+            const isInstagram = /instagram\.com/i.test(vimeoUrl);
+            if (isInstagram) {
+                // Validate Instagram Reel URL format if it's Instagram
+                const igPattern = /instagram\.com\/(reel|p)\/[A-Za-z0-9_-]+/i;
+                if (!igPattern.test(vimeoUrl)) {
+                    return res.status(400).json({ error: 'Neplatný formát Instagram URL. Použij např. https://www.instagram.com/reel/...' });
+                }
+            }
             const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
                 [finalTitle, category, description, vimeoUrl, null, tags]
             );
-            return res.json({ message: 'Portfolio item created' });
+            return res.json({ message: 'Portfolio item created successfully' });
         }
 
         // Handle Multiple Files

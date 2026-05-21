@@ -856,8 +856,8 @@
                                                 <select id="p-media-type" name="mediaType" required class="brut-select">
                                                     <option value="file" data-cs="MATERIÁL (FOTO/VIDEO)" data-en="MATERIAL (PHOTO/VIDEO)">MATERIÁL (FOTO/VIDEO)
                                                     </option>
-                                                    <option value="vimeo" data-cs="EXT. LINK (YOUTUBE/VIMEO)"
-                                                        data-en="EXT. LINK (YT/VIMEO)">EXT. LINK (YOUTUBE/VIMEO)
+                                                    <option value="vimeo" data-cs="EXT. LINK / URL (YT/VIMEO/INSTAGRAM)"
+                                                         data-en="EXT. LINK / URL (YT/VIMEO/INSTAGRAM)">EXT. LINK / URL (YT/VIMEO/INSTAGRAM)
                                                     </option>
                                                 </select>
                                             </div>
@@ -895,9 +895,10 @@
 
                                         <div id="vimeo-upload-section" class="hidden">
                                             <div class="form-group">
-                                                <label class="mono-label">REMOTE_SOURCE_URL</label>
+                                                <label class="mono-label" id="url-input-label">REMOTE_SOURCE_URL</label>
                                                 <input type="url" id="p-vimeo" name="vimeoUrl" placeholder="https://..."
-                                                    class="brut-input">
+                                                    class="brut-input" id="p-vimeo-input">
+                                                <div id="url-input-hint" class="mono-label" style="font-size:0.6rem; opacity:0.5; margin-top:0.4rem; display:none;">Formát: https://www.instagram.com/reel/SHORTCODE/</div>
                                             </div>
                                         </div>
                                     </div>

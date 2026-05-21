@@ -265,18 +265,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mediaTypeSelect) {
         mediaTypeSelect.addEventListener('change', (e) => {
             const val = e.target.value;
+            const urlLabel = document.getElementById('url-input-label');
+            const urlHint = document.getElementById('url-input-hint');
+            const urlInput = document.getElementById('p-vimeo');
+
             if (val === 'vimeo') {
                 fileUploadSection.classList.add('hidden');
                 vimeoUploadSection.classList.remove('hidden');
                 document.getElementById('p-media').required = false;
                 document.getElementById('p-vimeo').required = true;
-                selectedFiles = []; // Clear local file selection when switching to URL mode
+                selectedFiles = [];
                 clearPortfolioPreview();
+                if (urlLabel) urlLabel.textContent = 'REMOTE_SOURCE_URL';
+                if (urlInput) urlInput.placeholder = 'https://youtube.com/..., https://vimeo.com/... or https://instagram.com/reel/...';
+                if (urlHint) {
+                    urlHint.textContent = 'Podporováno: YouTube, Vimeo, Instagram Reels';
+                    urlHint.style.display = 'block';
+                }
             } else {
                 vimeoUploadSection.classList.add('hidden');
                 fileUploadSection.classList.remove('hidden');
                 document.getElementById('p-vimeo').required = false;
                 document.getElementById('p-media').required = true;
+                if (urlHint) urlHint.style.display = 'none';
             }
         });
     }
