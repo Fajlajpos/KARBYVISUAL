@@ -643,9 +643,10 @@ function openFolderModal(category, titles, originEl) {
             const div = document.createElement('div');
             div.className = `port-item reveal-fade active ${isSelectionMode ? 'selecting' : ''} ${selectedItems.has(item.id) ? 'selected' : ''}`;
             div.dataset.id = item.id;
-            div.style.opacity = 0;
-            div.style.transform = 'translateY(30px) scale(0.92)'; 
-            
+            div.style.opacity = '0';
+            // No transform on initial state — transforms bypass CSS overflow clipping
+            // which causes items to visually bleed outside the grid container bounds
+
             let adminHtml = '';
             if (window.isAdmin) {
                  adminHtml = `<div class="admin-badge-container">
@@ -775,36 +776,33 @@ function openFolderModal(category, titles, originEl) {
     grid.innerHTML = '';
     grid.appendChild(fragment);
 
+    // Only override maxHeight to prevent GSAP animation overflow bleed.
+    // All other layout properties are controlled by .folder-content-modal #folder-items-grid in CSS.
+    grid.style.maxHeight = 'calc(95vh - 130px)';
+
     // macOS Opening Animation Logic
     modal.classList.add('active');
     window.toggleBodyLock(true);
 
-    // Start modal hidden and scaled down
-    gsap.set(modalContent, { scale: 0.92, opacity: 0, y: 30 });
+    // Open animation — opacity only, NO scale/translate on modal content.
+    // Using transforms on a parent breaks overflow:hidden clipping for compositing-layer children.
+    gsap.set(modalContent, { opacity: 0 });
     gsap.set(modal.querySelector('.modal-overlay'), { opacity: 0 });
 
     const tl = gsap.timeline();
-    tl.to(modal.querySelector('.modal-overlay'), { opacity: 1, duration: 0.5, ease: "power2.out" })
+    tl.to(modal.querySelector('.modal-overlay'), { opacity: 1, duration: 0.4, ease: "power2.out" })
       .to(modalContent, {
-          scale: 1,
           opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: "expo.out", // Smoother than back.out for large windows
-          clearProps: "transform"
-      }, "-=0.35")
+          duration: 0.35,
+          ease: "power2.out"
+      }, "-=0.2")
       .to("#folder-items-grid .reveal-fade", {
           opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1,
-          stagger: {
-              each: 0.06,
-              grid: "auto",
-              from: "start"
-          },
-          ease: "expo.out"
-      }, "-=0.45");
+          duration: 0.5,
+          stagger: 0.04,
+          ease: "power2.out",
+          force3D: false
+      }, "-=0.1");
 }
 
 function openLightbox(item) {
