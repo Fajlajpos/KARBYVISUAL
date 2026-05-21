@@ -1994,7 +1994,8 @@ body.modal-open {
 .img-reveal-visible {
     opacity: 1 !important;
     transform: scale(1) !important;
-    filter: blur(0) !important;
+    /* Use 'none' instead of 'blur(0)' to prevent the browser from maintaining a heavy filter context */
+    filter: none !important;
 }
 
 .img-loading-trigger {
@@ -2317,6 +2318,9 @@ body.admin-enabled .delete-btn {
     gap: 2rem;
     padding: 2rem;
     scroll-behavior: smooth;
+    /* Force Hardware Acceleration for 60fps scrolling over backdrop-filter */
+    transform: translateZ(0);
+    will-change: scroll-position;
 }
 
 .folder-content-modal .port-item {
@@ -2324,10 +2328,6 @@ body.admin-enabled .delete-btn {
     border-color: rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
-    /* Disable compositing optimizations that break overflow clipping in modal context */
-    will-change: auto;
-    backface-visibility: visible;
-    -webkit-backface-visibility: visible;
     display: block;
     /* Reset the global hover transform so items don't escape their grid cell */
     transform: none !important;
