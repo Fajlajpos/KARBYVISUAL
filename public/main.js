@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     // Reset to initial state for next open
-                    gsap.set(modalContent, { scale: 0.85, opacity: 0 });
+                    gsap.set(modalContent, { opacity: 0 });
                     gsap.set(folderModal.querySelector('.modal-overlay'), { opacity: 0 });
                 }
             });
@@ -80,8 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Smoothly fade out the items first for extra polish
             tl.to("#folder-items-grid .reveal-fade", {
                 opacity: 0,
-                y: 15,
-                scale: 0.95,
                 duration: 0.3,
                 stagger: {
                     each: 0.02,
@@ -90,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ease: "power2.in"
             })
             .to(modalContent, {
-                scale: 0.9,
                 opacity: 0,
                 duration: 0.5,
                 ease: "expo.in"
