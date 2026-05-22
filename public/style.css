@@ -2954,8 +2954,10 @@ body.admin-enabled .delete-btn {
 }
 
 .option-col .small {
-    font-size: 0.55rem;
-    opacity: 0.7;
+    font-size: 0.68rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+    letter-spacing: 0.08em;
 }
 
 .matrix-grid {
