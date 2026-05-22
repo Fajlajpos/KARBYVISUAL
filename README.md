@@ -27,7 +27,7 @@ Kompletní, produkčně připravená webová aplikace (portfolio) postavená v d
     ```bash
     npm run dev
     ```
-    Následně otevři prohlížeč na: **http://localhost:3000**
+    Následně otevři prohlížeč na: **http://localhost:3001**
 
 ## Architektura UI & Administrátorská sekce
 

@@ -2139,11 +2139,12 @@ body.admin-enabled .delete-btn {
 
 .folder-name {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-sec);
+    font-size: 0.76rem;
+    font-weight: 400;
+    color: var(--text-primary);
     text-transform: none;
     letter-spacing: 0.12em;
-    transition: color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .folder-grid-rename {
@@ -2199,6 +2200,7 @@ body.admin-enabled .delete-btn {
 
 .folder-item:hover .folder-name {
     color: var(--text-primary);
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
 }
 
 .folder-item:hover .folder-icon {
@@ -2867,10 +2869,18 @@ body.admin-enabled .delete-btn {
     overflow: hidden;
 }
 
+.section-title-sm {
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
 .header-tag {
     font-family: var(--font-mono);
     font-size: 0.6rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.45);
     letter-spacing: 2px;
     margin-bottom: 0.5rem;
 }
@@ -2914,7 +2924,7 @@ body.admin-enabled .delete-btn {
 .tactical-input label {
     display: block;
     font-size: 0.6rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.55);
     margin-bottom: 0.5rem;
 }
 
@@ -2945,7 +2955,7 @@ body.admin-enabled .delete-btn {
 
 .option-col .small {
     font-size: 0.55rem;
-    opacity: 0.4;
+    opacity: 0.7;
 }
 
 .matrix-grid {
