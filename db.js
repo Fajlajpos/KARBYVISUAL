@@ -129,7 +129,7 @@ function initDb() {
         db.get(`SELECT * FROM settings WHERE key = 'hero_video_url'`, (err, row) => {
             if (!row) {
                 db.run(`INSERT INTO settings (key, value) VALUES (?, ?)`, 
-                    ['hero_video_url', 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=0&modestbranding=1&rel=0']);
+                    ['hero_video_url', 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=1&mute=1&loop=1&playlist=_VWkv_ONEiM&modestbranding=1&rel=0&controls=1']);
             }
         });
 
