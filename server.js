@@ -156,6 +156,59 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.fields([{ name: 'me
                     return res.status(400).json({ error: 'Neplatný formát Instagram URL. Použij např. https://www.instagram.com/reel/...' });
                 }
             }
+            
+            const isTikTok = /tiktok\.com/i.test(vimeoUrl);
+            if (isTikTok) {
+                // Validate TikTok URL format (standard, mobile short urls vt/vm/t)
+                const tiktokPattern = /tiktok\.com\/(?:@(?:[A-Za-z0-9_\.]+)\/video\/(\d+)|(?:vm|vt|t)\.tiktok\.com\/[A-Za-z0-9_-]+)/i;
+                if (!tiktokPattern.test(vimeoUrl)) {
+                    return res.status(400).json({ error: 'Neplatný formát TikTok URL. Použij např. https://www.tiktok.com/@uzivatel/video/... nebo vm.tiktok.com/...' });
+                }
+
+                // Auto-fetch oEmbed thumbnail if no custom thumbnail was uploaded
+                if (!uploadedThumbnailUrl) {
+                    try {
+                        let targetUrlForOembed = vimeoUrl;
+                        if (/vm\.tiktok\.com|vt\.tiktok\.com|t\.tiktok\.com/i.test(vimeoUrl)) {
+                            const resolveRes = await fetch(vimeoUrl, { 
+                                method: 'GET', 
+                                redirect: 'follow',
+                                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+                            });
+                            if (resolveRes.ok) {
+                                targetUrlForOembed = resolveRes.url;
+                            }
+                        }
+                        
+                        const oembedUrl = `https://www.tiktok.com/oembed?url=${encodeURIComponent(targetUrlForOembed)}`;
+                        const oembedRes = await fetch(oembedUrl);
+                        if (oembedRes.ok) {
+                            const oembedData = await oembedRes.json();
+                            const tiktokThumbUrl = oembedData.thumbnail_url;
+                            
+                            if (tiktokThumbUrl) {
+                                const imgRes = await fetch(tiktokThumbUrl);
+                                if (imgRes.ok) {
+                                    const imgBuffer = Buffer.from(await imgRes.arrayBuffer());
+                                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                                    const filename = 'thumb-tiktok-' + uniqueSuffix + '.webp';
+                                    const outputPath = path.join(uploadDir, filename);
+                                    
+                                    await sharp(imgBuffer)
+                                        .resize({ width: 1280, withoutEnlargement: true })
+                                        .webp({ quality: 85 })
+                                        .toFile(outputPath);
+                                        
+                                    uploadedThumbnailUrl = '/uploads/' + filename;
+                                }
+                            }
+                        }
+                    } catch (oembedErr) {
+                        console.error('TikTok oEmbed auto-thumbnail fetch failed:', oembedErr);
+                    }
+                }
+            }
+
             const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,

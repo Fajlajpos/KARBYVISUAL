@@ -3910,7 +3910,7 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     image-rendering: -webkit-optimize-contrast;
 }
 
-#lightbox-media-container iframe,
+#lightbox-media-container iframe:not(.ig-embed-iframe):not(.tiktok-embed-iframe),
 #lightbox-media-container video {
     width: 100%;
     height: 100%;
@@ -6971,13 +6971,14 @@ body > .sortable-fallback.port-item .port-info {
 
 /* --- Lightbox Embed Container --- */
 .ig-embed-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse at center, rgba(131,58,180,0.08) 0%, rgba(0,0,0,0) 70%);
     position: relative;
+    width: 325px;
+    height: 580px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    background: #000;
 }
 
 /* Loading state shown until iframe fires onload */
@@ -7013,15 +7014,17 @@ body > .sortable-fallback.port-item .port-info {
 }
 
 /* The actual Instagram iframe */
-.ig-embed-iframe {
-    max-width: 400px;
-    width: 100%;
-    min-height: 600px;
+#lightbox-media-container .ig-embed-iframe {
+    position: absolute;
+    top: -55px; /* Shift up to crop header */
+    left: 0;
+    width: 325px;
+    height: 700px; /* Push bottom footer out of crop bounds */
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     opacity: 0;
     transition: opacity 0.4s ease;
+    z-index: 1;
+    aspect-ratio: unset;
 }
 
 /* Error state */
@@ -7125,5 +7128,154 @@ body > .sortable-fallback.port-item .port-info {
     font-size: 0.8rem;
     letter-spacing: 2px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================
+   TIKTOK EMBED & REDIRECT CARD STYLES
+   ========================================== */
+
+.tiktok-embed-wrapper {
+    position: relative;
+    width: 325px;
+    height: 580px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    background: #000;
+}
+
+.tiktok-embed-loading {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.tiktok-embed-loading i {
+    font-size: 2.5rem;
+    color: #fff;
+    filter: drop-shadow(-2px -2px 0px #00f2fe) drop-shadow(2px 2px 0px #fe0979);
+    animation: tiktok-pulse 1.5s ease-in-out infinite;
+}
+
+.tiktok-embed-loading .mono-label {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    opacity: 0.5;
+}
+
+@keyframes tiktok-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.95); }
+}
+
+#lightbox-media-container .tiktok-embed-iframe {
+    position: absolute;
+    top: -80px; /* Shift up to crop title/profile */
+    left: -100px; /* Shift left to crop sidebar */
+    width: 535px; /* Make iframe wider so video is centered after shift */
+    height: 730px; /* Push bottom bar out */
+    border: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+    aspect-ratio: unset;
+}
+
+.tiktok-lightbox-redirect-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 80vh;
+    max-width: 450px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    background: #000;
+}
+
+.tiktok-lightbox-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.tiktok-lightbox-redirect-card:hover .tiktok-lightbox-cover {
+    transform: scale(1.05);
+}
+
+.tiktok-lightbox-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    transition: background 0.3s;
+}
+
+.tiktok-lightbox-redirect-card:hover .tiktok-lightbox-overlay {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.tiktok-play-button-pulsing {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #fff;
+    filter: drop-shadow(-2px -2px 0px #00f2fe) drop-shadow(2px 2px 0px #fe0979);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: tiktokPulse 2s infinite;
+}
+
+.tiktok-lightbox-redirect-card:hover .tiktok-play-button-pulsing {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255,255,255,0.4);
+}
+
+@keyframes tiktokPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+    70% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(254, 9, 121, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+}
+
+.tiktok-redirect-cta {
+    color: #fff;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 768px) {
+    .tiktok-embed-iframe {
+        max-width: 340px;
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tiktok-embed-iframe {
+        max-width: 100%;
+        min-height: 450px;
+    }
 }
 

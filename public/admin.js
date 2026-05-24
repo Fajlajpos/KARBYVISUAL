@@ -279,9 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedFiles = [];
                 clearPortfolioPreview();
                 if (urlLabel) urlLabel.textContent = 'REMOTE_SOURCE_URL';
-                if (urlInput) urlInput.placeholder = 'https://youtube.com/..., https://vimeo.com/... or https://instagram.com/reel/...';
+                if (urlInput) urlInput.placeholder = 'https://youtube.com/..., https://tiktok.com/..., or https://instagram.com/...';
                 if (urlHint) {
-                    urlHint.textContent = 'Podporováno: YouTube, Vimeo, Instagram Reels';
+                    urlHint.textContent = 'Podporováno: YouTube, Vimeo, Instagram Reels, TikTok';
                     urlHint.style.display = 'block';
                 }
             } else {

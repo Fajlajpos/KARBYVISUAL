@@ -657,9 +657,9 @@ function openFolderModal(category, titles, originEl) {
             let mediaHtml = '';
             const rawUrl = (item.media_url || '');
             const url = rawUrl.toLowerCase();
-            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube') || url.includes('youtu.be') || url.includes('instagram.com');
+            const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || url.includes('vimeo') || url.includes('youtube') || url.includes('youtu.be') || url.includes('instagram.com') || url.includes('tiktok.com');
 
-            if (isVideo && !url.includes('vimeo') && !url.includes('youtube') && !url.includes('youtu.be') && !url.includes('instagram.com')) {
+            if (isVideo && !url.includes('vimeo') && !url.includes('youtube') && !url.includes('youtu.be') && !url.includes('instagram.com') && !url.includes('tiktok.com')) {
                 const posterAttr = item.thumbnail_url ? ` poster="${item.thumbnail_url}"` : '';
                 mediaHtml = `
                     <div class="port-video-wrap img-loading-trigger">
@@ -667,11 +667,17 @@ function openFolderModal(category, titles, originEl) {
                         <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
                     </div>
                 `;
-            } else if (url.includes('instagram.com')) {
-                const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
-                const igShortcode = igMatch ? igMatch[1] : null;
-                const isPost = url.includes('/p/');
-                const displayThumb = item.thumbnail_url || (igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg');
+            } else if (url.includes('instagram.com') || url.includes('tiktok.com')) {
+                let displayThumb = item.thumbnail_url;
+                if (!displayThumb && url.includes('instagram.com')) {
+                    const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
+                    const igShortcode = igMatch ? igMatch[1] : null;
+                    const isPost = url.includes('/p/');
+                    displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg';
+                }
+                if (!displayThumb) {
+                    displayThumb = '/assets/kolaz_v5.jpg';
+                }
                 mediaHtml = `
                     <div class="port-img-wrap img-loading-trigger">
                         <img src="${displayThumb}" alt="${item.title}" class="port-img img-reveal-hidden" loading="lazy" 
@@ -874,14 +880,36 @@ function openLightbox(item) {
             if (igShortcode) {
                 const embedUrl = `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/embed`;
                 lightboxMedia.innerHTML = `
-                    <div class="ig-embed-wrapper" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                        <div class="ig-embed-loading" id="ig-loading-indicator" style="position:absolute; display:flex; flex-direction:column; align-items:center; gap:1rem;">
+                    <div class="ig-embed-wrapper" style="background: radial-gradient(ellipse at center, rgba(131,58,180,0.08) 0%, rgba(0,0,0,0) 70%);">
+                        <div class="ig-embed-loading" id="ig-loading-indicator" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; gap:1rem; pointer-events:none; z-index:2;">
                             <i class="ph ph-instagram-logo" style="font-size:2.5rem; animation: igPulse 1.5s ease-in-out infinite;"></i>
                             <span class="mono-label" style="font-size:0.6rem; letter-spacing:2px; opacity:0.5;">CONNECTING_TO_INSTAGRAM...</span>
                         </div>
-                        <iframe class="ig-embed-iframe" src="${embedUrl}" frameborder="0" scrolling="no" allowtransparency="true" onload="this.style.opacity = 1; const ind = document.getElementById('ig-loading-indicator'); if(ind) ind.style.display = 'none';" style="opacity:0; transition: opacity 0.4s ease; max-width:400px; width:100%; min-height:600px; border:none; border-radius:8px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);"></iframe>
+                        <iframe class="ig-embed-iframe" src="${embedUrl}" frameborder="0" scrolling="no" allowtransparency="true" onload="this.style.opacity = 1; const ind = document.getElementById('ig-loading-indicator'); if(ind) ind.style.display = 'none';" style="opacity:0;"></iframe>
+                        
+                        <a href="${rawUrl}" target="_blank" class="ig-floating-redirect-btn" style="position:absolute; bottom:20px; right:20px; z-index:10; background:rgba(10,10,10,0.85); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:0.8rem 1.5rem; border-radius:30px; display:flex; align-items:center; gap:10px; text-decoration:none; box-shadow:0 10px 25px rgba(0,0,0,0.4); transition:all 0.3s;">
+                            <i class="ph ph-instagram-logo" style="font-size:1.2rem; color:#fff;"></i>
+                            <span class="mono-label" style="color:#fff; font-size:0.65rem; letter-spacing:1px;" data-cs="[ INSTAGRAM ]" data-en="[ INSTAGRAM ]">[ INSTAGRAM ]</span>
+                        </a>
                     </div>
                 `;
+                
+                const btn = lightboxMedia.querySelector('.ig-floating-redirect-btn');
+                if (btn) {
+                    btn.addEventListener('mouseenter', () => {
+                        btn.style.transform = 'scale(1.05)';
+                        btn.style.background = '#fff';
+                        btn.querySelector('i').style.color = '#000';
+                        btn.querySelector('span').style.color = '#000';
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        btn.style.transform = 'scale(1)';
+                        btn.style.background = 'rgba(10,10,10,0.85)';
+                        btn.querySelector('i').style.color = '#fff';
+                        btn.querySelector('span').style.color = '#fff';
+                    });
+                }
+                updateLanguageUI(currentLang);
             } else {
                 const thumbUrl = item.thumbnail_url || '/assets/kolaz_v5.jpg';
                 lightboxMedia.innerHTML = `
@@ -895,7 +923,59 @@ function openLightbox(item) {
                         </div>
                     </a>
                 `;
-                updateLanguageUI(currentLang); // Sync translations
+                updateLanguageUI(currentLang);
+            }
+        } else if (url.includes('tiktok.com')) {
+            const tiktokMatch = rawUrl.match(/\/video\/(\d+)/i);
+            const tiktokVideoId = tiktokMatch ? tiktokMatch[1] : null;
+
+            if (tiktokVideoId) {
+                const embedUrl = `https://www.tiktok.com/embed/v2/${tiktokVideoId}`;
+                lightboxMedia.innerHTML = `
+                    <div class="tiktok-embed-wrapper" style="background: radial-gradient(ellipse at center, rgba(0, 242, 254, 0.05) 0%, rgba(254, 9, 121, 0.05) 50%, rgba(0,0,0,0) 75%);">
+                        <div class="tiktok-embed-loading" id="tiktok-loading-indicator" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; gap:1rem; pointer-events:none; z-index:2;">
+                            <i class="ph ph-tiktok-logo" style="font-size:2.5rem; animation: tiktok-pulse 1.5s ease-in-out infinite;"></i>
+                            <span class="mono-label" style="font-size:0.6rem; letter-spacing:2px; opacity:0.5;">CONNECTING_TO_TIKTOK...</span>
+                        </div>
+                        <iframe class="tiktok-embed-iframe" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" onload="this.style.opacity = 1; const ind = document.getElementById('tiktok-loading-indicator'); if(ind) ind.style.display = 'none';" style="opacity:0;"></iframe>
+                        
+                        <a href="${rawUrl}" target="_blank" class="tiktok-floating-redirect-btn" style="position:absolute; bottom:20px; right:20px; z-index:10; background:rgba(10,10,10,0.85); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:0.8rem 1.5rem; border-radius:30px; display:flex; align-items:center; gap:10px; text-decoration:none; box-shadow:0 10px 25px rgba(0,0,0,0.4); transition:all 0.3s;">
+                            <i class="ph ph-tiktok-logo" style="font-size:1.2rem; color:#fff;"></i>
+                            <span class="mono-label" style="color:#fff; font-size:0.65rem; letter-spacing:1px;" data-cs="[ TIKTOK ]" data-en="[ TIKTOK ]">[ TIKTOK ]</span>
+                        </a>
+                    </div>
+                `;
+                
+                const btn = lightboxMedia.querySelector('.tiktok-floating-redirect-btn');
+                if (btn) {
+                    btn.addEventListener('mouseenter', () => {
+                        btn.style.transform = 'scale(1.05)';
+                        btn.style.background = '#fff';
+                        btn.querySelector('i').style.color = '#000';
+                        btn.querySelector('span').style.color = '#000';
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        btn.style.transform = 'scale(1)';
+                        btn.style.background = 'rgba(10,10,10,0.85)';
+                        btn.querySelector('i').style.color = '#fff';
+                        btn.querySelector('span').style.color = '#fff';
+                    });
+                }
+                updateLanguageUI(currentLang);
+            } else {
+                const thumbUrl = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+                lightboxMedia.innerHTML = `
+                    <a href="${rawUrl}" target="_blank" class="tiktok-lightbox-redirect-card">
+                        <img src="${thumbUrl}" class="tiktok-lightbox-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
+                        <div class="tiktok-lightbox-overlay">
+                            <div class="tiktok-play-button-pulsing">
+                                <i class="ph ph-tiktok-logo"></i>
+                            </div>
+                            <span class="mono-label tiktok-redirect-cta" data-cs="[ ZOBRAZIT NA TIKTOKU ]" data-en="[ VIEW ON TIKTOK ]">[ VIEW ON TIKTOK ]</span>
+                        </div>
+                    </a>
+                `;
+                updateLanguageUI(currentLang);
             }
         } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
             // Extract YouTube ID (Case sensitive)
@@ -913,7 +993,21 @@ function openLightbox(item) {
             const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1`;
             lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>`;
         } else if (url.match(/\.(mp4|webm|mov)(\?.*)?$/i)) {
-            lightboxMedia.innerHTML = `<video controls autoplay name="media" style="max-height:100%; width:100%;"><source src="${item.media_url}" type="video/mp4"></video>`;
+            lightboxMedia.innerHTML = `<video controls autoplay muted loop playsinline name="media" style="max-height:100%; width:100%;"><source src="${item.media_url}" type="video/mp4"></video>`;
+            
+            // Explicitly force the video to start playing to bypass dynamic DOM injection restrictions
+            setTimeout(() => {
+                const vid = lightboxMedia.querySelector('video');
+                if (vid) {
+                    vid.muted = true; // Double ensure muted for browser policy
+                    const playPromise = vid.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.warn("Explicit autoplay prevented, adding trigger:", error);
+                        });
+                    }
+                }
+            }, 50);
         } else {
              lightboxMedia.innerHTML = `<img src="${item.media_url}" alt="${item.title}" style="max-height:100%; object-fit: contain;">`;
         }
