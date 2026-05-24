@@ -904,6 +904,24 @@
                                                 <div id="url-input-hint" class="mono-label" style="font-size:0.6rem; opacity:0.5; margin-top:0.4rem; display:none;">Formát: https://www.instagram.com/reel/SHORTCODE/</div>
                                             </div>
                                         </div>
+
+                                        <!-- Combined Optional Thumbnail Uplink inside the panel -->
+                                        <div id="thumbnail-upload-container" class="hidden" style="margin-top: 1.5rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 1.5rem;">
+                                            <div class="form-group">
+                                                <label class="mono-label" data-cs="VLASTNÍ NÁHLED OBRÁZKU (NEPOVINNÝ)" data-en="CUSTOM THUMBNAIL IMAGE (OPTIONAL)">CUSTOM THUMBNAIL IMAGE (OPTIONAL)</label>
+                                                <div class="upload-dropzone" id="thumb-dropzone" style="min-height: 120px; padding: 1.5rem 1rem; margin-top: 0.5rem;">
+                                                    <input type="file" id="p-thumbnail" name="thumbnail" accept="image/*">
+                                                    <div class="dropzone-content">
+                                                        <i class="ph ph-image-square" style="font-size: 1.8rem; margin-bottom: 0.5rem;"></i>
+                                                        <span data-cs="KLIKNI NEBO PŘETÁHNI FOTKU NÁHLEDU" data-en="CLICK OR DRAG THUMBNAIL PHOTO">KLIKNI NEBO PŘETÁHNI FOTKU NÁHLEDU</span>
+                                                    </div>
+                                                    <div id="thumb-preview-container" class="preview-container hidden">
+                                                        <div class="scanner-line"></div>
+                                                        <img id="thumb-preview-img" src="" alt="Thumbnail Preview" style="width:100%; height:100%; object-fit:cover;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

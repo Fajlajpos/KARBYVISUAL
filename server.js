@@ -120,11 +120,32 @@ app.get('/api/folders', async (req, res) => {
 });
 
 // 3. Admin Portfolio Actions (Protected)
-app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20), async (req, res) => {
+app.post('/api/portfolio', verifyToken, requireAdmin, upload.fields([{ name: 'media', maxCount: 20 }, { name: 'thumbnail', maxCount: 1 }]), async (req, res) => {
     try {
         const { title, category, mediaType, vimeoUrl, descriptionCS, descriptionEN, tags } = req.body;
         const finalTitle = title || '';
         
+        const mediaFiles = req.files && req.files['media'] ? req.files['media'] : [];
+        const thumbnailFile = req.files && req.files['thumbnail'] && req.files['thumbnail'][0];
+
+        let uploadedThumbnailUrl = null;
+        if (thumbnailFile) {
+            if (thumbnailFile.mimetype.startsWith('image/')) {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                const filename = 'thumb-' + uniqueSuffix + '.webp';
+                const outputPath = path.join(uploadDir, filename);
+
+                await sharp(thumbnailFile.buffer)
+                    .resize({ width: 1280, withoutEnlargement: true })
+                    .webp({ quality: 85 })
+                    .toFile(outputPath);
+
+                uploadedThumbnailUrl = '/uploads/' + filename;
+            } else {
+                return res.status(400).json({ error: 'Náhledový obrázek musí být obrázek.' });
+            }
+        }
+
         // Handle External URL (YouTube, Vimeo, Instagram, etc.)
         if (mediaType === 'vimeo' && vimeoUrl) {
             const isInstagram = /instagram\.com/i.test(vimeoUrl);
@@ -138,19 +159,19 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
             const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
             await dbAsync.run(
                 `INSERT INTO portfolio_items (title, category, description, media_url, thumbnail_url, tags) VALUES (?, ?, ?, ?, ?, ?)`,
-                [finalTitle, category, description, vimeoUrl, null, tags]
+                [finalTitle, category, description, vimeoUrl, uploadedThumbnailUrl, tags]
             );
             return res.json({ message: 'Portfolio item created successfully' });
         }
 
         // Handle Multiple Files
-        if (!req.files || req.files.length === 0) {
+        if (!mediaFiles || mediaFiles.length === 0) {
             return res.status(400).json({ error: 'No media files uploaded' });
         }
 
         const description = JSON.stringify({ cs: descriptionCS || '', en: descriptionEN || '' });
 
-        for (const file of req.files) {
+        for (const file of mediaFiles) {
             let finalMediaUrl = '';
             let thumbnail_url = null;
 
@@ -166,7 +187,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
                     .toFile(outputPath);
 
                 finalMediaUrl = '/uploads/' + filename;
-                thumbnail_url = finalMediaUrl;
+                thumbnail_url = uploadedThumbnailUrl || finalMediaUrl;
             } else {
                 // Fallback for non-images (if uploaded)
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -176,7 +197,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
                 fs.writeFileSync(outputPath, file.buffer);
                 
                 finalMediaUrl = '/uploads/' + filename;
-                thumbnail_url = null; // No thumb for video right now
+                thumbnail_url = uploadedThumbnailUrl; // Use the uploaded custom thumbnail for video
             }
 
             await dbAsync.run(
@@ -185,7 +206,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.array('media', 20),
             );
         }
 
-        res.json({ message: `${req.files.length} items created successfully` });
+        res.json({ message: `${mediaFiles.length} items created successfully` });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

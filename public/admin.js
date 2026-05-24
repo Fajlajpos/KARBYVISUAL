@@ -269,9 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const urlHint = document.getElementById('url-input-hint');
             const urlInput = document.getElementById('p-vimeo');
 
+            const thumbContainer = document.getElementById('thumbnail-upload-container');
             if (val === 'vimeo') {
                 fileUploadSection.classList.add('hidden');
                 vimeoUploadSection.classList.remove('hidden');
+                if (thumbContainer) thumbContainer.classList.remove('hidden');
                 document.getElementById('p-media').required = false;
                 document.getElementById('p-vimeo').required = true;
                 selectedFiles = [];
@@ -285,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 vimeoUploadSection.classList.add('hidden');
                 fileUploadSection.classList.remove('hidden');
+                if (thumbContainer) thumbContainer.classList.add('hidden');
                 document.getElementById('p-vimeo').required = false;
                 document.getElementById('p-media').required = true;
                 if (urlHint) urlHint.style.display = 'none';
@@ -321,9 +324,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     // NEW: Success Animation
                     showSuccessAnimation(successMsg);
                     
+                    const preservedMode = mediaTypeSelect ? mediaTypeSelect.value : 'file';
                     portfolioForm.reset();
                     selectedFiles = []; // Clear local state
                     clearPortfolioPreview();
+                    
+                    const thumbPreviewContainer = document.getElementById('thumb-preview-container');
+                    const thumbPreviewImg = document.getElementById('thumb-preview-img');
+                    if (thumbPreviewContainer) thumbPreviewContainer.classList.add('hidden');
+                    if (thumbPreviewImg) thumbPreviewImg.src = '';
+                    
+                    // Keep the select option state and layout in perfect sync
+                    if (mediaTypeSelect) {
+                        mediaTypeSelect.value = preservedMode;
+                        mediaTypeSelect.dispatchEvent(new Event('change'));
+                    }
+                    
                     if (typeof loadPortfolio === 'function') loadPortfolio();
                 } else {
                     const data = await res.json();
@@ -880,6 +896,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.readAsDataURL(file);
             } else {
                 avatarPreviewContainer.classList.add('hidden');
+            }
+        });
+    }
+
+    // Custom Thumbnail Preview logic
+    const thumbInput = document.getElementById('p-thumbnail');
+    const thumbPreviewContainer = document.getElementById('thumb-preview-container');
+    const thumbPreviewImg = document.getElementById('thumb-preview-img');
+
+    if (thumbInput && thumbPreviewContainer) {
+        thumbInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    thumbPreviewImg.src = re.target.result;
+                    thumbPreviewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                thumbPreviewContainer.classList.add('hidden');
+                thumbPreviewImg.src = '';
             }
         });
     }
