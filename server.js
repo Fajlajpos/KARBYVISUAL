@@ -22,6 +22,37 @@ const avatarDir = path.join(uploadDir, 'avatars');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
 
+// Robust file deletion helper to prevent Windows file-lock blockages
+function safeDeleteFile(relativeUrl) {
+    if (!relativeUrl || typeof relativeUrl !== 'string' || !relativeUrl.startsWith('/uploads/')) {
+        return;
+    }
+    // Prevent directory traversal
+    const normalized = path.normalize(relativeUrl).replace(/^(\.\.(\/|\\))+/, '');
+    const filePath = path.join(__dirname, 'public', normalized);
+    
+    if (fs.existsSync(filePath)) {
+        try {
+            fs.unlinkSync(filePath);
+            console.log(`[FILE_SYSTEM] Successfully deleted file: ${filePath}`);
+        } catch (err) {
+            console.error(`[FILE_SYSTEM] Failed to delete file on primary attempt: ${filePath}. Error: ${err.message}`);
+            
+            // Retry after 1.5 seconds if file is locked (typical Windows behavior)
+            setTimeout(() => {
+                try {
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                        console.log(`[FILE_SYSTEM] Successfully deleted file on retry: ${filePath}`);
+                    }
+                } catch (retryErr) {
+                    console.error(`[FILE_SYSTEM] Permanent failure deleting file: ${filePath}. Error: ${retryErr.message}`);
+                }
+            }, 1500);
+        }
+    }
+}
+
 // Multer Storage config - Memory Storage for Sharp processing
 const storage = multer.memoryStorage();
 const upload = multer({ 
@@ -269,13 +300,9 @@ app.delete('/api/portfolio/:id', verifyToken, requireAdmin, async (req, res) => 
     try {
         const item = await dbAsync.get('SELECT media_url, thumbnail_url FROM portfolio_items WHERE id = ?', [req.params.id]);
         if (item) {
-            if (item.media_url && item.media_url.startsWith('/uploads/')) {
-                const filePath = path.join(__dirname, 'public', item.media_url);
-                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-            }
-            if (item.thumbnail_url && item.thumbnail_url.startsWith('/uploads/') && item.thumbnail_url !== item.media_url) {
-                const thumbPath = path.join(__dirname, 'public', item.thumbnail_url);
-                if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+            safeDeleteFile(item.media_url);
+            if (item.thumbnail_url !== item.media_url) {
+                safeDeleteFile(item.thumbnail_url);
             }
         }
         await dbAsync.run('DELETE FROM portfolio_items WHERE id = ?', [req.params.id]);
@@ -334,17 +361,9 @@ app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
 
         // 3. Delete files for each item
         for (const item of items) {
-            if (item.media_url && item.media_url.startsWith('/uploads/')) {
-                const filePath = path.join(__dirname, 'public', item.media_url);
-                if (fs.existsSync(filePath)) {
-                    try { fs.unlinkSync(filePath); } catch (e) { console.error(`Failed to delete file: ${filePath}`, e); }
-                }
-            }
-            if (item.thumbnail_url && item.thumbnail_url.startsWith('/uploads/') && item.thumbnail_url !== item.media_url) {
-                const thumbPath = path.join(__dirname, 'public', item.thumbnail_url);
-                if (fs.existsSync(thumbPath)) {
-                    try { fs.unlinkSync(thumbPath); } catch (e) { console.error(`Failed to delete thumbnail: ${thumbPath}`, e); }
-                }
+            safeDeleteFile(item.media_url);
+            if (item.thumbnail_url !== item.media_url) {
+                safeDeleteFile(item.thumbnail_url);
             }
         }
 
@@ -370,13 +389,9 @@ app.post('/api/portfolio/batch-delete', verifyToken, requireAdmin, async (req, r
         for (const id of ids) {
             const item = await dbAsync.get('SELECT media_url, thumbnail_url FROM portfolio_items WHERE id = ?', [id]);
             if (item) {
-                if (item.media_url && item.media_url.startsWith('/uploads/')) {
-                    const filePath = path.join(__dirname, 'public', item.media_url);
-                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-                }
-                if (item.thumbnail_url && item.thumbnail_url.startsWith('/uploads/') && item.thumbnail_url !== item.media_url) {
-                    const thumbPath = path.join(__dirname, 'public', item.thumbnail_url);
-                    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+                safeDeleteFile(item.media_url);
+                if (item.thumbnail_url !== item.media_url) {
+                    safeDeleteFile(item.thumbnail_url);
                 }
             }
             await dbAsync.run('DELETE FROM portfolio_items WHERE id = ?', [id]);
@@ -474,9 +489,8 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
 app.delete('/api/testimonials/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
         const testimonial = await dbAsync.get('SELECT avatar_url FROM testimonials WHERE id = ?', [req.params.id]);
-        if (testimonial && testimonial.avatar_url && testimonial.avatar_url.startsWith('/uploads/')) {
-            const filePath = path.join(__dirname, 'public', testimonial.avatar_url);
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        if (testimonial) {
+            safeDeleteFile(testimonial.avatar_url);
         }
         await dbAsync.run('DELETE FROM testimonials WHERE id = ?', [req.params.id]);
         res.json({ message: 'Testimonial deleted' });
