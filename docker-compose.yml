@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: karbyvisual-dev
+    restart: always
+    ports:
+      # Propojení portu 3001 z kontejneru na Váš počítač (hostitele)
+      - "3001:3001"
+    env_file:
+      - .env
+    volumes:
+      # Propojení databáze pro trvalé ukládání dat přímo na Váš disk
+      - ./database.sqlite:/usr/src/app/database.sqlite
+      # Propojení složky s nahranými obrázky pro trvalé ukládání
+      - ./public/uploads:/usr/src/app/public/uploads
