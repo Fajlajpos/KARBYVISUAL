@@ -1309,6 +1309,18 @@ function initAuthUI() {
             openAuthModal('reg-modal');
             return;
         }
+        if (id === 'legal-terms-trigger' || target.closest('#legal-terms-trigger')) {
+            e.preventDefault();
+            openAuthModal('legal-modal');
+            if (typeof window.switchLegalTab === 'function') window.switchLegalTab('terms');
+            return;
+        }
+        if (id === 'legal-privacy-trigger' || target.closest('#legal-privacy-trigger')) {
+            e.preventDefault();
+            openAuthModal('legal-modal');
+            if (typeof window.switchLegalTab === 'function') window.switchLegalTab('privacy');
+            return;
+        }
         if (id === 'main-logout-btn') {
             handleLogout();
             return;
@@ -1489,6 +1501,42 @@ function closeAuthModal(id) {
     }
 }
 window.closeAuthModal = closeAuthModal;
+
+function switchLegalTab(tab) {
+    const btnTerms = document.getElementById('legal-tab-btn-terms');
+    const btnPrivacy = document.getElementById('legal-tab-btn-privacy');
+    const tabTerms = document.getElementById('legal-tab-terms');
+    const tabPrivacy = document.getElementById('legal-tab-privacy');
+
+    if (tab === 'terms') {
+        if (btnTerms) {
+            btnTerms.classList.add('active');
+            btnTerms.style.borderBottom = '2px solid var(--accent)';
+            btnTerms.style.color = '#fff';
+        }
+        if (btnPrivacy) {
+            btnPrivacy.classList.remove('active');
+            btnPrivacy.style.borderBottom = 'none';
+            btnPrivacy.style.color = 'rgba(255,255,255,0.5)';
+        }
+        if (tabTerms) tabTerms.style.display = 'block';
+        if (tabPrivacy) tabPrivacy.style.display = 'none';
+    } else {
+        if (btnTerms) {
+            btnTerms.classList.remove('active');
+            btnTerms.style.borderBottom = 'none';
+            btnTerms.style.color = 'rgba(255,255,255,0.5)';
+        }
+        if (btnPrivacy) {
+            btnPrivacy.classList.add('active');
+            btnPrivacy.style.borderBottom = '2px solid var(--accent)';
+            btnPrivacy.style.color = '#fff';
+        }
+        if (tabTerms) tabTerms.style.display = 'none';
+        if (tabPrivacy) tabPrivacy.style.display = 'block';
+    }
+}
+window.switchLegalTab = switchLegalTab;
 
 function customConfirm(message) {
     return new Promise((resolve) => {

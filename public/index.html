@@ -605,9 +605,9 @@
                     <div class="mono-label" style="letter-spacing: 2px; opacity: 0.6;">DIRECTED BY FAJLAJP</div>
                 </div>
                 <p class="footer-tagline"
-                    data-cs="Profesionální video produkce a natáčení. Vizuální tvorba pod vedením FAJLAJPA."
-                    data-en="Professional video production and filming. Visual creation directed by FAJLAJP.">
-                    Profesionální video produkce a natáčení. Vizuální tvorba pod vedením FAJLAJPA.
+                    data-cs="Syrová vizuální produkce bez kompromisů. Hudební videoklipy, reklamy a nekompromisní střih pod taktovkou FAJLAJPA."
+                    data-en="Raw visual production without compromise. Music videos, commercial projects, and razor-sharp editing directed by FAJLAJP.">
+                    Syrová vizuální produkce bez kompromisů. Hudební videoklipy, reklamy a nekompromisní střih pod taktovkou FAJLAJPA.
                 </p>
             </div>
 
@@ -626,10 +626,8 @@
             <div class="footer-col">
                 <div class="footer-col-title" data-cs="PROTOKOL" data-en="PROTOCOL">PROTOKOL</div>
                 <div class="footer-links-list">
-                    <a href="#" class="footer-link" data-cs="PODMÍNKY UŽITÍ" data-en="TERMS OF SERVICE">PODMÍNKY
-                        UŽITÍ</a>
-                    <a href="#" class="footer-link" data-cs="OCHRANA SOUKROMÍ" data-en="PRIVACY POLICY">OCHRANA
-                        SOUKROMÍ</a>
+                    <a href="#" id="legal-terms-trigger" class="footer-link" data-cs="PODMÍNKY UŽITÍ" data-en="TERMS OF SERVICE">PODMÍNKY UŽITÍ</a>
+                    <a href="#" id="legal-privacy-trigger" class="footer-link" data-cs="OCHRANA SOUKROMÍ" data-en="PRIVACY POLICY">OCHRANA SOUKROMÍ</a>
                 </div>
             </div>
 
@@ -639,9 +637,10 @@
                 <div class="footer-links-list">
                     <a href="https://www.instagram.com/karbyvisuals/" target="_blank" class="footer-link"><i
                             class="ph ph-instagram-logo"></i> @KARBYVISUALS</a>
-                    <a href="mailto:samkarban@gmail.com" class="footer-link" data-cs="NAPIŠ MI E-MAIL" data-en="SEND ME AN EMAIL"><i class="ph ph-envelope-simple"></i>
-                        NAPIŠ MI E-MAIL</a>
-                    <a href="#" target="_blank" class="footer-link"><i class="ph ph-youtube-logo"></i> YOUTUBE</a>
+                    <a href="mailto:samkarban@gmail.com" class="footer-link"><i class="ph ph-envelope-simple"></i>
+                        <span data-cs="samkarban@gmail.com" data-en="samkarban@gmail.com">samkarban@gmail.com</span></a>
+                    <a href="tel:+420737516301" class="footer-link"><i class="ph ph-phone"></i>
+                        <span data-cs="+420 737 516 301" data-en="+420 737 516 301">+420 737 516 301</span></a>
                 </div>
             </div>
         </div>
@@ -741,6 +740,92 @@
 
     <!-- Global Toast Container -->
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Legal Modal (Terms & GDPR) -->
+    <div class="auth-modal" id="legal-modal" aria-modal="true" role="dialog">
+        <div class="modal-overlay"></div>
+        <div class="modal-panel textured-bg" style="max-width: 650px; border: 1px solid rgba(255, 255, 255, 0.15);">
+            <div class="auth-close" data-modal="legal-modal"><i class="ph ph-x"></i></div>
+            <div class="auth-content">
+                <div class="auth-logo">KARBYVISUALS</div>
+                <h2 class="auth-title" id="legal-modal-title" data-cs="PRÁVNÍ PROTOKOL" data-en="LEGAL PROTOCOL">PRÁVNÍ PROTOKOL</h2>
+                <p class="auth-subtitle" data-cs="Obchodní podmínky & Ochrana osobních údajů" data-en="Terms of Service & Privacy Policy">Obchodní podmínky & Ochrana osobních údajů</p>
+                
+                <!-- Tab controls inside the modal -->
+                <div class="db-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                    <button class="db-tab-btn active" id="legal-tab-btn-terms" data-tab="terms" style="background: none; border: none; font-family: var(--font-mono); font-size: 0.75rem; color: #fff; cursor: pointer; padding: 0.5rem 0; border-bottom: 2px solid var(--accent); transition: all 0.3s;" onclick="switchLegalTab('terms')">
+                        <span data-cs="OBCHODNÍ PODMÍNKY" data-en="TERMS & CONDITIONS">OBCHODNÍ PODMÍNKY</span>
+                    </button>
+                    <button class="db-tab-btn" id="legal-tab-btn-privacy" data-tab="privacy" style="background: none; border: none; font-family: var(--font-mono); font-size: 0.75rem; color: rgba(255,255,255,0.5); cursor: pointer; padding: 0.5rem 0; transition: all 0.3s;" onclick="switchLegalTab('privacy')">
+                        <span data-cs="OCHRANA SOUKROMÍ (GDPR)" data-en="PRIVACY (GDPR)">OCHRANA SOUKROMÍ (GDPR)</span>
+                    </button>
+                </div>
+
+                <!-- Tab 1: Terms of Service & Business info -->
+                <div class="legal-tab-content active" id="legal-tab-terms" data-lenis-prevent style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.6; color: var(--text-sec); display: block; max-height: 50vh; overflow-y: auto; padding-right: 0.5rem; text-align: left;">
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="1. IDENTIFIKAČNÍ ÚDAJE PODNIKATELE" data-en="1. IDENTIFICATION OF THE OPERATOR">1. IDENTIFIKAČNÍ ÚDAJE PODNIKATELE</h3>
+                    <p style="margin-bottom: 1.2rem;" data-cs="Webové stránky karbyvisuals.cz jsou provozovány a zastřešeny následujícím subjektem v souladu s § 435 občanského zákoníku a dalším platným zákonodárstvím České republiky:" data-en="The website karbyvisuals.cz is operated and represented by the following entity in accordance with Section 435 of the Czech Civil Code and other applicable laws of the Republic:">
+                        Webové stránky karbyvisuals.cz jsou provozovány a zastřešeny následujícím subjektem v souladu s § 435 občanského zákoníku a dalším platným zákonodárstvím České republiky:
+                    </p>
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1rem; margin-bottom: 1.5rem;">
+                        <p style="margin: 0.3rem 0;"><strong><span data-cs="Provozovatel:" data-en="Operator:">Provozovatel:</span></strong> Samuel Karban</p>
+                        <p style="margin: 0.3rem 0;"><strong><span data-cs="Sídlo podnikání:" data-en="Registered Office:">Sídlo podnikání:</span></strong> [Doplňte Vaši adresu sídla podnikatele]</p>
+                        <p style="margin: 0.3rem 0;"><strong><span data-cs="IČO (Identifikační číslo):" data-en="Business ID (IČO):">IČO (Identifikační číslo):</span></strong> [Doplňte Vaše IČO podnikatele]</p>
+                        <p style="margin: 0.3rem 0;"><strong><span data-cs="Registrace:" data-en="Registration:">Registrace:</span></strong> <span data-cs="Fyzická osoba zapsaná v živnostenském rejstříku." data-en="Natural person registered in the Trade Register.">Fyzická osoba zapsaná v živnostenském rejstříku.</span></p>
+                        <p style="margin: 0.3rem 0;"><strong><span data-cs="Kontakt:" data-en="Contact:">Kontakt:</span></strong> samkarban@gmail.com | +420 737 516 301</p>
+                    </div>
+
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="2. VŠEOBECNÉ PODMÍNKY UŽÍVÁNÍ" data-en="2. GENERAL TERMS OF USE">2. VŠEOBECNÉ PODMÍNKY UŽÍVÁNÍ</h3>
+                    <p style="margin-bottom: 1.2rem;" data-cs="Tento web slouží jako prezentace uměleckého a komerčního portfolia videoprodukce a střihu. Uživatelé jsou povinni dodržovat autorská práva. Veškeré materiály (fotografie, texty, videa, ukázky prací) jsou chráněny autorským právem provozovatele či třetích stran a bez předchozího písemného souhlasu nesmí být stahovány, modifikovány ani dále šířeny." data-en="This website serves as a presentation of artistic and commercial video production and editing portfolio. Users are obliged to respect copyrights. All materials (photos, texts, videos, samples of work) are protected by the copyright of the operator or third parties and must not be downloaded, modified, or further distributed without prior written consent.">
+                        Tento web slouží jako prezentace uměleckého a komerčního portfolia videoprodukce a střihu. Uživatelé jsou povinni dodržovat autorská práva. Veškeré materiály (fotografie, texty, videa, ukázky prací) jsou chráněny autorským právem provozovatele či třetích stran a bez předchozího písemného souhlasu nesmí být stahovány, modifikovány ani dále šířeny.
+                    </p>
+
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="3. SMLUVNÍ VZTAHY A POPTÁVKY" data-en="3. CONTRACTUAL RELATIONSHIPS & INQUIRIES">3. SMLUVNÍ VZTAHY A POPTÁVKY</h3>
+                    <p style="margin-bottom: 1.2rem;" data-cs="Poptávkový formulář (Poptávkový protokol) na těchto stránkách neslouží jako přímý závazný návrh smlouvy, nýbrž jako nezávazný komunikační prostředek pro vygenerování cenové nabídky a probrání specifikací zakázky. Konkrétní parametry natáčení, licencí, termínů a platebních podmínek jsou vždy sjednány individuální smlouvou či písemnou dohodou (e-mailem)." data-en="The inquiry form on this website does not serve as a direct binding draft contract, but as a non-binding communication tool to generate a price offer and discuss project specifications. Specific parameters of filming, licensing, deadlines, and payment terms are always negotiated via an individual contract or written agreement (via email).">
+                        Poptávkový formulář (Poptávkový protokol) na těchto stránkách neslouží jako přímý závazný návrh smlouvy, nýbrž jako nezávazný komunikační prostředek pro vygenerování cenové nabídky a probrání specifikací zakázky. Konkrétní parametry natáčení, licencí, termínů a platebních podmínek jsou vždy sjednány individuální smlouvou či písemnou dohodou (e-mailem).
+                    </p>
+                </div>
+
+                <!-- Tab 2: GDPR / Privacy Policy -->
+                <div class="legal-tab-content" id="legal-tab-privacy" data-lenis-prevent style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.6; color: var(--text-sec); display: none; max-height: 50vh; overflow-y: auto; padding-right: 0.5rem; text-align: left;">
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="1. ZPRACOVÁNÍ OSOBNÍCH ÚDAJŮ (GDPR)" data-en="1. PERSONAL DATA PROCESSING (GDPR)">1. ZPRACOVÁNÍ OSOBNÍCH ÚDAJŮ (GDPR)</h3>
+                    <p style="margin-bottom: 1.2rem;" data-cs="Respektujeme vaše soukromí. Odesláním poptávkového formuláře dochází ke zpracování vašich osobních údajů v souladu s Obecným nařízením o ochraně osobních údajů (GDPR) za účelem vyřízení vaší poptávky a komunikace ohledně spolupráce." data-en="We respect your privacy. By submitting the inquiry form, your personal data is processed in accordance with the General Data Protection Regulation (GDPR) for the purpose of handling your inquiry and communicating about the collaboration.">
+                        Respektujeme vaše soukromí. Odesláním poptávkového formuláře dochází ke zpracování vašich osobních údajů v souladu s Obecným nařízením o ochraně osobních údajů (GDPR) za účelem vyřízení vaší poptávky a komunikace ohledně spolupráce.
+                    </p>
+
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="2. ROZSAH ZPRACOVÁVANÝCH ÚDAJŮ" data-en="2. SCOPE OF PROCESSED DATA">2. ROZSAH ZPRACOVÁVANÝCH ÚDAJŮ</h3>
+                    <p style="margin-bottom: 0.5rem;" data-cs="Zpracováváme pouze ty údaje, které sami dobrovolně zadáte do formuláře:" data-en="We only process the data that you voluntarily enter into the form:">
+                        Zpracováváme pouze ty údaje, které sami dobrovolně zadáte do formuláře:
+                    </p>
+                    <ul style="margin-bottom: 1.2rem; padding-left: 1.2rem;">
+                        <li data-cs="Jméno a příjmení" data-en="First name and Last name">Jméno a příjmení</li>
+                        <li data-cs="Instagramový handle (nepovinné)" data-en="Instagram handle (optional)">Instagramový handle (nepovinné)</li>
+                        <li data-cs="E-mailová adresa" data-en="E-mail address">E-mailová adresa</li>
+                        <li data-cs="Informace o rozpočtu a popisu projektu" data-en="Information on budget and project description">Informace o rozpočtu a popisu projektu</li>
+                    </ul>
+
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="3. ÚČEL A DOBA ZPRACOVÁNÍ" data-en="3. PURPOSE & RETENTION">3. ÚČEL A DOBA ZPRACOVÁNÍ</h3>
+                    <p style="margin-bottom: 1.2rem;" data-cs="Údaje slouží výhradně k jednání o uzavření a plnění smlouvy. Nebudou předávány žádným třetím stranám ani využívány pro nevyžádané obchodní newslettery (marketing). Osobní údaje zpracováváme po dobu nezbytnou k vyřízení poptávky nebo po dobu trvání smluvního vztahu, nejdéle však po dobu 5 let od odeslání, pokud zákon neukládá delší archivační lhůtu." data-en="The data is used solely for the negotiation, conclusion, and fulfillment of the contract. It will not be transferred to third parties or used for unsolicited commercial newsletters (marketing). We process personal data for the period necessary to handle the inquiry or for the duration of the contractual relationship, but for a maximum of 5 years from submission, unless the law imposes a longer archiving period.">
+                        Údaje slouží výhradně k jednání o uzavření a plnění smlouvy. Nebudou předávány žádným třetím stranám ani využívány pro nevyžádané obchodní newslettery (marketing). Osobní údaje zpracováváme po dobu nezbytnou k vyřízení poptávky nebo po dobu trvání smluvního vztahu, nejdéle však po dobu 5 let od odeslání, pokud zákon neukládá delší archivační lhůtu.
+                    </p>
+
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.8rem;" data-cs="4. VAŠE PRÁVA" data-en="4. YOUR RIGHTS">4. VAŠE PRÁVA</h3>
+                    <p style="margin-bottom: 1.2rem;" data-cs="Máte plné právo požadovat informaci o tom, jaké vaše údaje zpracováváme, žádat jejich opravu, omezení zpracování nebo úplný výmaz. Své dotazy můžete posílat na samkarban@gmail.com." data-en="You have the full right to request information about what data we process, ask for correction, restriction of processing, or complete deletion. You can send your inquiries to samkarban@gmail.com.">
+                        Máte plné právo požadovat informaci o tom, jaké vaše údaje zpracováváme, žádat jejich opravu, omezení zpracování nebo úplný výmaz. Své dotazy můžete posílat na samkarban@gmail.com.
+                    </p>
+                </div>
+
+                <!-- Footer button inside modal to close -->
+                <button type="button" class="btn-cad-primary auth-submit" style="width: 100%; padding: 1rem; margin-top: 1.5rem;" onclick="closeAuthModal('legal-modal')">
+                    <div class="cad-grid-bg"></div>
+                    <div class="cad-corners">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                    <span class="btn-text cad-label" data-cs="[ POTVRDIT A ZAVŘÍT ]" data-en="[ CONFIRM & CLOSE ]">[ POTVRDIT A ZAVŘÍT ]</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Login Modal -->
     <div class="auth-modal" id="login-modal" aria-modal="true" role="dialog">
