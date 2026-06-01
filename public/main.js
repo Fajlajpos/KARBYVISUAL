@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (yearEl) yearEl.textContent = new Date().getFullYear();
     
     initLocalization();
+    initCookieConsent();
     loadSettings(); // Load site settings (Hero Video etc)
     loadPortfolio();
     if (typeof window.loadFolders === 'function') window.loadFolders();
@@ -1909,5 +1910,193 @@ async function saveNewOrder(grid) {
         }
     } catch (err) {
         showToast('ORDER_SYNC_FAILED', 'error');
+    }
+}
+
+// ==========================================
+// COOKIE CONSENT PROTOCOL
+// ==========================================
+function initCookieConsent() {
+    const overlay = document.getElementById('cookie-overlay');
+    const banner = document.getElementById('cookie-banner');
+    if (!overlay || !banner) return;
+
+    const acceptAllBtn = document.getElementById('cookie-accept-all');
+    const rejectAllBtn = document.getElementById('cookie-reject-all');
+    const toggleSettingsBtn = document.getElementById('cookie-toggle-settings');
+    const saveSettingsBtn = document.getElementById('cookie-save-settings');
+    const settingsPanel = document.getElementById('cookie-settings-panel');
+    
+    const optAnalytics = document.getElementById('cookie-opt-analytics');
+    const optMarketing = document.getElementById('cookie-opt-marketing');
+    
+    const settingsTrigger = document.getElementById('cookie-settings-trigger');
+
+    // 1. Check if preference already exists in localStorage
+    const consent = localStorage.getItem('karbyCookieConsent');
+    
+    if (!consent) {
+        // Show banner after 3.2 seconds delay (gives preloader & hero animations time to finish)
+        setTimeout(() => {
+            overlay.classList.add('active');
+        }, 3200);
+    } else {
+        // Apply existing preferences
+        try {
+            const preferences = JSON.parse(consent);
+            applyCookiePreferences(preferences);
+        } catch (e) {
+            console.error('Failed to parse cookie preferences:', e);
+        }
+    }
+
+    // 2. Accept All Action (Agree & Enter)
+    if (acceptAllBtn) {
+        acceptAllBtn.addEventListener('click', () => {
+            const preferences = {
+                necessary: true,
+                analytics: true,
+                marketing: true,
+                timestamp: new Date().getTime()
+            };
+            savePreferences(preferences);
+        });
+    }
+
+    // 3. Reject All / Disagree Action (Disagree & Leave)
+    if (rejectAllBtn) {
+        rejectAllBtn.addEventListener('click', () => {
+            // Redirect the user away from the site as requested
+            window.location.href = 'https://www.google.com';
+        });
+    }
+
+    // 4. Toggle Settings Action (Customize Protocol)
+    if (toggleSettingsBtn) {
+        toggleSettingsBtn.addEventListener('click', () => {
+            const isHidden = settingsPanel.style.display === 'none';
+            if (isHidden) {
+                // Expand panel
+                settingsPanel.style.display = 'flex';
+                // Show save settings button
+                saveSettingsBtn.style.display = 'block';
+                
+                // Update dynamic translation attributes
+                toggleSettingsBtn.setAttribute('data-cs', 'SKRÝT NASTAVENÍ');
+                toggleSettingsBtn.setAttribute('data-en', 'HIDE PREFERENCES');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'SKRÝT NASTAVENÍ' : 'HIDE PREFERENCES';
+                
+                // Pre-populate switches from current localStorage settings if they exist
+                if (consent) {
+                    try {
+                        const preferences = JSON.parse(consent);
+                        if (optAnalytics) optAnalytics.checked = !!preferences.analytics;
+                        if (optMarketing) optMarketing.checked = !!preferences.marketing;
+                    } catch(e) {}
+                }
+            } else {
+                // Collapse panel
+                settingsPanel.style.display = 'none';
+                saveSettingsBtn.style.display = 'none';
+                
+                // Reset translation attributes
+                toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
+                toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+            }
+        });
+    }
+
+    // 5. Save Custom Settings Action (Save Consent & Enter)
+    if (saveSettingsBtn) {
+        saveSettingsBtn.addEventListener('click', () => {
+            const preferences = {
+                necessary: true,
+                analytics: optAnalytics ? optAnalytics.checked : false,
+                marketing: optMarketing ? optMarketing.checked : false,
+                timestamp: new Date().getTime()
+            };
+            savePreferences(preferences);
+        });
+    }
+
+    // 6. Footer Link Trigger to re-open settings
+    if (settingsTrigger) {
+        settingsTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Open settings panel inside the banner immediately
+            settingsPanel.style.display = 'flex';
+            saveSettingsBtn.style.display = 'block';
+            
+            toggleSettingsBtn.setAttribute('data-cs', 'SKRÝT NASTAVENÍ');
+            toggleSettingsBtn.setAttribute('data-en', 'HIDE PREFERENCES');
+            toggleSettingsBtn.textContent = currentLang === 'cs' ? 'SKRÝT NASTAVENÍ' : 'HIDE PREFERENCES';
+            
+            // Populate switches
+            const currentConsent = localStorage.getItem('karbyCookieConsent');
+            if (currentConsent) {
+                try {
+                    const preferences = JSON.parse(currentConsent);
+                    if (optAnalytics) optAnalytics.checked = !!preferences.analytics;
+                    if (optMarketing) optMarketing.checked = !!preferences.marketing;
+                } catch(e) {}
+            }
+            
+            overlay.classList.add('active');
+        });
+    }
+
+    // 7. Privacy Policy Modal Trigger Proxy
+    const privacyLink = document.getElementById('cookie-privacy-link');
+    if (privacyLink) {
+        privacyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const trigger = document.getElementById('legal-privacy-trigger');
+            if (trigger) trigger.click();
+        });
+    }
+
+    function savePreferences(preferences) {
+        localStorage.setItem('karbyCookieConsent', JSON.stringify(preferences));
+        applyCookiePreferences(preferences);
+        
+        // Hide overlay
+        overlay.classList.remove('active');
+        
+        // Reset display after animation completes
+        setTimeout(() => {
+            settingsPanel.style.display = 'none';
+            saveSettingsBtn.style.display = 'none';
+            toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
+            toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
+            toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+        }, 600);
+        
+        // Show success notification/toast if showToast is available
+        if (typeof showToast === 'function') {
+            showToast(currentLang === 'cs' ? 'SOUHLAS BYL ULOŽEN' : 'CONSENT PROTOCOL UPDATED', 'success');
+        }
+    }
+
+    function applyCookiePreferences(preferences) {
+        console.log('Cookie preferences applied:', preferences);
+        
+        // Custom events to hook up with third party widgets (Analytics/GTM/FB pixel etc)
+        if (preferences.analytics) {
+            window.analyticsEnabled = true;
+            document.dispatchEvent(new CustomEvent('cookies:analytics:optin'));
+        } else {
+            window.analyticsEnabled = false;
+            document.dispatchEvent(new CustomEvent('cookies:analytics:optout'));
+        }
+        
+        if (preferences.marketing) {
+            window.marketingEnabled = true;
+            document.dispatchEvent(new CustomEvent('cookies:marketing:optin'));
+        } else {
+            window.marketingEnabled = false;
+            document.dispatchEvent(new CustomEvent('cookies:marketing:optout'));
+        }
     }
 }

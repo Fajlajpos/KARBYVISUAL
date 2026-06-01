@@ -628,6 +628,7 @@
                 <div class="footer-links-list">
                     <a href="#" id="legal-terms-trigger" class="footer-link" data-cs="PODMÍNKY UŽITÍ" data-en="TERMS OF SERVICE">PODMÍNKY UŽITÍ</a>
                     <a href="#" id="legal-privacy-trigger" class="footer-link" data-cs="OCHRANA SOUKROMÍ" data-en="PRIVACY POLICY">OCHRANA SOUKROMÍ</a>
+                    <a href="#" id="cookie-settings-trigger" class="footer-link" data-cs="NASTAVENÍ COOKIES" data-en="COOKIE SETTINGS">NASTAVENÍ COOKIES</a>
                 </div>
             </div>
 
@@ -1359,6 +1360,95 @@
             <button id="batch-cancel-btn" class="btn-batch-cancel">
                 <span data-cs="ZRUŠIT" data-en="CANCEL">CANCEL</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Cookie Consent Popup Wrapper & Overlay -->
+    <div id="cookie-overlay" class="cookie-overlay">
+        <div id="cookie-banner" class="cookie-banner-v3">
+            <div class="cookie-header">
+                <span class="mono-label" data-cs="[ SECURITY_PROTOCOL // v1.09 ]" data-en="[ SECURITY_PROTOCOL // v1.09 ]">[ SECURITY_PROTOCOL // v1.09 ]</span>
+            </div>
+            <div class="cookie-main-content">
+                <div class="cookie-text-area">
+                    <h3 data-cs="SOUKROMÍ &amp; COOKIES" data-en="PRIVACY &amp; COOKIES">PRIVACY &amp; COOKIES</h3>
+                    <p data-cs="Tento web vyžaduje souhlas se soubory cookies k zajištění základní funkčnosti (přihlášení, jazyk), analýze návštěvnosti a personalizaci obsahu. Pokud nesouhlasíte, budete přesměrováni pryč." data-en="This website requires cookie consent to ensure basic operations, traffic analysis, and content personalization. If you disagree, you will be redirected away.">This website requires cookie consent to ensure basic operations, traffic analysis, and content personalization. If you disagree, you will be redirected away.</p>
+                </div>
+                
+                <div class="cookie-actions-area">
+                    <div class="cookie-btn-row">
+                        <button type="button" id="cookie-accept-all" class="btn-cad-secondary">
+                            <div class="cad-focus-frame">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                            <span class="cad-label" data-cs="SOUHLASÍM" data-en="AGREE">SOUHLASÍM</span>
+                        </button>
+                        <button type="button" id="cookie-reject-all" class="btn-cad-secondary">
+                            <div class="cad-focus-frame">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                            <span class="cad-label" data-cs="NESOUHLASÍM" data-en="DISAGREE">NESOUHLASÍM</span>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 0.8rem; align-items: center; margin-top: 0.15rem;">
+                        <button type="button" id="cookie-toggle-settings" class="cookie-link-btn mono-label" data-cs="NASTAVENÍ SOUHLASU" data-en="CUSTOMIZE PREFERENCES" style="font-size: 0.62rem; margin-top: 0;">CUSTOMIZE PREFERENCES</button>
+                        <span class="mono-label" style="font-size: 0.62rem; opacity: 0.3;">|</span>
+                        <a href="#" id="cookie-privacy-link" class="cookie-link-btn mono-label" data-cs="ZÁSADY OCHRANY SOUKROMÍ" data-en="PRIVACY POLICY" style="font-size: 0.62rem; text-decoration: underline;">PRIVACY POLICY</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="cookie-settings-panel" class="cookie-settings-panel" style="display: none;">
+                <div class="cookie-settings-grid">
+                    <div class="cookie-setting-item">
+                        <div class="cookie-setting-info">
+                            <span class="cookie-setting-title" data-cs="01_NEZBYTNÉ" data-en="01_NECESSARY">01_NECESSARY</span>
+                            <span class="cookie-setting-desc" data-cs="JWT přihlášení a uložení jazyka." data-en="Secure JWT login and language storage.">Secure JWT login and language storage.</span>
+                        </div>
+                        <div class="cookie-toggle-wrapper">
+                            <span class="mono-label" data-cs="AKTIVNÍ" data-en="ACTIVE" style="color: #4CAF50; font-weight: bold; font-size: 0.6rem;">ACTIVE</span>
+                        </div>
+                    </div>
+                    
+                    <div class="cookie-setting-item">
+                        <div class="cookie-setting-info">
+                            <span class="cookie-setting-title" data-cs="02_ANALYTICKÉ" data-en="02_ANALYTICAL">02_ANALYTICAL</span>
+                            <span class="cookie-setting-desc" data-cs="Měření návštěvnosti a výkonu webu." data-en="Traffic and performance measurement.">Traffic and performance measurement.</span>
+                        </div>
+                        <div class="cookie-toggle-wrapper">
+                            <label class="tactical-switch">
+                                <input type="checkbox" id="cookie-opt-analytics" checked>
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="cookie-setting-item">
+                        <div class="cookie-setting-info">
+                            <span class="cookie-setting-title" data-cs="03_MARKETINGOVÉ" data-en="03_MARKETING">03_MARKETING</span>
+                            <span class="cookie-setting-desc" data-cs="Personalizace reklam a sociálních kampaní." data-en="Personalization of ads and social campaigns.">Personalization of ads and social campaigns.</span>
+                        </div>
+                        <div class="cookie-toggle-wrapper">
+                            <label class="tactical-switch">
+                                <input type="checkbox" id="cookie-opt-marketing" checked>
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <button type="button" id="cookie-save-settings" class="btn-cad-primary">
+                        <div class="cad-grid-bg"></div>
+                        <div class="cad-scanner"></div>
+                        <div class="cad-extension-lines"></div>
+                        <div class="cad-corners">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                        <span class="cad-label" data-cs="ULOŽIT SOUHLAS" data-en="SAVE CONSENT">SAVE CONSENT</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
