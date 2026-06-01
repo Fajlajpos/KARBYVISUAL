@@ -16,10 +16,15 @@ const { notifyAdmin, sendAutoReply } = require('./mailer');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Enable Trust Proxy for VPS deployment (Nginx secure HTTPS cookies support)
+app.set('trust proxy', 1);
+
 // Setup Uploads Directory (Ensure it exists)
 const uploadDir = path.join(__dirname, 'public', 'uploads');
+const tmpUploadDir = path.join(uploadDir, 'tmp');
 const avatarDir = path.join(uploadDir, 'avatars');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(tmpUploadDir)) fs.mkdirSync(tmpUploadDir, { recursive: true });
 if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
 
 // Robust file deletion helper to prevent Windows file-lock blockages
@@ -53,15 +58,64 @@ function safeDeleteFile(relativeUrl) {
     }
 }
 
-// Multer Storage config - Memory Storage for Sharp processing
-const storage = multer.memoryStorage();
+// Helper to clean up any remaining temporary upload files (in tmp/) to prevent disk leaks
+function cleanUpTempFiles(req) {
+    if (req.files) {
+        Object.keys(req.files).forEach(key => {
+            const files = req.files[key];
+            if (Array.isArray(files)) {
+                files.forEach(file => {
+                    if (file.path && fs.existsSync(file.path)) {
+                        try {
+                            fs.unlinkSync(file.path);
+                            console.log(`[FILE_SYSTEM] Cleaned up temporary file: ${file.path}`);
+                        } catch (e) {
+                            console.error(`[FILE_SYSTEM] Failed to clean up temp file ${file.path}:`, e.message);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+        try {
+            fs.unlinkSync(req.file.path);
+            console.log(`[FILE_SYSTEM] Cleaned up temporary avatar/file: ${req.file.path}`);
+        } catch (e) {
+            console.error(`[FILE_SYSTEM] Failed to clean up temp file ${req.file.path}:`, e.message);
+        }
+    }
+}
+
+// Helper to sanitize HTML inputs to prevent XSS (Cross-Site Scripting)
+function sanitizeInput(str) {
+    if (typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+}
+
+// Multer Storage config - Disk Storage for Sharp processing (avoids memory overload)
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, tmpUploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
+    limits: { fileSize: 100 * 1024 * 1024 } // 100 MB limit
 });
 const uploadAvatar = multer({ 
     storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
+    limits: { fileSize: 20 * 1024 * 1024 } // 20 MB limit
 });
 
 // Middlewares
@@ -166,7 +220,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.fields([{ name: 'me
                 const filename = 'thumb-' + uniqueSuffix + '.webp';
                 const outputPath = path.join(uploadDir, filename);
 
-                await sharp(thumbnailFile.buffer)
+                await sharp(thumbnailFile.path)
                     .resize({ width: 1280, withoutEnlargement: true })
                     .webp({ quality: 85 })
                     .toFile(outputPath);
@@ -265,7 +319,7 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.fields([{ name: 'me
                 const filename = uniqueSuffix + '.webp';
                 const outputPath = path.join(uploadDir, filename);
 
-                await sharp(file.buffer)
+                await sharp(file.path)
                     .resize({ width: 2560, withoutEnlargement: true })
                     .webp({ quality: 85 })
                     .toFile(outputPath);
@@ -273,12 +327,18 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.fields([{ name: 'me
                 finalMediaUrl = '/uploads/' + filename;
                 thumbnail_url = uploadedThumbnailUrl || finalMediaUrl;
             } else {
-                // Fallback for non-images (if uploaded)
+                // Fallback for non-images (if uploaded) - move from tmp/ to final destination
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
                 const ext = path.extname(file.originalname);
                 const filename = uniqueSuffix + ext;
                 const outputPath = path.join(uploadDir, filename);
-                fs.writeFileSync(outputPath, file.buffer);
+                
+                try {
+                    fs.renameSync(file.path, outputPath);
+                } catch (renameErr) {
+                    fs.copyFileSync(file.path, outputPath);
+                    fs.unlinkSync(file.path);
+                }
                 
                 finalMediaUrl = '/uploads/' + filename;
                 thumbnail_url = uploadedThumbnailUrl; // Use the uploaded custom thumbnail for video
@@ -293,6 +353,8 @@ app.post('/api/portfolio', verifyToken, requireAdmin, upload.fields([{ name: 'me
         res.json({ message: `${mediaFiles.length} items created successfully` });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    } finally {
+        cleanUpTempFiles(req);
     }
 });
 
@@ -457,7 +519,7 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
                 const filename = uniqueSuffix + '.webp';
                 const outputPath = path.join(avatarDir, filename);
 
-                await sharp(req.file.buffer)
+                await sharp(req.file.path)
                     .resize({ width: 800, withoutEnlargement: true })
                     .webp({ quality: 85 })
                     .toFile(outputPath);
@@ -468,7 +530,14 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
                 const ext = path.extname(req.file.originalname);
                 const filename = uniqueSuffix + ext;
                 const outputPath = path.join(avatarDir, filename);
-                fs.writeFileSync(outputPath, req.file.buffer);
+                
+                try {
+                    fs.renameSync(req.file.path, outputPath);
+                } catch (renameErr) {
+                    fs.copyFileSync(req.file.path, outputPath);
+                    fs.unlinkSync(req.file.path);
+                }
+                
                 avatarUrl = '/uploads/avatars/' + filename;
             }
         }
@@ -483,6 +552,8 @@ app.post('/api/testimonials', verifyToken, requireAdmin, uploadAvatar.single('av
     } catch (err) {
         console.error('Testimonial upload ERROR:', err);
         res.status(500).json({ error: err.message });
+    } finally {
+        cleanUpTempFiles(req);
     }
 });
 
@@ -502,7 +573,12 @@ app.delete('/api/testimonials/:id', verifyToken, requireAdmin, async (req, res) 
 // 5. Contact Form (Public)
 app.post('/api/contact', async (req, res) => {
     try {
-        const { name, email, instagram, project_type, budget, message } = req.body;
+        const name = sanitizeInput(req.body.name);
+        const email = req.body.email || '';
+        const instagram = sanitizeInput(req.body.instagram);
+        const project_type = sanitizeInput(req.body.project_type);
+        const budget = sanitizeInput(req.body.budget);
+        const message = sanitizeInput(req.body.message);
         
         // Save to DB
         await dbAsync.run(
@@ -510,7 +586,7 @@ app.post('/api/contact', async (req, res) => {
             [name, email, instagram, project_type, budget, message]
         );
 
-        // Send Emails (Non-blocking)
+        // Send Emails (Non-blocking, using sanitized safe strings)
         notifyAdmin(name, email, project_type, budget, message, instagram).catch(err => console.error("Admin mail fail:", err));
         sendAutoReply(email, name).catch(err => console.error("Auto-reply mail fail:", err));
 
