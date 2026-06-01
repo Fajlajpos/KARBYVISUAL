@@ -820,7 +820,7 @@ function openFolderModal(category, titles, originEl) {
           duration: 0.5,
           stagger: 0.04,
           ease: "power2.out",
-          force3D: false
+          force3D: true
       }, "-=0.1");
 }
 
@@ -873,110 +873,97 @@ function openLightbox(item) {
             const embedUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1`;
             lightboxMedia.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="width:100%; height:100%;"></iframe>`;
         } else if (url.includes('instagram.com')) {
-            const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
-            const igShortcode = igMatch ? igMatch[1] : null;
-            const isPost = url.includes('/p/');
-            
-            if (igShortcode) {
-                const embedUrl = `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/embed`;
-                lightboxMedia.innerHTML = `
-                    <div class="ig-embed-wrapper" style="background: radial-gradient(ellipse at center, rgba(131,58,180,0.08) 0%, rgba(0,0,0,0) 70%);">
-                        <div class="ig-embed-loading" id="ig-loading-indicator" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; gap:1rem; pointer-events:none; z-index:2;">
-                            <i class="ph ph-instagram-logo" style="font-size:2.5rem; animation: igPulse 1.5s ease-in-out infinite;"></i>
-                            <span class="mono-label" style="font-size:0.6rem; letter-spacing:2px; opacity:0.5;">CONNECTING_TO_INSTAGRAM...</span>
+            let displayThumb = item.thumbnail_url;
+            if (!displayThumb) {
+                const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
+                const igShortcode = igMatch ? igMatch[1] : null;
+                const isPost = url.includes('/p/');
+                displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg';
+            }
+            lightboxMedia.innerHTML = `
+                <div class="social-redirect-container ig-theme">
+                    <div class="social-ambient-glow" style="background-image: url('${displayThumb}')"></div>
+                    <a href="${rawUrl}" target="_blank" rel="noopener noreferrer" class="social-redirect-card">
+                        <div class="social-cover-wrapper">
+                            <img src="${displayThumb}" class="social-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
+                            <div class="social-card-overlay"></div>
                         </div>
-                        <iframe class="ig-embed-iframe" src="${embedUrl}" frameborder="0" scrolling="no" allowtransparency="true" onload="this.style.opacity = 1; const ind = document.getElementById('ig-loading-indicator'); if(ind) ind.style.display = 'none';" style="opacity:0;"></iframe>
                         
-                        <a href="${rawUrl}" target="_blank" class="ig-floating-redirect-btn" style="position:absolute; bottom:20px; right:20px; z-index:10; background:rgba(10,10,10,0.85); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:0.8rem 1.5rem; border-radius:30px; display:flex; align-items:center; gap:10px; text-decoration:none; box-shadow:0 10px 25px rgba(0,0,0,0.4); transition:all 0.3s;">
-                            <i class="ph ph-instagram-logo" style="font-size:1.2rem; color:#fff;"></i>
-                            <span class="mono-label" style="color:#fff; font-size:0.65rem; letter-spacing:1px;" data-cs="[ INSTAGRAM ]" data-en="[ INSTAGRAM ]">[ INSTAGRAM ]</span>
-                        </a>
-                    </div>
-                `;
-                
-                const btn = lightboxMedia.querySelector('.ig-floating-redirect-btn');
-                if (btn) {
-                    btn.addEventListener('mouseenter', () => {
-                        btn.style.transform = 'scale(1.05)';
-                        btn.style.background = '#fff';
-                        btn.querySelector('i').style.color = '#000';
-                        btn.querySelector('span').style.color = '#000';
-                    });
-                    btn.addEventListener('mouseleave', () => {
-                        btn.style.transform = 'scale(1)';
-                        btn.style.background = 'rgba(10,10,10,0.85)';
-                        btn.querySelector('i').style.color = '#fff';
-                        btn.querySelector('span').style.color = '#fff';
-                    });
-                }
-                updateLanguageUI(currentLang);
-            } else {
-                const thumbUrl = item.thumbnail_url || '/assets/kolaz_v5.jpg';
-                lightboxMedia.innerHTML = `
-                    <a href="${rawUrl}" target="_blank" class="ig-lightbox-redirect-card">
-                        <img src="${thumbUrl}" class="ig-lightbox-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
-                        <div class="ig-lightbox-overlay">
-                            <div class="ig-play-button-pulsing">
+                        <div class="hud-element hud-top-left">
+                            <span class="hud-rec-dot"></span>
+                            <span class="mono-label">REC</span>
+                        </div>
+                        <div class="hud-element hud-top-right">
+                            <span class="mono-label">1080x1920 @60FPS</span>
+                        </div>
+                        <div class="hud-element hud-bottom-left">
+                            <span class="mono-label">PLAYBACK_PREVIEW</span>
+                        </div>
+                        
+                        <div class="hud-crosshair-tl"></div>
+                        <div class="hud-crosshair-tr"></div>
+                        <div class="hud-crosshair-bl"></div>
+                        <div class="hud-crosshair-br"></div>
+                        
+                        <div class="social-center-cta">
+                            <div class="social-play-btn">
                                 <i class="ph ph-instagram-logo"></i>
                             </div>
-                            <span class="mono-label ig-redirect-cta" data-cs="[ ZOBRAZIT NA INSTAGRAMU ]" data-en="[ VIEW ON INSTAGRAM ]">[ VIEW ON INSTAGRAM ]</span>
+                        </div>
+                        
+                        <div class="social-bottom-bar">
+                            <div class="social-btn-cta instagram-gradient-btn">
+                                <i class="ph ph-arrow-up-right"></i>
+                                <span class="mono-label" data-cs="OTEVŘÍT NA INSTAGRAMU" data-en="OPEN ON INSTAGRAM">OPEN ON INSTAGRAM</span>
+                            </div>
                         </div>
                     </a>
-                `;
-                updateLanguageUI(currentLang);
-            }
+                </div>
+            `;
+            updateLanguageUI(currentLang);
         } else if (url.includes('tiktok.com')) {
-            const tiktokMatch = rawUrl.match(/\/video\/(\d+)/i);
-            const tiktokVideoId = tiktokMatch ? tiktokMatch[1] : null;
-
-            if (tiktokVideoId) {
-                const embedUrl = `https://www.tiktok.com/embed/v2/${tiktokVideoId}`;
-                lightboxMedia.innerHTML = `
-                    <div class="tiktok-embed-wrapper" style="background: radial-gradient(ellipse at center, rgba(0, 242, 254, 0.05) 0%, rgba(254, 9, 121, 0.05) 50%, rgba(0,0,0,0) 75%);">
-                        <div class="tiktok-embed-loading" id="tiktok-loading-indicator" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; gap:1rem; pointer-events:none; z-index:2;">
-                            <i class="ph ph-tiktok-logo" style="font-size:2.5rem; animation: tiktok-pulse 1.5s ease-in-out infinite;"></i>
-                            <span class="mono-label" style="font-size:0.6rem; letter-spacing:2px; opacity:0.5;">CONNECTING_TO_TIKTOK...</span>
+            const displayThumb = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+            lightboxMedia.innerHTML = `
+                <div class="social-redirect-container tiktok-theme">
+                    <div class="social-ambient-glow" style="background-image: url('${displayThumb}')"></div>
+                    <a href="${rawUrl}" target="_blank" rel="noopener noreferrer" class="social-redirect-card">
+                        <div class="social-cover-wrapper">
+                            <img src="${displayThumb}" class="social-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
+                            <div class="social-card-overlay"></div>
                         </div>
-                        <iframe class="tiktok-embed-iframe" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" onload="this.style.opacity = 1; const ind = document.getElementById('tiktok-loading-indicator'); if(ind) ind.style.display = 'none';" style="opacity:0;"></iframe>
                         
-                        <a href="${rawUrl}" target="_blank" class="tiktok-floating-redirect-btn" style="position:absolute; bottom:20px; right:20px; z-index:10; background:rgba(10,10,10,0.85); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:0.8rem 1.5rem; border-radius:30px; display:flex; align-items:center; gap:10px; text-decoration:none; box-shadow:0 10px 25px rgba(0,0,0,0.4); transition:all 0.3s;">
-                            <i class="ph ph-tiktok-logo" style="font-size:1.2rem; color:#fff;"></i>
-                            <span class="mono-label" style="color:#fff; font-size:0.65rem; letter-spacing:1px;" data-cs="[ TIKTOK ]" data-en="[ TIKTOK ]">[ TIKTOK ]</span>
-                        </a>
-                    </div>
-                `;
-                
-                const btn = lightboxMedia.querySelector('.tiktok-floating-redirect-btn');
-                if (btn) {
-                    btn.addEventListener('mouseenter', () => {
-                        btn.style.transform = 'scale(1.05)';
-                        btn.style.background = '#fff';
-                        btn.querySelector('i').style.color = '#000';
-                        btn.querySelector('span').style.color = '#000';
-                    });
-                    btn.addEventListener('mouseleave', () => {
-                        btn.style.transform = 'scale(1)';
-                        btn.style.background = 'rgba(10,10,10,0.85)';
-                        btn.querySelector('i').style.color = '#fff';
-                        btn.querySelector('span').style.color = '#fff';
-                    });
-                }
-                updateLanguageUI(currentLang);
-            } else {
-                const thumbUrl = item.thumbnail_url || '/assets/kolaz_v5.jpg';
-                lightboxMedia.innerHTML = `
-                    <a href="${rawUrl}" target="_blank" class="tiktok-lightbox-redirect-card">
-                        <img src="${thumbUrl}" class="tiktok-lightbox-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
-                        <div class="tiktok-lightbox-overlay">
-                            <div class="tiktok-play-button-pulsing">
+                        <div class="hud-element hud-top-left">
+                            <span class="hud-rec-dot"></span>
+                            <span class="mono-label">REC</span>
+                        </div>
+                        <div class="hud-element hud-top-right">
+                            <span class="mono-label">1080x1920 @60FPS</span>
+                        </div>
+                        <div class="hud-element hud-bottom-left">
+                            <span class="mono-label">PLAYBACK_PREVIEW</span>
+                        </div>
+                        
+                        <div class="hud-crosshair-tl"></div>
+                        <div class="hud-crosshair-tr"></div>
+                        <div class="hud-crosshair-bl"></div>
+                        <div class="hud-crosshair-br"></div>
+                        
+                        <div class="social-center-cta">
+                            <div class="social-play-btn">
                                 <i class="ph ph-tiktok-logo"></i>
                             </div>
-                            <span class="mono-label tiktok-redirect-cta" data-cs="[ ZOBRAZIT NA TIKTOKU ]" data-en="[ VIEW ON TIKTOK ]">[ VIEW ON TIKTOK ]</span>
+                        </div>
+                        
+                        <div class="social-bottom-bar">
+                            <div class="social-btn-cta tiktok-neon-btn">
+                                <i class="ph ph-arrow-up-right"></i>
+                                <span class="mono-label" data-cs="OTEVŘÍT NA TIKTOKU" data-en="OPEN ON TIKTOK">OPEN ON TIKTOK</span>
+                            </div>
                         </div>
                     </a>
-                `;
-                updateLanguageUI(currentLang);
-            }
+                </div>
+            `;
+            updateLanguageUI(currentLang);
         } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
             // Extract YouTube ID (Case sensitive)
             let ytId = '';
