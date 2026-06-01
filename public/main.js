@@ -1481,11 +1481,25 @@ function closeAuthModal(id) {
             const modal = document.getElementById(id);
             if (modal) modal.classList.remove('active');
             if (window.toggleBodyLock) window.toggleBodyLock(false);
+            
+            // Re-open cookie banner if it was temporarily hidden to read the legal text
+            if (id === 'legal-modal' && window.cookieBannerWasHiddenForLegal) {
+                window.cookieBannerWasHiddenForLegal = false;
+                const overlay = document.getElementById('cookie-overlay');
+                if (overlay) overlay.classList.add('active');
+            }
         });
     } else {
         const modal = document.getElementById(id);
         if (modal) modal.classList.remove('active');
         if (window.toggleBodyLock) window.toggleBodyLock(false);
+        
+        // Re-open cookie banner if it was temporarily hidden to read the legal text
+        if (id === 'legal-modal' && window.cookieBannerWasHiddenForLegal) {
+            window.cookieBannerWasHiddenForLegal = false;
+            const overlay = document.getElementById('cookie-overlay');
+            if (overlay) overlay.classList.add('active');
+        }
     }
 }
 window.closeAuthModal = closeAuthModal;
@@ -2052,6 +2066,11 @@ function initCookieConsent() {
     if (privacyLink) {
         privacyLink.addEventListener('click', (e) => {
             e.preventDefault();
+            
+            // Hide the cookie banner overlay temporarily so it doesn't block the legal text
+            overlay.classList.remove('active');
+            window.cookieBannerWasHiddenForLegal = true;
+            
             const trigger = document.getElementById('legal-privacy-trigger');
             if (trigger) trigger.click();
         });
