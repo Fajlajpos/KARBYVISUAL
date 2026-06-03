@@ -1977,11 +1977,16 @@ function initCookieConsent() {
         });
     }
 
-    // 3. Reject All / Disagree Action (Disagree & Leave)
+    // 3. Reject All / Disagree Action (Disagree & Continue)
     if (rejectAllBtn) {
         rejectAllBtn.addEventListener('click', () => {
-            // Redirect the user away from the site as requested
-            window.location.href = 'https://www.google.com';
+            const preferences = {
+                necessary: true,
+                analytics: false,
+                marketing: false,
+                timestamp: new Date().getTime()
+            };
+            savePreferences(preferences);
         });
     }
 
@@ -2001,9 +2006,10 @@ function initCookieConsent() {
                 toggleSettingsBtn.textContent = currentLang === 'cs' ? 'SKRÝT NASTAVENÍ' : 'HIDE PREFERENCES';
                 
                 // Pre-populate switches from current localStorage settings if they exist
-                if (consent) {
+                const activeConsent = localStorage.getItem('karbyCookieConsent');
+                if (activeConsent) {
                     try {
-                        const preferences = JSON.parse(consent);
+                        const preferences = JSON.parse(activeConsent);
                         if (optAnalytics) optAnalytics.checked = !!preferences.analytics;
                         if (optMarketing) optMarketing.checked = !!preferences.marketing;
                     } catch(e) {}
@@ -2076,6 +2082,36 @@ function initCookieConsent() {
         });
     }
 
+    function deleteCookie(name) {
+        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie = name + '=; Path=/; Domain=' + window.location.hostname + '; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie = name + '=; Path=/; Domain=.' + window.location.hostname + '; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        
+        const hostParts = window.location.hostname.split('.');
+        if (hostParts.length >= 2) {
+            const mainDomain = '.' + hostParts.slice(-2).join('.');
+            document.cookie = name + '=; Path=/; Domain=' + mainDomain + '; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+    }
+
+    function clearFirstPartyCookies(category) {
+        const cookies = document.cookie.split(';');
+        const analyticsPatterns = ['_ga', '_gid', '_gat', '__utm'];
+        const marketingPatterns = ['_fbp', '_fbc', 'fr'];
+        
+        let patterns = [];
+        if (category === 'analytics') patterns = analyticsPatterns;
+        if (category === 'marketing') patterns = marketingPatterns;
+        
+        cookies.forEach(cookie => {
+            const name = cookie.split('=')[0].trim();
+            const shouldDelete = patterns.some(pattern => name.startsWith(pattern));
+            if (shouldDelete) {
+                deleteCookie(name);
+            }
+        });
+    }
+
     function savePreferences(preferences) {
         localStorage.setItem('karbyCookieConsent', JSON.stringify(preferences));
         applyCookiePreferences(preferences);
@@ -2108,6 +2144,7 @@ function initCookieConsent() {
         } else {
             window.analyticsEnabled = false;
             document.dispatchEvent(new CustomEvent('cookies:analytics:optout'));
+            clearFirstPartyCookies('analytics');
         }
         
         if (preferences.marketing) {
@@ -2116,6 +2153,7 @@ function initCookieConsent() {
         } else {
             window.marketingEnabled = false;
             document.dispatchEvent(new CustomEvent('cookies:marketing:optout'));
+            clearFirstPartyCookies('marketing');
         }
     }
 }
