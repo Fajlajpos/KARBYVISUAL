@@ -1170,12 +1170,20 @@ async function handleContactSubmit(e) {
     const submitBtn = document.getElementById('submit-btn');
     
     formStatus.innerHTML = '';
-    btnText.style.display = 'none';
-    loader.classList.remove('hidden');
-    submitBtn.disabled = true;
 
     const formData = new FormData(contactForm);
     const data = Object.fromEntries(formData.entries());
+
+    // Custom validation for hidden radio inputs to prevent silent submission blocking
+    if (!data.project_type || !data.budget) {
+        const errorMsg = currentLang === 'cs' ? 'ZVOLTE TYP PROJEKTU A ROZPOČET.' : 'SELECT PROJECT TYPE AND BUDGET.';
+        formStatus.innerHTML = `<div style="color: var(--accent); margin-top: 15px;">ERROR: ${errorMsg}</div>`;
+        return;
+    }
+
+    if (btnText) btnText.style.display = 'none';
+    if (loader) loader.classList.remove('hidden');
+    if (submitBtn) submitBtn.disabled = true;
 
     try {
         const res = await fetch('/api/contact', {
@@ -1196,9 +1204,9 @@ async function handleContactSubmit(e) {
     } catch (err) {
         formStatus.innerHTML = `<div style="color: var(--accent); margin-top: 15px;">CONNECTION FAILED.</div>`;
     } finally {
-        btnText.style.display = 'block';
-        loader.classList.add('hidden');
-        submitBtn.disabled = false;
+        if (btnText) btnText.style.display = 'block';
+        if (loader) loader.classList.add('hidden');
+        if (submitBtn) submitBtn.disabled = false;
         setTimeout(() => { formStatus.innerHTML = ''; }, 5000);
     }
 }

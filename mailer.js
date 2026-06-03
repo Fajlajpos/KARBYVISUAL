@@ -18,9 +18,17 @@ async function notifyAdmin(contactName, contactEmail, projectType, budget, messa
         return;
     }
 
+    const adminEmail = process.env.ADMIN_EMAIL || 'karbyvisuals@gmail.com';
+    const contactReceiver = process.env.CONTACT_RECEIVER;
+    
+    const recipients = [adminEmail];
+    if (contactReceiver && contactReceiver !== adminEmail) {
+        recipients.push(contactReceiver);
+    }
+
     const mailOptions = {
         from: `"KARBYVISUAL Web" <${process.env.SMTP_USER}>`,
-        to: process.env.CONTACT_RECEIVER || process.env.ADMIN_EMAIL,
+        to: recipients.join(', '),
         subject: `Nová Poptávka | KARBYVISUAL: ${contactName} - ${projectType}`,
         html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff;">
