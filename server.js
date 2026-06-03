@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const rateLimit = require('express-rate-limit');
-const { dbAsync } = require('./db');
+const { dbAsync, dbInitialized } = require('./db');
 const { createToken, verifyToken, requireAdmin } = require('./auth');
 const { notifyAdmin, sendAutoReply } = require('./mailer');
 
@@ -36,6 +36,13 @@ function safeDeleteFile(relativeUrl) {
     const normalized = path.normalize(relativeUrl).replace(/^(\.\.(\/|\\))+/, '');
     const filePath = path.join(__dirname, 'public', normalized);
     
+    // Safety check: ensure the resolved path stays inside public/uploads
+    const uploadDir = path.join(__dirname, 'public', 'uploads');
+    if (!filePath.startsWith(uploadDir)) {
+        console.warn(`[SECURITY] Blocked potential directory traversal attempt for path: ${filePath}`);
+        return;
+    }
+
     if (fs.existsSync(filePath)) {
         try {
             fs.unlinkSync(filePath);
@@ -719,18 +726,52 @@ app.use((err, req, res, next) => {
     });
 });
 
-// STARTUP DB CHECK: Strictly enforce admin role ONLY for the main email in .env
-dbAsync.run("UPDATE users SET role = 'user'").then(() => {
-    return dbAsync.run(
-        "UPDATE users SET role = 'admin', full_name = 'KARBY ADMIN' WHERE email = ?",
-        [process.env.ADMIN_EMAIL]
-    );
-}).then(() => console.log('Admin policy enforced: ONLY .env account is admin.'))
-  .catch(err => console.error('Admin policy enforcement failed:', err));
+// Function to clean temporary uploads directory
+function cleanTempUploadDirectory() {
+    const tmpDir = path.join(__dirname, 'public', 'uploads', 'tmp');
+    if (fs.existsSync(tmpDir)) {
+        try {
+            const files = fs.readdirSync(tmpDir);
+            let cleanedCount = 0;
+            files.forEach(file => {
+                const filePath = path.join(tmpDir, file);
+                const stat = fs.statSync(filePath);
+                if (stat.isFile()) {
+                    fs.unlinkSync(filePath);
+                    cleanedCount++;
+                }
+            });
+            if (cleanedCount > 0) {
+                console.log(`[FILE_SYSTEM] Successfully cleaned up ${cleanedCount} temporary upload file(s).`);
+            } else {
+                console.log('[FILE_SYSTEM] Temporary upload directory is already clean.');
+            }
+        } catch (err) {
+            console.error('[FILE_SYSTEM] Failed to clean up temporary upload directory:', err.message);
+        }
+    }
+}
 
-const server = app.listen(PORT, () => {
-    console.log(`TACTICAL_COMMAND_CENTER_READY at http://localhost:${PORT}`);
+// Wait for DB to be completely connected, initialized and seeded before starting server
+dbInitialized.then(() => {
+    // 1. Clean the tmp uploads directory on start
+    cleanTempUploadDirectory();
+
+    // 2. Enforce admin role policy
+    return dbAsync.run("UPDATE users SET role = 'user'").then(() => {
+        return dbAsync.run(
+            "UPDATE users SET role = 'admin', full_name = 'KARBY ADMIN' WHERE email = ?",
+            [process.env.ADMIN_EMAIL]
+        );
+    }).then(() => console.log('Admin policy enforced: ONLY .env account is admin.'));
+}).then(() => {
+    // 3. Start the server
+    const server = app.listen(PORT, () => {
+        console.log(`TACTICAL_COMMAND_CENTER_READY at http://localhost:${PORT}`);
+    });
+    // Set timeout to 10 minutes for large uploads
+    server.timeout = 600000;
+}).catch(err => {
+    console.error('CRITICAL: Server initialization sequence failed:', err);
+    process.exit(1);
 });
-
-// Set timeout to 10 minutes for large uploads
-server.timeout = 600000;

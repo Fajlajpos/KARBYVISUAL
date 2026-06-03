@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = {
                 title: 'KARBYVISUALS SHOWREEL',
                 category: 'SHOWREEL',
-                description: 'VizuÄËlnÄÂ­ produkce bez kompromisÄ¹Å».',
+                description: 'Vizuální produkce bez kompromisů.',
                 media_url: src
             };
             
@@ -696,7 +696,7 @@ function openFolderModal(category, titles, originEl) {
                     if (rawUrl.includes('watch?v=')) ytId = rawUrl.split('v=')[1].split(/[&#]/)[0];
                     else if (rawUrl.includes('youtu.be/')) ytId = rawUrl.split('youtu.be/')[1].split(/[?#]/)[0];
                     else if (rawUrl.includes('embed/')) ytId = rawUrl.split('embed/')[1].split(/[?#]/)[0];
-                    else if (rawUrl.includes('shorts/')) ytId = rawUrl.split('shorts/')[1].split(/[?#]/)[0];
+                    else if (rawUrl.includes('shorts/')) ytId = rawUrl.split('shorts/')[1].split(/[?&#]/)[0];
                     
                     if (ytId) displayThumb = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
                 }
@@ -1206,10 +1206,6 @@ async function handleContactSubmit(e) {
 // AUTH & TOASTS
 // ==========================================
 
-// ==========================================
-// AUTH & TOASTS
-// ==========================================
-
 async function checkAuth() {
     try {
         const res = await fetch('/api/me');
@@ -1272,7 +1268,7 @@ async function handleLogout() {
     try {
         const res = await fetch('/api/logout', { method: 'POST' });
         if (res.ok) {
-            showToast(currentLang === 'cs' ? 'OdhlÃ¡Å¡enÃ­ ÃºspÄÅ¡nÃ©.' : 'Logged out successfully.', 'success');
+            showToast(currentLang === 'cs' ? 'Odhlášení úspěšné.' : 'Logged out successfully.', 'success');
             checkAuth();
         }
     } catch (err) {
@@ -1845,7 +1841,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (batchDeleteBtn) {
         batchDeleteBtn.onclick = async () => {
             const ids = Array.from(selectedItems);
-            const confirmMsg = currentLang === 'cs' ? `OPRAVDU SMAZAT ${ids.length} POLOÅ½EK?` : `REALLY DELETE ${ids.length} ITEMS?`;
+            const confirmMsg = currentLang === 'cs' ? `OPRAVDU SMAZAT ${ids.length} POLOŽEK?` : `REALLY DELETE ${ids.length} ITEMS?`;
             const confirmed = await window.customConfirm(confirmMsg);
             if (!confirmed) return;
 
