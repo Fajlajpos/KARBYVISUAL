@@ -60,17 +60,57 @@ async function sendAutoReply(contactEmail, contactName) {
     const mailOptions = {
         from: `"KARBYVISUAL" <${process.env.SMTP_USER}>`,
         to: contactEmail,
-        subject: `Your Inquiry Receipt | KARBYVISUAL`,
+        subject: `Díky za poptávku! // KARBYVISUALS`,
         html: `
-            <div style="font-family: Arial, sans-serif; padding: 30px; background: #000; color: #fff; text-align: center;">
-                <h1 style="letter-spacing: 5px; text-transform: uppercase;">Karby<span style="color: #666;">Visual</span></h1>
-                <p style="text-align: left; margin-top: 30px; font-size: 16px; line-height: 1.5;">
-                    Dear ${contactName},<br><br>
-                    Thank you for reaching out. We have received your inquiry and will review it shortly.
-                    Due to high volume, it may take 24-48 hours for us to respond.<br><br>
-                    Best Regards,<br>
-                    <strong>KARBYVISUAL Team</strong>
-                </p>
+            <div style="background-color: #000000; margin: 0; padding: 40px 0; font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif; width: 100%; text-align: left;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #080808; border: 1px solid #1a1a1a; padding: 40px; color: #ffffff; box-sizing: border-box;">
+                    
+                    <!-- Header with Logo matching Hero -->
+                    <div style="text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #151515;">
+                        <h1 style="font-size: 32px; font-weight: 800; color: #ffffff; letter-spacing: -1px; text-transform: uppercase; margin: 0; line-height: 1.0;">
+                            KARBYVISUALS
+                        </h1>
+                        <div style="font-family: 'Courier New', Courier, monospace; font-size: 9px; color: #e60000; margin-top: 8px; letter-spacing: 3px; font-weight: bold; text-transform: uppercase;">
+                            Cinematographer & Photographer
+                        </div>
+                    </div>
+                    
+                    <!-- Body Text -->
+                    <p style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px;">
+                        Zdravím ${contactName},
+                    </p>
+                    
+                    <p style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px;">
+                        Díky za odeslání poptávky. Tvoje specifikace projektu úspěšně dorazily do mého systému a už teď na ně koukám. Každému projektu věnuji maximální péči, takže si detaily pečlivě projdu. Ozvu se ti zpět co nejdříve, standardně během 24 až 48 hodin, abychom probrali další postup a možnosti spolupráce.
+                    </p>
+                    
+                    <p style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px;">
+                        Pokud už teď máš připravené nějaké podklady, nápady, moodboardy nebo rovnou natočené záběry, můžeš mi je poslat přímo na tyto kontakty:
+                    </p>
+                    
+                    <!-- Contact Box -->
+                    <div style="background: #111111; padding: 20px; border-left: 3px solid #e60000; margin: 25px 0; font-size: 14px; line-height: 1.6;">
+                        <strong style="color: #ffffff;">E-mail:</strong> <a href="mailto:samkarban@gmail.com" style="color: #e60000; text-decoration: none; font-weight: bold;">samkarban@gmail.com</a><br>
+                        <strong style="color: #ffffff;">Instagram:</strong> <a href="https://www.instagram.com/karbyvisuals/" style="color: #e60000; text-decoration: none; font-weight: bold;">@karbyvisuals</a><br>
+                        <strong style="color: #ffffff;">Telefon:</strong> <span style="color: #ffffff;">+420 737 516 301</span>
+                    </div>
+                    
+                    <p style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px;">
+                        V případě velkých souborů (videa, audio nebo balíky fotek) je prosím nahraj na <strong>WeTransfer</strong>, <strong>MyAirBridge</strong> nebo nasdílej složku na <strong>Google Drive</strong> a pošli mi odkaz.
+                    </p>
+                    
+                    <p style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-top: 35px; margin-bottom: 0;">
+                        Těším se na spolupráci. Měj se fajn,<br>
+                        <strong style="color: #ffffff;">Samuel Karban</strong>
+                    </p>
+                    
+                    <!-- Footer -->
+                    <hr style="border: none; border-top: 1px solid #151515; margin: 30px 0;" />
+                    <div style="font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #444444; text-align: center; letter-spacing: 1px; text-transform: uppercase;">
+                        DIRECTED BY FAJLAJP // KARBYVISUALS Team
+                    </div>
+                    
+                </div>
             </div>
         `
     };
