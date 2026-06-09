@@ -12,6 +12,6 @@ services:
       - .env
     volumes:
       # Propojení databáze pro trvalé ukládání dat přímo na Váš disk
-      - ./database.sqlite:/usr/src/app/database.sqlite
+      - ./data:/usr/src/app/data
       # Propojení složky s nahranými obrázky pro trvalé ukládání
       - ./public/uploads:/usr/src/app/public/uploads

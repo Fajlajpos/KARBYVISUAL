@@ -1,14 +1,15 @@
 const fs = require('fs');
 const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 
 /**
  * DATABASE BACKUP UTILITY for KARBYVISUAL SQLite Database
  * 
- * This script copies 'database.sqlite' into a timestamped file inside the 'backups' directory.
+ * This script copies 'data/database.sqlite' into a timestamped file inside the 'backups' directory.
  * It is lightweight, safe, and can be scheduled via Cron or run manually.
  */
 
-const dbFile = path.resolve(__dirname, 'database.sqlite');
+const dbFile = path.resolve(__dirname, 'data', 'database.sqlite');
 const backupDir = path.resolve(__dirname, 'backups');
 
 console.log('[DATABASE_BACKUP] Initiating database backup sequence...');
@@ -36,6 +37,37 @@ const timestamp = `${year}-${month}-${day}_${hours}-${minutes}`;
 const backupFile = path.join(backupDir, `database_backup_${timestamp}.sqlite`);
 
 if (fs.existsSync(dbFile)) {
+    console.log('[DATABASE_BACKUP] Performing WAL checkpoint before backup...');
+    
+    // Open SQLite connection to force WAL checkpoint
+    const db = new sqlite3.Database(dbFile, (err) => {
+        if (err) {
+            console.error(`[DATABASE_BACKUP_ERROR] Failed to connect to database for checkpoint: ${err.message}`);
+            // Fallback: try to copy anyway
+            performCopy();
+        } else {
+            db.run('PRAGMA wal_checkpoint(TRUNCATE)', (checkpointErr) => {
+                if (checkpointErr) {
+                    console.error(`[DATABASE_BACKUP_ERROR] WAL checkpoint failed: ${checkpointErr.message}`);
+                } else {
+                    console.log('[DATABASE_BACKUP] WAL checkpoint (TRUNCATE) completed successfully.');
+                }
+                
+                db.close((closeErr) => {
+                    if (closeErr) {
+                        console.error(`[DATABASE_BACKUP_ERROR] Failed to close database connection: ${closeErr.message}`);
+                    }
+                    performCopy();
+                });
+            });
+        }
+    });
+} else {
+    console.error(`[DATABASE_BACKUP_ERROR] Primary database file not found at: ${dbFile}`);
+    process.exit(1);
+}
+
+function performCopy() {
     try {
         fs.copyFileSync(dbFile, backupFile);
         console.log(`[DATABASE_BACKUP_SUCCESS] Safe backup created successfully: ${backupFile}`);
@@ -59,7 +91,4 @@ if (fs.existsSync(dbFile)) {
         console.error(`[DATABASE_BACKUP_ERROR] File operation failed during copy: ${err.message}`);
         process.exit(1);
     }
-} else {
-    console.error(`[DATABASE_BACKUP_ERROR] Primary database file not found at: ${dbFile}`);
-    process.exit(1);
 }

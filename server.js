@@ -142,6 +142,12 @@ const authLimiter = rateLimit({
     message: { error: "Too many login attempts, please try again in a minute" }
 });
 
+const contactLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 3, // limit each IP to 3 contact submissions per 15 minutes
+    message: { error: "Příliš mnoho odeslaných zpráv. Zkuste to prosím znovu za 15 minut." }
+});
+
 // 1. Auth Endpoints
 
 app.post('/api/register', (req, res) => {
@@ -578,7 +584,7 @@ app.delete('/api/testimonials/:id', verifyToken, requireAdmin, async (req, res) 
 });
 
 // 5. Contact Form (Public)
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', contactLimiter, async (req, res) => {
     try {
         const name = sanitizeInput(req.body.name);
         const email = req.body.email || '';
@@ -586,6 +592,12 @@ app.post('/api/contact', async (req, res) => {
         const project_type = sanitizeInput(req.body.project_type);
         const budget = sanitizeInput(req.body.budget);
         const message = sanitizeInput(req.body.message);
+        
+        // Basic Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Neplatný formát e-mailové adresy.' });
+        }
         
         // Save to DB
         await dbAsync.run(
@@ -735,10 +747,14 @@ function cleanTempUploadDirectory() {
             let cleanedCount = 0;
             files.forEach(file => {
                 const filePath = path.join(tmpDir, file);
-                const stat = fs.statSync(filePath);
-                if (stat.isFile()) {
-                    fs.unlinkSync(filePath);
-                    cleanedCount++;
+                try {
+                    const stat = fs.statSync(filePath);
+                    if (stat.isFile()) {
+                        fs.unlinkSync(filePath);
+                        cleanedCount++;
+                    }
+                } catch (fileErr) {
+                    console.error(`[FILE_SYSTEM] Failed to clean up file ${file}:`, fileErr.message);
                 }
             });
             if (cleanedCount > 0) {
@@ -747,7 +763,7 @@ function cleanTempUploadDirectory() {
                 console.log('[FILE_SYSTEM] Temporary upload directory is already clean.');
             }
         } catch (err) {
-            console.error('[FILE_SYSTEM] Failed to clean up temporary upload directory:', err.message);
+            console.error('[FILE_SYSTEM] Failed to read temporary upload directory:', err.message);
         }
     }
 }

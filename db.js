@@ -1,9 +1,17 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 require('dotenv').config();
 
-const dbPath = path.resolve(__dirname, 'database.sqlite');
+const dbPath = path.resolve(__dirname, 'data', 'database.sqlite');
+
+// Ensure database directory exists
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
+
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error connecting to SQLite:', err.message);
