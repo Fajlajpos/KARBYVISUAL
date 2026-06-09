@@ -6063,6 +6063,8 @@ box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     height: 100%;
     object-fit: cover;
     pointer-events: auto;
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
 .hs-floating-card {

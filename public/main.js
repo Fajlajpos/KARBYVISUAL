@@ -212,47 +212,73 @@ document.addEventListener('DOMContentLoaded', () => {
 // SETTINGS
 // ==========================================
 async function loadSettings() {
+    const defaultUrl = 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=1&mute=1&loop=1&playlist=_VWkv_ONEiM&modestbranding=1&rel=0&controls=1';
+    const heroIframe = document.querySelector('.hs-video-iframe');
+    
+    // Helper to safely set src and handle fade-in/out transition
+    const setIframeSrc = (url) => {
+        if (!heroIframe) return;
+        
+        // If the URL is already set to the same target, just show it
+        if (heroIframe.src === url) {
+            heroIframe.style.opacity = '1';
+            return;
+        }
+        
+        // Fade out if it was already visible
+        heroIframe.style.opacity = '0';
+        
+        heroIframe.addEventListener('load', () => {
+            heroIframe.style.opacity = '1';
+        }, { once: true });
+        
+        heroIframe.src = url;
+    };
+
     try {
         const res = await fetch('/api/settings');
-        if (!res.ok) return;
+        if (!res.ok) {
+            setIframeSrc(defaultUrl);
+            return;
+        }
         const settings = await res.json();
         
         // Update Hero Video
         if (settings.hero_video_url) {
-            const heroIframe = document.querySelector('.hs-video-iframe');
-            if (heroIframe) {
-                let url = settings.hero_video_url;
-                
-                // YouTube cleaning
-                let ytId = '';
-                if (url.includes('youtube.com/watch?v=')) {
-                    ytId = url.split('v=')[1].split(/[&#]/)[0];
-                } else if (url.includes('youtu.be/')) {
-                    ytId = url.split('youtu.be/')[1].split(/[?#]/)[0];
-                } else if (url.includes('youtube.com/embed/')) {
-                    ytId = url.split('embed/')[1].split(/[?&#]/)[0];
-                } else if (url.includes('youtube.com/shorts/')) {
-                    ytId = url.split('shorts/')[1].split(/[?&#]/)[0];
-                }
-
-                if (ytId) {
-                    url = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&modestbranding=1&rel=0&controls=1`;
-                } else if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
-                    const vidId = url.split('vimeo.com/')[1].split(/[?#]/)[0];
-                    url = `https://player.vimeo.com/video/${vidId}?autoplay=1&muted=1&loop=1&controls=1`;
-                } else if (url.includes('player.vimeo.com')) {
-                    let parts = url.split('video/');
-                    if (parts[1]) {
-                        let vimeoId = parts[1].split(/[?#]/)[0];
-                        url = `https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&loop=1&controls=1`;
-                    }
-                }
-
-                heroIframe.src = url;
+            let url = settings.hero_video_url;
+            
+            // YouTube cleaning
+            let ytId = '';
+            if (url.includes('youtube.com/watch?v=')) {
+                ytId = url.split('v=')[1].split(/[&#]/)[0];
+            } else if (url.includes('youtu.be/')) {
+                ytId = url.split('youtu.be/')[1].split(/[?#]/)[0];
+            } else if (url.includes('youtube.com/embed/')) {
+                ytId = url.split('embed/')[1].split(/[?&#]/)[0];
+            } else if (url.includes('youtube.com/shorts/')) {
+                ytId = url.split('shorts/')[1].split(/[?&#]/)[0];
             }
+
+            if (ytId) {
+                url = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&modestbranding=1&rel=0&controls=1`;
+            } else if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+                const vidId = url.split('vimeo.com/')[1].split(/[?#]/)[0];
+                url = `https://player.vimeo.com/video/${vidId}?autoplay=1&muted=1&loop=1&controls=1`;
+            } else if (url.includes('player.vimeo.com')) {
+                let parts = url.split('video/');
+                if (parts[1]) {
+                    let vimeoId = parts[1].split(/[?#]/)[0];
+                    url = `https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&loop=1&controls=1`;
+                }
+            }
+
+            setIframeSrc(url);
+        } else {
+            setIframeSrc(defaultUrl);
         }
     } catch (err) {
         console.error('Settings load error:', err);
+        setIframeSrc(defaultUrl);
     }
 }
 
