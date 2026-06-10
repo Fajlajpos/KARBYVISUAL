@@ -1323,10 +1323,7 @@ function initAuthUI() {
             openAuthModal('login-modal');
             return;
         }
-        if (id === 'register-trigger') {
-            openAuthModal('reg-modal');
-            return;
-        }
+
         if (id === 'legal-terms-trigger' || target.closest('#legal-terms-trigger')) {
             e.preventDefault();
             openAuthModal('legal-modal');
@@ -1401,7 +1398,7 @@ function initAuthUI() {
             if (input) {
                 input.type = input.type === 'password' ? 'text' : 'password';
                 target.classList.toggle('ph-eye');
-                target.classList.toggle('ph-eye-closed');
+                target.classList.toggle('ph-eye-slash');
             }
         }
 
@@ -1696,38 +1693,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-async function handleRegister(e) {
-    e.preventDefault();
-    const form = e.target;
-    const fullName = form.fullName.value;
-    const email = form.email.value;
-    const password = form.password.value;
-    const confirm = form.confirmPassword.value;
 
-    if (password !== confirm) {
-        showToast('Passwords do not match', 'error');
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fullName, email, password })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-            showToast('Account created. Welcome.', 'success');
-            closeAuthModal('reg-modal');
-            checkAuth();
-        } else {
-            showToast(data.error || 'Registration failed', 'error');
-        }
-    } catch (err) {
-        showToast('Connection error', 'error');
-    }
-}
 
 function toggleBtnLoading(btn, loading) {
     // Keeping simple for now
