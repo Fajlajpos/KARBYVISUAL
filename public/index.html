@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <!-- SEO & META -->
     <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
@@ -90,7 +90,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-    <link rel="stylesheet" href="/style.css?v=3">
+    <link rel="stylesheet" href="/style.css?v=4">
 </head>
 
 <body class="loading">
@@ -298,7 +298,7 @@
                 </div>
 
                 <!-- Bento Metrics -->
-                <div class="bento-grid" style="margin-top: 2rem; grid-template-columns: 1fr 1fr;">
+                <div class="bento-grid" style="margin-top: 2rem;">
                     <div class="bento-cell bento-metric reveal-fade">
                         <div class="cell-header">
                             <span class="mono-label" data-cs="[ METRIKA 01 ]" data-en="[ METRIC 01 ]">[ METRIKA 01 ]</span>
@@ -619,6 +619,12 @@
                                         data-placeholder-en="Specify your project, deadline, location..." 
                                         placeholder="INPUT_DATA_SPECIFICATIONS..."></textarea>
                                 </div>
+                            </div>
+
+                            <div class="form-protocol-status">
+                                <div class="form-status-metric" data-cs="INTEGRITA_DAT: " data-en="DATA_INTEGRITY: ">DATA_INTEGRITY: <span id="form-integrity-val">0%</span></div>
+                                <div class="form-status-bar"><div class="form-status-progress" id="form-integrity-progress"></div></div>
+                                <div class="form-status-state" data-cs="STAV_SYSTÉMU: " data-en="SYSTEM_STATUS: ">SYSTEM_STATUS: <span id="form-state-val">IDLE</span></div>
                             </div>
 
                             <div class="form-actions-v3 mt-2">
@@ -1490,6 +1496,48 @@
                         <span class="cad-label" data-cs="ULOŽIT SOUHLAS" data-en="SAVE CONSENT">SAVE CONSENT</span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Drawer Overlay -->
+    <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-drawer" id="mobile-drawer">
+        <div class="mobile-nav-content">
+            <span class="mono-label" style="font-size: 0.6rem; opacity: 0.4; letter-spacing: 2px; display: block; margin-bottom: 0.8rem;">[ MOBILE_INTERFACE // v2.0 ]</span>
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <a href="#hero">KARBYVISUALS</a>
+                </div>
+                <div class="mobile-drawer-close" id="mobile-drawer-close">
+                    <i class="ph ph-x"></i>
+                </div>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="#about" class="mobile-nav-link" data-cs="O MNĚ" data-en="ABOUT">O MNĚ</a>
+                <a href="#portfolio" class="mobile-nav-link" data-cs="ARCHIV" data-en="ARCHIV">ARCHIV</a>
+                <a href="#reviews" class="mobile-nav-link" data-cs="RECENZE" data-en="REVIEWS">RECENZE</a>
+                <a href="#contact" class="mobile-nav-link" data-cs="KONTAKT" data-en="CONTACT">KONTAKT</a>
+            </div>
+            
+            <div class="mobile-nav-terminal">
+                <div class="terminal-header" data-cs="DIAGNOSTIKA_SPOJENÍ: OK" data-en="UPLINK_DIAGNOSTICS: OK">UPLINK_DIAGNOSTICS: OK</div>
+                <div class="terminal-log" id="mobile-nav-log"></div>
+            </div>
+            <div class="mobile-nav-footer">
+                <div class="mobile-nav-auth" id="mobile-nav-auth"></div>
+                <div class="mobile-drawer-footer">
+                    <div class="drawer-lang-switcher">
+                        <button class="drawer-lang-btn cs-btn active" data-lang="cs">CS</button>
+                        <button class="drawer-lang-btn en-btn" data-lang="en">EN</button>
+                    </div>
+                    <a href="https://www.instagram.com/karbyvisuals/" target="_blank" class="drawer-instagram-link">
+                        <i class="ph ph-instagram-logo"></i> @KARBYVISUALS
+                    </a>
+                </div>
+                <div class="mono-label" style="margin-top: 1.5rem; opacity: 0.4;">© KARBYVISUALS</div>
             </div>
         </div>
     </div>

@@ -3,15 +3,16 @@ gsap.registerPlugin(ScrollTrigger);
 // ==========================================================================
 // Setup Lenis (Smooth Scroll)
 // ==========================================================================
+const _isMobile = window.innerWidth <= 768;
 const lenis = new Lenis({
-    duration: 1.2,
+    duration: _isMobile ? 1.0 : 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     direction: 'vertical',
     gestureDirection: 'vertical',
     smooth: true,
     mouseMultiplier: 1,
     smoothTouch: false,
-    touchMultiplier: 2,
+    touchMultiplier: _isMobile ? 1.2 : 2,
     infinite: false,
 })
 
@@ -170,6 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const grid = document.querySelector('#reviews-grid');
         if (!viewport || !grid) return;
 
+
+
         // Clean up any existing clones first (if called multiple times)
         const existingClones = grid.querySelectorAll('.is-clone');
         existingClones.forEach(c => c.remove());
@@ -272,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     initFormV3();
+    if (typeof initMobileMenu === 'function') initMobileMenu();
 });
 
 // ==========================================================================
@@ -430,3 +434,74 @@ function initNavbarScroll() {
 }
 
 document.addEventListener('DOMContentLoaded', initNavbarScroll);
+
+function initMobileMenu() {
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('mobile-drawer-overlay');
+    const drawerLinks = document.querySelectorAll('.mobile-nav-link, .drawer-link');
+    const langBtns = document.querySelectorAll('.drawer-lang-btn');
+    const drawerCloseBtn = document.getElementById('mobile-drawer-close');
+
+    if (!menuBtn || !drawer || !overlay) return;
+
+    const openMenu = () => {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+        const icon = menuBtn.querySelector('i');
+        if (icon) {
+            icon.classList.remove('ph-list');
+            icon.classList.add('ph-x');
+        }
+        if (window.lenis) window.lenis.stop();
+        document.body.classList.add('modal-open');
+        if (typeof window.triggerTerminalLog === 'function') {
+            window.triggerTerminalLog();
+        }
+    };
+
+    const closeMenu = () => {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        const icon = menuBtn.querySelector('i');
+        if (icon) {
+            icon.classList.remove('ph-x');
+            icon.classList.add('ph-list');
+        }
+        if (window.lenis) window.lenis.start();
+        document.body.classList.remove('modal-open');
+    };
+
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (drawer.classList.contains('open')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+
+    overlay.addEventListener('click', closeMenu);
+    if (drawerCloseBtn) {
+        drawerCloseBtn.addEventListener('click', closeMenu);
+    }
+
+    drawerLinks.forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('open')) {
+            closeMenu();
+        }
+    });
+
+    langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const lang = btn.getAttribute('data-lang');
+            if (typeof window.switchLanguage === 'function') {
+                window.switchLanguage(lang);
+            }
+        });
+    });
+}

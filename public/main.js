@@ -49,6 +49,138 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth(); 
     initAuthUI(); 
 
+    // --- Mobile Menu Typewriter diagnostics sequence ---
+    let logInterval = null;
+    const triggerTerminalLog = () => {
+        const logEl = document.getElementById('mobile-nav-log');
+        if (!logEl) return;
+        logEl.innerHTML = '';
+        
+        const messages = [
+            'SYS.BOOT_VOL_01 // SECURE_UPLINK',
+            'CONNECTING NODE_GATEWAY_85... OK',
+            'RESOLVING ADDR: SAMKARBAN@GMAIL.COM... OK',
+            'MOUNTING INTERFACE ARCHIVES... SUCCESS',
+            'AESTHETIC PROTOCOLS: RAW_BRUTALISM',
+            'STATUS: COMMAND_CENTER_ONLINE'
+        ];
+        
+        let lineIndex = 0;
+        clearInterval(logInterval);
+        
+        const printLine = () => {
+            if (lineIndex < messages.length) {
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                line.style.opacity = 0;
+                line.textContent = '> ' + messages[lineIndex];
+                logEl.appendChild(line);
+                gsap.to(line, { opacity: 1, x: 5, duration: 0.2, ease: "power1.out" });
+                logEl.scrollTop = logEl.scrollHeight;
+                lineIndex++;
+            } else {
+                clearInterval(logInterval);
+            }
+        };
+        
+        logInterval = setInterval(printLine, 220);
+    };
+    window.triggerTerminalLog = triggerTerminalLog;
+
+    // --- Hero Tag Click Interactions ---
+    const tags = document.querySelectorAll('.discipline-tag');
+    tags.forEach(tag => {
+        tag.addEventListener('click', (e) => {
+            const csVal = tag.getAttribute('data-cs') || '';
+            const enVal = tag.getAttribute('data-en') || '';
+            
+            let targetCategory = '';
+            if (csVal === 'VIDEOKLIPY' || enVal === 'MUSIC VIDEOS') targetCategory = 'VIDEOKLIPY';
+            else if (csVal === 'NATÁČENÍ AKCÍ' || enVal === 'EVENT FILMING') targetCategory = 'AKCE';
+            else if (csVal === 'YOUTUBE EDIT' || enVal === 'YOUTUBE EDIT') targetCategory = 'YOUTUBE';
+            else if (csVal === 'FOTOGRAFIE' || enVal === 'PHOTOGRAPHY') targetCategory = 'PHOTOGRAPHY';
+            
+            if (!targetCategory) return;
+            
+            e.preventDefault();
+            
+            // Scroll to portfolio
+            const portfolioSec = document.getElementById('portfolio');
+            if (portfolioSec) {
+                if (window.lenis) {
+                    window.lenis.scrollTo(portfolioSec, { offset: -50, duration: 1.2 });
+                } else {
+                    portfolioSec.scrollIntoView({ behavior: 'smooth' });
+                }
+                
+                // After scroll, find folder, flash highlight and open it
+                setTimeout(() => {
+                    const folder = document.querySelector(`.folder-item[data-category="${targetCategory}"]`);
+                    if (folder) {
+                        folder.classList.add('highlight-glow');
+                        // Trigger folder open after the glow pulse completes
+                        setTimeout(() => {
+                            folder.click();
+                            folder.classList.remove('highlight-glow');
+                        }, 700);
+                    }
+                }, 900);
+            }
+        });
+    });
+
+    // --- Form Diagnostic Protocol Calculator ---
+    const contactForm = document.getElementById('contact-form');
+    const integrityVal = document.getElementById('form-integrity-val');
+    const integrityProgress = document.getElementById('form-integrity-progress');
+    const stateVal = document.getElementById('form-state-val');
+
+    if (contactForm && integrityVal && integrityProgress && stateVal) {
+        const requiredInputs = contactForm.querySelectorAll('input[required], textarea[required]');
+        
+        const updateFormDiagnostics = () => {
+            let filledRequired = 0;
+            requiredInputs.forEach(input => {
+                if (input.value.trim() !== '') filledRequired++;
+            });
+            
+            // Check radio groups
+            const projectTypeChecked = contactForm.querySelector('input[name="project_type"]:checked') ? 1 : 0;
+            const budgetChecked = contactForm.querySelector('input[name="budget"]:checked') ? 1 : 0;
+            
+            const totalFields = requiredInputs.length + 2; // Required fields + 2 matrices
+            const totalFilled = filledRequired + projectTypeChecked + budgetChecked;
+            
+            const percentage = Math.round((totalFilled / totalFields) * 100);
+            
+            if (integrityVal) integrityVal.textContent = percentage + '%';
+            if (integrityProgress) gsap.to(integrityProgress, { width: percentage + '%', duration: 0.4, ease: "power2.out" });
+            
+            if (percentage === 0) {
+                stateVal.textContent = 'IDLE';
+            } else if (percentage === 100) {
+                stateVal.textContent = 'READY_TO_TRANSMIT';
+            } else {
+                stateVal.textContent = 'BUFFERING_DATA';
+            }
+        };
+
+        contactForm.addEventListener('input', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                stateVal.textContent = 'WRITING_DATA...';
+                // Slight delay so the user sees the 'WRITING_DATA...' state before updating metric
+                setTimeout(() => {
+                    updateFormDiagnostics();
+                }, 600);
+            } else {
+                updateFormDiagnostics();
+            }
+        });
+        
+        // Initial run
+        updateFormDiagnostics();
+    }
+
     // Folder Modal Close
     const folderModal = document.getElementById('folder-modal');
     const closeFolderBtn = document.getElementById('close-folder-modal');
@@ -300,7 +432,14 @@ function switchLanguage(lang) {
     // Update active state on toggles
     if (btnCS) btnCS.classList.toggle('active', lang === 'cs');
     if (btnEN) btnEN.classList.toggle('active', lang === 'en');
+
+    // Update active state in mobile drawer
+    const drawerCS = document.querySelector('.drawer-lang-btn.cs-btn');
+    const drawerEN = document.querySelector('.drawer-lang-btn.en-btn');
+    if (drawerCS) drawerCS.classList.toggle('active', lang === 'cs');
+    if (drawerEN) drawerEN.classList.toggle('active', lang === 'en');
 }
+window.switchLanguage = switchLanguage;
 
 function updateLanguageUI(lang) {
     // Standard Text Nodes
@@ -1258,7 +1397,10 @@ async function checkAuth() {
 
 function updateNavAuth(authenticated) {
     const navAuth = document.getElementById('nav-auth');
+    const mobileNavAuth = document.getElementById('mobile-nav-auth');
     if (!navAuth) return;
+
+    let authHtml = '';
 
     if (authenticated && currentUser) {
         console.log('DEBUG: User logged in:', currentUser); // Debugging
@@ -1279,7 +1421,7 @@ function updateNavAuth(authenticated) {
             `;
         }
         
-        navAuth.innerHTML = `
+        authHtml = `
             <div class="user-profile" style="display: flex; align-items: center; gap: 0.8rem;">
                 ${adminBtns}
                 <div class="user-info" style="display: flex; align-items: center; gap: 0.5rem; margin-left: 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: #fff;">
@@ -1290,9 +1432,13 @@ function updateNavAuth(authenticated) {
             </div>
         `;
     } else {
-        navAuth.innerHTML = '';
         window.isAdmin = false;
         document.body.classList.remove('admin-enabled');
+    }
+    
+    navAuth.innerHTML = authHtml;
+    if (mobileNavAuth) {
+        mobileNavAuth.innerHTML = authHtml;
     }
     
     updateLanguageUI(currentLang);
