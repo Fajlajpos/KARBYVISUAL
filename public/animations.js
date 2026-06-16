@@ -455,9 +455,6 @@ function initMobileMenu() {
         }
         if (window.lenis) window.lenis.stop();
         document.body.classList.add('modal-open');
-        if (typeof window.triggerTerminalLog === 'function') {
-            window.triggerTerminalLog();
-        }
     };
 
     const closeMenu = () => {

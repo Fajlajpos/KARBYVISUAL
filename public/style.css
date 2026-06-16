@@ -2647,6 +2647,13 @@ body.admin-enabled .delete-btn {
     color: var(--text-primary);
 }
 
+.stat-suffix {
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
 /* DOCTRINE & ARSENAL (Replaced Process) */
 .giant-manifesto-text {
     font-size: clamp(3rem, 7vw, 9rem);
@@ -7757,7 +7764,7 @@ body > .sortable-fallback.port-item .port-info {
 
 .mobile-nav-link {
     font-family: var(--font-mono);
-    font-size: 1.15rem;
+    font-size: 0.95rem;
     font-weight: 500;
     text-decoration: none;
     color: var(--text-sec);
@@ -7766,7 +7773,7 @@ body > .sortable-fallback.port-item .port-info {
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     display: flex;
     align-items: center;
-    padding: 1.25rem 0.5rem;
+    padding: 0.85rem 0.5rem;
     border-bottom: 1px solid var(--border-color);
     position: relative;
 }
@@ -7778,7 +7785,7 @@ body > .sortable-fallback.port-item .port-info {
 .mobile-nav-link::before {
     counter-increment: mobile-menu-count;
     content: '0' counter(mobile-menu-count) ' // [';
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     opacity: 0.4;
     color: var(--text-primary);
     transition: all 0.3s ease;
@@ -7959,11 +7966,10 @@ body > .sortable-fallback.port-item .port-info {
     }
     
     .about-me-photo-container {
-        width: 200px !important;
-        height: 200px !important;
-        aspect-ratio: 1/1 !important;
-        margin: 0 auto 1.5rem auto !important;
-        max-width: 100% !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        aspect-ratio: 0.75 !important;
+        margin: 0 auto 2rem auto !important;
     }
     
     .about-me-text.bento-cell {
