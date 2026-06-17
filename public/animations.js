@@ -455,6 +455,11 @@ function initMobileMenu() {
         }
         if (window.lenis) window.lenis.stop();
         document.body.classList.add('modal-open');
+        
+        // Trigger typewriter diagnostics
+        if (typeof window.triggerTerminalLog === 'function') {
+            window.triggerTerminalLog();
+        }
     };
 
     const closeMenu = () => {
@@ -484,7 +489,23 @@ function initMobileMenu() {
     }
 
     drawerLinks.forEach(link => {
-        link.addEventListener('click', closeMenu);
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const targetEl = document.querySelector(href);
+                closeMenu();
+                if (targetEl && window.lenis) {
+                    setTimeout(() => {
+                        window.lenis.scrollTo(targetEl, { offset: -60, duration: 1.0 });
+                    }, 250);
+                } else if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                closeMenu();
+            }
+        });
     });
 
     document.addEventListener('keydown', (e) => {

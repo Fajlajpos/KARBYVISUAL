@@ -1505,6 +1505,12 @@
 
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-nav-drawer" id="mobile-drawer">
+        <!-- Corner Crosshairs -->
+        <div class="ui-crosshair ui-ch-tl"></div>
+        <div class="ui-crosshair ui-ch-tr"></div>
+        <div class="ui-crosshair ui-ch-bl"></div>
+        <div class="ui-crosshair ui-ch-br"></div>
+
         <div class="mobile-nav-content">
             <div class="mobile-nav-header">
                 <div class="logo">
@@ -1515,10 +1521,16 @@
                 </div>
             </div>
             <div class="mobile-nav-links">
-                <a href="#about" class="mobile-nav-link" data-cs="O MNĚ" data-en="ABOUT">O MNĚ</a>
-                <a href="#portfolio" class="mobile-nav-link" data-cs="ARCHIV" data-en="ARCHIV">ARCHIV</a>
-                <a href="#reviews" class="mobile-nav-link" data-cs="RECENZE" data-en="REVIEWS">RECENZE</a>
-                <a href="#contact" class="mobile-nav-link" data-cs="KONTAKT" data-en="CONTACT">KONTAKT</a>
+                <a href="#about" class="mobile-nav-link" data-index="01"><span data-cs="O MNĚ" data-en="ABOUT">O MNĚ</span></a>
+                <a href="#portfolio" class="mobile-nav-link" data-index="02"><span data-cs="ARCHIV" data-en="ARCHIV">ARCHIV</span></a>
+                <a href="#reviews" class="mobile-nav-link" data-index="03"><span data-cs="RECENZE" data-en="REVIEWS">RECENZE</span></a>
+                <a href="#contact" class="mobile-nav-link" data-index="04"><span data-cs="KONTAKT" data-en="CONTACT">KONTAKT</span></a>
+            </div>
+            
+            <!-- Terminal Diagnostics widget -->
+            <div class="mobile-nav-terminal">
+                <div class="terminal-header" data-cs="SYSTÉMOVÁ DIAGNOSTIKA" data-en="SYSTEM DIAGNOSTICS">SYSTÉMOVÁ DIAGNOSTIKA</div>
+                <div class="terminal-log" id="mobile-nav-log"></div>
             </div>
             
             <div class="mobile-nav-footer">
