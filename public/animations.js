@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pg = { val: 0 };
     tl.to(pg, {
          val: 100,
-         duration: 1.5,
+         duration: _isMobile ? 0.8 : 1.5,
          ease: 'power2.inOut',
          onUpdate: () => {
              document.querySelector('.preloader-progress').style.setProperty('--after-width', `${pg.val}%`);

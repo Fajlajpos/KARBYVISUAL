@@ -23,6 +23,10 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-primary);
@@ -282,7 +286,7 @@ body.modal-open {
     color: #000;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1024px) {
     .mobile-menu-btn {
         display: flex;
     }
@@ -296,7 +300,6 @@ body.modal-open {
     }
 }
 
-/* Lenis Scroll */
 html.lenis {
     height: auto;
 }
@@ -4962,9 +4965,9 @@ body.admin-enabled .delete-btn {
 
 @media (max-width: 768px) {
     .folder-content-modal #folder-items-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        padding: 1.5rem;
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr) !important;
+        padding: 1.25rem !important;
+        gap: 1rem !important;
     }
 
     .btn-admin-db {
@@ -7954,7 +7957,23 @@ body > .sortable-fallback.port-item .port-info {
         width: 100% !important;
         max-width: 100% !important;
         flex-shrink: 0 !important;
-        padding: 0 1rem !important;
+        padding: 0 0.5rem !important;
+        gap: 0.75rem !important;
+    }
+    .insta-dm-card .dm-avatar-wrapper {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    .insta-dm-card .dm-content-wrapper {
+        max-width: calc(100% - 44px) !important;
+    }
+    .insta-dm-card .dm-bubble {
+        padding: 0.8rem 1.2rem !important;
+        border-radius: 18px 18px 18px 4px !important;
+    }
+    .insta-dm-card .dm-text {
+        font-size: 0.95rem !important;
+        line-height: 1.4 !important;
     }
 
     /* ============================================
@@ -8189,7 +8208,8 @@ body > .sortable-fallback.port-item .port-info {
     background: #000000;
     border-left: 1px solid var(--border-color);
     transform: translateX(100%);
-    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    visibility: hidden;
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     display: flex;
     flex-direction: column;
     padding: max(2rem, calc(1rem + env(safe-area-inset-top, 0px))) 2rem max(2rem, calc(1rem + env(safe-area-inset-bottom, 0px))) 2rem;
@@ -8220,6 +8240,7 @@ body > .sortable-fallback.port-item .port-info {
 
 .mobile-nav-drawer.open {
     transform: translateX(0);
+    visibility: visible;
 }
 
 .mobile-drawer-overlay {
@@ -8324,7 +8345,7 @@ body > .sortable-fallback.port-item .port-info {
 }
 
 /* Navbar optimization */
-@media (max-width: 991px) {
+@media (max-width: 1024px) {
     .navbar .lang-switcher {
         display: none !important;
     }
@@ -8338,7 +8359,7 @@ body > .sortable-fallback.port-item .port-info {
 }
 
 /* Hero adaptations */
-@media (max-width: 991px) {
+@media (max-width: 1024px) {
     .hero-subline {
         letter-spacing: 0.12em !important;
     }
@@ -8347,10 +8368,13 @@ body > .sortable-fallback.port-item .port-info {
     .hero-subline {
         letter-spacing: 0.08em !important;
     }
+    .hero-sales-title {
+        font-size: clamp(1.6rem, 7vw, 2.5rem) !important;
+    }
 }
 
 .giant-branding {
-    font-size: clamp(3rem, 11vw, 8rem) !important;
+    font-size: clamp(2rem, 10vw, 8rem) !important;
 }
 
 @media (max-width: 768px) {
@@ -8372,23 +8396,27 @@ body > .sortable-fallback.port-item .port-info {
 }
 
 /* About Section adaptations */
-@media (max-width: 768px) {
+@media (max-width: 991px) {
     .about-me-split {
         display: flex !important;
         flex-direction: column !important;
     }
     .about-me-photo-container {
         order: -1 !important;
+        margin: 0 auto 2rem auto !important;
     }
     .about-me-photo-container::after {
         display: none !important;
     }
 }
 
-/* Bento Grid */
+/* Bento Grid & Section Headers */
 @media (max-width: 480px) {
     .bento-grid {
         grid-template-columns: 1fr !important;
+    }
+    .section-title, .about-me-text h3 {
+        font-size: 2rem !important;
     }
 }
 
@@ -8497,3 +8525,26 @@ body > .sortable-fallback.port-item .port-info {
     }
 }
 
+/* Narrow mobile viewports (<= 360px) contact form & project types stacking */
+@media (max-width: 360px) {
+    .options-matrix .matrix-grid,
+    .options-matrix .option-col:last-child .matrix-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .transmission-form-v3 {
+        padding: 1rem !important;
+    }
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-delay: -1ms !important;
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        background-attachment: initial !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+    }
+}
