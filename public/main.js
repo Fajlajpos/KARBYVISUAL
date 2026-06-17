@@ -668,7 +668,7 @@ function openFolderModal(category, titles, originEl) {
 
     // Update Title
     const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
-    titleEl.innerHTML = `<span class="title-text">[ ${displayTitle} ]</span>`;
+    titleEl.innerHTML = `<span class="title-text" data-cs="[ ${titles.cs} ]" data-en="[ ${titles.en} ]">[ ${displayTitle} ]</span>`;
 
     // Admin Controls (Selection & Reorder)
     if (window.isAdmin) {
@@ -1006,19 +1006,29 @@ function openLightbox(item) {
     title.textContent = item.title || 'Bez názvu';
     
     // Inject localized description (or plain string)
-    let descriptionText = getLocalizedDesc(item.description);
+    let descCs = '';
+    let descEn = '';
+    try {
+        const obj = JSON.parse(item.description);
+        descCs = obj.cs || obj.en || '';
+        descEn = obj.en || obj.cs || '';
+    } catch(e) {
+        descCs = item.description || '';
+        descEn = item.description || '';
+    }
+    const escapeAttr = (str) => (str || '').replace(/"/g, '&quot;');
     
-    // Prevent old element duplication
-    if (document.getElementById('lightbox-desc-text')) {
-        document.getElementById('lightbox-desc-text').innerHTML = descriptionText;
-    } else {
-        const p = document.createElement('p');
+    let p = document.getElementById('lightbox-desc-text');
+    if (!p) {
+        p = document.createElement('p');
         p.id = 'lightbox-desc-text';
         p.style.marginTop = '1rem';
         p.style.color = '#ccc';
-        p.innerHTML = descriptionText;
         document.querySelector('.lightbox-info').appendChild(p);
     }
+    p.setAttribute('data-cs', escapeAttr(descCs));
+    p.setAttribute('data-en', escapeAttr(descEn));
+    p.innerHTML = currentLang === 'cs' ? descCs : descEn;
     
     cat.textContent = item.category;
     
@@ -1297,11 +1307,16 @@ function renderTestimonials(data) {
     // Use data-attributes for localization if needed, or render based on currentLang
     reviewsGrid.innerHTML = '';
     
+    const escapeAttr = (str) => (str || '').replace(/"/g, '&quot;');
+    
     data.forEach((t, i) => {
         const card = document.createElement('div');
         card.className = 'insta-dm-card reveal-fade';
         
-        const quote = currentLang === 'cs' ? (t.quote || t.quote_cs) : (t.quote_en || t.quote || t.quote_cs);
+        const quoteCs = t.quote || t.quote_cs || '';
+        const quoteEn = t.quote_en || t.quote || t.quote_cs || '';
+        const quote = currentLang === 'cs' ? quoteCs : quoteEn;
+        
         // Better fallback for avatar: use UI Avatars instead of random pravatar
         const avatarImg = t.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.client_name)}&background=111&color=fff&bold=true`;
         const hasProject = t.project && t.project.trim() !== '';
@@ -1313,7 +1328,7 @@ function renderTestimonials(data) {
             <div class="dm-content-wrapper">
                 <span class="dm-username">${t.client_name.toLowerCase().replace(/\s/g, '_')}</span>
                 <div class="dm-bubble">
-                    <p class="dm-text" data-cs="${quote}" data-en="${quote}">${quote}</p>
+                    <p class="dm-text" data-cs="${escapeAttr(quoteCs)}" data-en="${escapeAttr(quoteEn)}">${quote}</p>
                     <div class="dm-scanner-line"></div>
                 </div>
                 ${hasProject ? `<span class="dm-meta">${t.project}</span>` : ''}
