@@ -49,43 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth(); 
     initAuthUI(); 
 
-    // --- Mobile Menu Typewriter diagnostics sequence ---
-    let logInterval = null;
-    const triggerTerminalLog = () => {
-        const logEl = document.getElementById('mobile-nav-log');
-        if (!logEl) return;
-        logEl.innerHTML = '';
-        
-        const messages = [
-            'SYS.BOOT_VOL_01 // SECURE_UPLINK',
-            'CONNECTING NODE_GATEWAY_85... OK',
-            'RESOLVING ADDR: SAMKARBAN@GMAIL.COM... OK',
-            'MOUNTING INTERFACE ARCHIVES... SUCCESS',
-            'AESTHETIC PROTOCOLS: RAW_BRUTALISM',
-            'STATUS: COMMAND_CENTER_ONLINE'
-        ];
-        
-        let lineIndex = 0;
-        clearInterval(logInterval);
-        
-        const printLine = () => {
-            if (lineIndex < messages.length) {
-                const line = document.createElement('div');
-                line.className = 'terminal-line';
-                line.style.opacity = 0;
-                line.textContent = '> ' + messages[lineIndex];
-                logEl.appendChild(line);
-                gsap.to(line, { opacity: 1, x: 5, duration: 0.2, ease: "power1.out" });
-                logEl.scrollTop = logEl.scrollHeight;
-                lineIndex++;
-            } else {
-                clearInterval(logInterval);
-            }
-        };
-        
-        logInterval = setInterval(printLine, 220);
-    };
-    window.triggerTerminalLog = triggerTerminalLog;
+
 
     // --- Hero Tag Click Interactions ---
     const tags = document.querySelectorAll('.discipline-tag');

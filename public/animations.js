@@ -448,30 +448,58 @@ function initMobileMenu() {
     const openMenu = () => {
         drawer.classList.add('open');
         overlay.classList.add('open');
-        const icon = menuBtn.querySelector('i');
-        if (icon) {
-            icon.classList.remove('ph-list');
-            icon.classList.add('ph-x');
-        }
+        menuBtn.classList.add('active');
+        
         if (window.lenis) window.lenis.stop();
         document.body.classList.add('modal-open');
+
+        // GSAP top-down slide in
+        gsap.killTweensOf(drawer);
+        gsap.fromTo(drawer,
+            { yPercent: -100 },
+            { yPercent: 0, duration: 0.6, ease: "power4.out" }
+        );
+
+        // GSAP premium staggered entrance reveal
+        gsap.killTweensOf('.mobile-nav-link');
+        gsap.killTweensOf('.mobile-nav-footer > *');
         
-        // Trigger typewriter diagnostics
-        if (typeof window.triggerTerminalLog === 'function') {
-            window.triggerTerminalLog();
-        }
+        gsap.fromTo('.mobile-nav-link', 
+            { y: 35, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "power3.out", delay: 0.18 }
+        );
+        gsap.fromTo('.mobile-nav-footer > *',
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, stagger: 0.08, ease: "power2.out", delay: 0.38 }
+        );
     };
 
     const closeMenu = () => {
-        drawer.classList.remove('open');
         overlay.classList.remove('open');
-        const icon = menuBtn.querySelector('i');
-        if (icon) {
-            icon.classList.remove('ph-x');
-            icon.classList.add('ph-list');
-        }
+        menuBtn.classList.remove('active');
+        
         if (window.lenis) window.lenis.start();
         document.body.classList.remove('modal-open');
+
+        // GSAP slide up and then deactivate open class
+        gsap.killTweensOf(drawer);
+        gsap.to(drawer, {
+            yPercent: -100,
+            duration: 0.5,
+            ease: "power4.in",
+            onComplete: () => {
+                drawer.classList.remove('open');
+            }
+        });
+
+        // Graceful fade out of contents
+        gsap.to('.mobile-nav-link, .mobile-nav-footer > *', {
+            opacity: 0,
+            y: -10,
+            duration: 0.2,
+            ease: "power2.in",
+            overwrite: "auto"
+        });
     };
 
     menuBtn.addEventListener('click', (e) => {
