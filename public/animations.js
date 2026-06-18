@@ -445,6 +445,20 @@ function initMobileMenu() {
 
     if (!menuBtn || !drawer || !overlay) return;
 
+    let tcInterval = null;
+    const tcElement = document.getElementById('menu-tc-display');
+
+    const updateTimecode = () => {
+        if (!tcElement) return;
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        const secs = String(now.getSeconds()).padStart(2, '0');
+        const ms = now.getMilliseconds();
+        const frame = String(Math.floor((ms / 1000) * 24)).padStart(2, '0');
+        tcElement.textContent = `TC ${hrs}:${mins}:${secs}:${frame}`;
+    };
+
     const openMenu = () => {
         drawer.classList.add('open');
         overlay.classList.add('open');
@@ -452,6 +466,13 @@ function initMobileMenu() {
         
         if (window.lenis) window.lenis.stop();
         document.body.classList.add('modal-open');
+
+        // Start timecode ticker
+        if (tcElement) {
+            updateTimecode();
+            clearInterval(tcInterval);
+            tcInterval = setInterval(updateTimecode, 1000 / 24);
+        }
 
         // GSAP top-down slide in
         gsap.killTweensOf(drawer);
@@ -480,6 +501,12 @@ function initMobileMenu() {
         
         if (window.lenis) window.lenis.start();
         document.body.classList.remove('modal-open');
+
+        // Stop timecode ticker
+        if (tcInterval) {
+            clearInterval(tcInterval);
+            tcInterval = null;
+        }
 
         // GSAP slide up and then deactivate open class
         gsap.killTweensOf(drawer);
