@@ -8233,7 +8233,7 @@ body > .sortable-fallback.port-item .port-info {
     visibility: hidden;
     display: flex;
     flex-direction: column;
-    padding: max(1.5rem, calc(0.5rem + env(safe-area-inset-top, 0px))) 1.5rem max(1.5rem, calc(0.5rem + env(safe-area-inset-bottom, 0px))) 1.5rem;
+    padding: 0; /* Fullscreen padding removed */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95);
     overflow: hidden;
     box-sizing: border-box;
@@ -8269,11 +8269,12 @@ body > .sortable-fallback.port-item .port-info {
 .mobile-nav-drawer .ui-crosshair {
     z-index: 10;
     pointer-events: none;
+    position: absolute;
 }
-.mobile-nav-drawer .ui-ch-tl { top: 1rem; left: 1rem; }
-.mobile-nav-drawer .ui-ch-tr { top: 1rem; right: 1rem; }
-.mobile-nav-drawer .ui-ch-bl { bottom: 1rem; left: 1rem; }
-.mobile-nav-drawer .ui-ch-br { bottom: 1rem; right: 1rem; }
+.mobile-nav-drawer .ui-ch-tl { top: max(1.5rem, calc(0.8rem + env(safe-area-inset-top, 0px))); left: 1.5rem; }
+.mobile-nav-drawer .ui-ch-tr { top: max(1.5rem, calc(0.8rem + env(safe-area-inset-top, 0px))); right: 1.5rem; }
+.mobile-nav-drawer .ui-ch-bl { bottom: max(1.5rem, calc(0.8rem + env(safe-area-inset-bottom, 0px))); left: 1.5rem; }
+.mobile-nav-drawer .ui-ch-br { bottom: max(1.5rem, calc(0.8rem + env(safe-area-inset-bottom, 0px))); right: 1.5rem; }
 
 .mobile-nav-drawer .mobile-nav-content {
     position: relative;
@@ -8281,22 +8282,60 @@ body > .sortable-fallback.port-item .port-info {
     flex-direction: column;
     height: 100%;
     width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    background-color: rgba(4, 4, 4, 0.93);
+    border: none; /* Removed inner boxed borders */
+    background-color: rgba(3, 3, 3, 0.97); /* Solid, sleek translucent backdrop */
     background-image: 
         linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
         linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+        radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
     background-size: 100% 4px, 30px 30px, 30px 30px, 100% 100%;
     background-blend-mode: overlay, normal, normal, normal;
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
-    padding: 2.5rem 2rem;
+    padding: max(2.5rem, calc(1.5rem + env(safe-area-inset-top, 0px))) 2rem max(2rem, calc(1.5rem + env(safe-area-inset-bottom, 0px))) 2rem;
     box-sizing: border-box;
     z-index: 5;
     overflow-y: auto;
+}
+
+/* Telemetry Diagnostics Panel */
+.mobile-nav-drawer .menu-telemetry-panel {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--text-sec);
+    opacity: 0.5;
+    letter-spacing: 1.5px;
+    margin-bottom: 2rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.6rem;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Fullscreen sweep scanline */
+.mobile-nav-drawer .menu-scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 4px rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    z-index: 6;
+    animation: menu-scanner-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes menu-scanner-sweep {
+    0% { top: 0%; opacity: 0; }
+    5% { opacity: 0.8; }
+    95% { opacity: 0.8; }
+    100% { top: 100%; opacity: 0; }
 }
 
 .mobile-nav-drawer .mobile-nav-header {
@@ -8306,6 +8345,10 @@ body > .sortable-fallback.port-item .port-info {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 1.2rem;
     margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .mobile-nav-drawer .logo a {
@@ -8352,8 +8395,9 @@ body > .sortable-fallback.port-item .port-info {
 }
 
 .mobile-nav-drawer .mobile-nav-link.btn-cad-primary {
-    width: calc(100% - 40px);
-    margin: 1.2rem auto;
+    width: 100%;
+    max-width: 400px;
+    margin: 0.8rem auto;
     height: 60px;
     padding: 0 !important;
     display: flex;
