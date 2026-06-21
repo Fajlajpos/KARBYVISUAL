@@ -205,27 +205,52 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             grid._marquee = marquee;
 
-            // Use named functions to allow removal
+            // Remove any old mouseover/mouseout event listeners
             if (grid._marqueeOver) grid.removeEventListener('mouseover', grid._marqueeOver);
             if (grid._marqueeOut) grid.removeEventListener('mouseout', grid._marqueeOut);
 
-            grid._marqueeOver = (e) => {
-                if (e.target.closest('.insta-dm-card')) {
-                    marquee.pause();
-                    gsap.to(grid, { opacity: 0.8, duration: 0.3 });
-                }
-            };
-            grid._marqueeOut = (e) => {
-                const currentCard = e.target.closest('.insta-dm-card');
-                const relatedCard = e.relatedTarget ? e.relatedTarget.closest('.insta-dm-card') : null;
-                if (currentCard && currentCard !== relatedCard) {
-                    marquee.play();
-                    gsap.to(grid, { opacity: 1, duration: 0.3 });
+            // Click-to-toggle pause logic (fixes mobile scrolling freeze and adds click-toggle)
+            let pausedCard = null;
+
+            const handleDocumentClick = (e) => {
+                const clickedCard = e.target.closest('.insta-dm-card');
+                
+                if (clickedCard) {
+                    e.stopPropagation();
+                    if (pausedCard === clickedCard) {
+                        // Clicked same card again -> resume
+                        marquee.play();
+                        gsap.to(grid, { opacity: 1, duration: 0.3 });
+                        clickedCard.classList.remove('card-paused');
+                        pausedCard = null;
+                    } else {
+                        // Clicked a different card or first card
+                        if (pausedCard) {
+                            pausedCard.classList.remove('card-paused');
+                        }
+                        marquee.pause();
+                        gsap.to(grid, { opacity: 0.8, duration: 0.3 });
+                        gsap.to(clickedCard, { opacity: 1, duration: 0.3 }); // Keep clicked card at full opacity
+                        clickedCard.classList.add('card-paused');
+                        pausedCard = clickedCard;
+                    }
+                } else {
+                    // Clicked outside any card -> resume if paused
+                    if (pausedCard) {
+                        pausedCard.classList.remove('card-paused');
+                        marquee.play();
+                        gsap.to(grid, { opacity: 1, duration: 0.3 });
+                        pausedCard = null;
+                    }
                 }
             };
 
-            grid.addEventListener('mouseover', grid._marqueeOver);
-            grid.addEventListener('mouseout', grid._marqueeOut);
+            // Clean up any old click handler to prevent duplicates
+            if (grid._marqueeClick) {
+                document.removeEventListener('click', grid._marqueeClick);
+            }
+            grid._marqueeClick = handleDocumentClick;
+            document.addEventListener('click', handleDocumentClick);
         }, 100);
     }
 

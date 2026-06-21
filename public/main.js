@@ -222,6 +222,38 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             navigateLightbox(1);
         });
+
+        // Touch Swipe Navigation for Mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        lightboxModal.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        lightboxModal.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            
+            // Threshold for horizontal swipe (50px)
+            // Ensure swipe is mostly horizontal, not vertical
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    navigateLightbox(-1); // Swipe Right -> Previous
+                } else {
+                    navigateLightbox(1);  // Swipe Left -> Next
+                }
+            }
+        }
     }
 
     function closeLightbox() {
@@ -496,15 +528,19 @@ window.loadFolders = async function() {
                 
                 let clickTimeout = null;
                 div.addEventListener('click', () => {
-                    if (clickTimeout) {
-                        clearTimeout(clickTimeout);
-                        clickTimeout = null;
-                        return; // Handle via dblclick
-                    }
-                    clickTimeout = setTimeout(() => {
+                    if (window.isAdmin) {
+                        if (clickTimeout) {
+                            clearTimeout(clickTimeout);
+                            clickTimeout = null;
+                            return; // Handle via dblclick
+                        }
+                        clickTimeout = setTimeout(() => {
+                            openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en, id: f.id }, div);
+                            clickTimeout = null;
+                        }, 250);
+                    } else {
                         openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en, id: f.id }, div);
-                        clickTimeout = null;
-                    }, 250);
+                    }
                 });
 
                 div.addEventListener('dblclick', (e) => {
@@ -899,7 +935,9 @@ function openFolderModal(category, titles, originEl) {
                 });
             }
 
-            div.querySelector('.port-img-wrap, .port-video-wrap').addEventListener('click', (e) => {
+            div.addEventListener('click', (e) => {
+                if (e.target.closest('.admin-badge-container')) return;
+
                 if (isSelectionMode) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -1181,12 +1219,38 @@ function openLightbox(item) {
 function navigateLightbox(direction) {
     if (currentFolderItems.length === 0) return;
     
-    currentLightboxIndex += direction;
+    const mediaContainer = document.getElementById('lightbox-media-container');
+    if (!mediaContainer) return;
     
-    if (currentLightboxIndex < 0) currentLightboxIndex = currentFolderItems.length - 1;
-    if (currentLightboxIndex >= currentFolderItems.length) currentLightboxIndex = 0;
+    // Prevent animation queues from building up on fast clicking/swiping
+    gsap.killTweensOf(mediaContainer.children);
     
-    openLightbox(currentFolderItems[currentLightboxIndex]);
+    const slideOutX = direction === 1 ? -60 : 60;
+    const slideInX = direction === 1 ? 60 : -60;
+    
+    gsap.to(mediaContainer.children, {
+        x: slideOutX,
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = currentFolderItems.length - 1;
+            if (currentLightboxIndex >= currentFolderItems.length) currentLightboxIndex = 0;
+            
+            openLightbox(currentFolderItems[currentLightboxIndex]);
+            
+            const newChildren = mediaContainer.children;
+            gsap.killTweensOf(newChildren);
+            gsap.set(newChildren, { x: slideInX, opacity: 0 });
+            gsap.to(newChildren, {
+                x: 0,
+                opacity: 1,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        }
+    });
 }
 
 function openEditModal(item) {
