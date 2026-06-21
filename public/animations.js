@@ -307,6 +307,81 @@ document.addEventListener("DOMContentLoaded", () => {
 // AUTH & TOAST ANIMATIONS (GSAP)
 // ==========================================================================
 
+window.animateCookieBannerOpen = function() {
+    const overlay = document.getElementById('cookie-overlay');
+    const banner = document.getElementById('cookie-banner');
+    if (!overlay || !banner) return;
+
+    gsap.killTweensOf([overlay, banner]);
+    
+    // Set initial values if they are not already visible
+    if (!overlay.classList.contains('active')) {
+        gsap.set(overlay, { 
+            opacity: 0,
+            backdropFilter: "blur(0px) saturate(100%)",
+            webkitBackdropFilter: "blur(0px) saturate(100%)"
+        });
+        gsap.set(banner, { 
+            opacity: 0, 
+            y: 30, 
+            scale: 0.98
+        });
+    }
+    
+    overlay.classList.add('active');
+    
+    gsap.to(overlay, {
+        opacity: 1,
+        backdropFilter: "blur(20px) saturate(180%)",
+        webkitBackdropFilter: "blur(20px) saturate(180%)",
+        duration: 0.5,
+        ease: "power2.out"
+    });
+    
+    gsap.to(banner, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.7,
+        ease: "power3.out"
+    });
+};
+
+window.animateCookieBannerClose = function(callback) {
+    const overlay = document.getElementById('cookie-overlay');
+    const banner = document.getElementById('cookie-banner');
+    if (!overlay || !banner) {
+        if (callback) callback();
+        return;
+    }
+
+    gsap.killTweensOf([overlay, banner]);
+    
+    const tl = gsap.timeline({
+        onComplete: () => {
+            overlay.classList.remove('active');
+            gsap.set(overlay, { clearProps: "opacity,backdropFilter,webkitBackdropFilter" });
+            gsap.set(banner, { clearProps: "opacity,transform" });
+            if (callback) callback();
+        }
+    });
+    
+    tl.to(banner, {
+        opacity: 0,
+        y: 30,
+        scale: 0.98,
+        duration: 0.5,
+        ease: "power2.in"
+    }, 0)
+    .to(overlay, {
+        opacity: 0,
+        backdropFilter: "blur(0px) saturate(100%)",
+        webkitBackdropFilter: "blur(0px) saturate(100%)",
+        duration: 0.4,
+        ease: "power2.in"
+    }, 0.1);
+};
+
 window.animateModalOpen = function(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;

@@ -1701,8 +1701,12 @@ function closeAuthModal(id) {
             // Re-open cookie banner if it was temporarily hidden to read the legal text
             if (id === 'legal-modal' && window.cookieBannerWasHiddenForLegal) {
                 window.cookieBannerWasHiddenForLegal = false;
-                const overlay = document.getElementById('cookie-overlay');
-                if (overlay) overlay.classList.add('active');
+                if (window.animateCookieBannerOpen) {
+                    window.animateCookieBannerOpen();
+                } else {
+                    const overlay = document.getElementById('cookie-overlay');
+                    if (overlay) overlay.classList.add('active');
+                }
             }
         });
     } else {
@@ -1713,8 +1717,12 @@ function closeAuthModal(id) {
         // Re-open cookie banner if it was temporarily hidden to read the legal text
         if (id === 'legal-modal' && window.cookieBannerWasHiddenForLegal) {
             window.cookieBannerWasHiddenForLegal = false;
-            const overlay = document.getElementById('cookie-overlay');
-            if (overlay) overlay.classList.add('active');
+            if (window.animateCookieBannerOpen) {
+                window.animateCookieBannerOpen();
+            } else {
+                const overlay = document.getElementById('cookie-overlay');
+                if (overlay) overlay.classList.add('active');
+            }
         }
     }
 }
@@ -2131,19 +2139,49 @@ function initCookieConsent() {
     
     const settingsTrigger = document.getElementById('cookie-settings-trigger');
 
-    // 1. Check if preference already exists in localStorage
-    const consent = localStorage.getItem('karbyCookieConsent');
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + encodeURIComponent(value || "") + expires + "; path=/; SameSite=Lax; Secure";
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+        }
+        return null;
+    }
+
+    // 1. Check if preference already exists in localStorage or Cookie
+    const consentCookie = getCookie('karbyCookieConsent');
+    const consent = localStorage.getItem('karbyCookieConsent') || consentCookie;
     
     if (!consent) {
         // Show banner after 3.2 seconds delay (gives preloader & hero animations time to finish)
         setTimeout(() => {
-            overlay.classList.add('active');
+            if (window.animateCookieBannerOpen) {
+                window.animateCookieBannerOpen();
+            } else {
+                overlay.classList.add('active');
+            }
         }, 3200);
     } else {
         // Apply existing preferences
         try {
             const preferences = JSON.parse(consent);
             applyCookiePreferences(preferences);
+            // Sync cookie just in case it was only in localStorage
+            if (!consentCookie) {
+                setCookie('karbyCookieConsent', JSON.stringify(preferences), 365);
+            }
         } catch (e) {
             console.error('Failed to parse cookie preferences:', e);
         }
@@ -2190,8 +2228,8 @@ function initCookieConsent() {
                 toggleSettingsBtn.setAttribute('data-en', 'HIDE PREFERENCES');
                 toggleSettingsBtn.textContent = currentLang === 'cs' ? 'SKRÝT NASTAVENÍ' : 'HIDE PREFERENCES';
                 
-                // Pre-populate switches from current localStorage settings if they exist
-                const activeConsent = localStorage.getItem('karbyCookieConsent');
+                // Pre-populate switches from current settings if they exist
+                const activeConsent = localStorage.getItem('karbyCookieConsent') || getCookie('karbyCookieConsent');
                 if (activeConsent) {
                     try {
                         const preferences = JSON.parse(activeConsent);
@@ -2225,32 +2263,45 @@ function initCookieConsent() {
         });
     }
 
-    // 6. Footer Link Trigger to re-open settings
-    if (settingsTrigger) {
-        settingsTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Open settings panel inside the banner immediately
-            settingsPanel.style.display = 'flex';
-            saveSettingsBtn.style.display = 'block';
-            
-            toggleSettingsBtn.setAttribute('data-cs', 'SKRÝT NASTAVENÍ');
-            toggleSettingsBtn.setAttribute('data-en', 'HIDE PREFERENCES');
-            toggleSettingsBtn.textContent = currentLang === 'cs' ? 'SKRÝT NASTAVENÍ' : 'HIDE PREFERENCES';
-            
-            // Populate switches
-            const currentConsent = localStorage.getItem('karbyCookieConsent');
-            if (currentConsent) {
-                try {
-                    const preferences = JSON.parse(currentConsent);
-                    if (optAnalytics) optAnalytics.checked = !!preferences.analytics;
-                    if (optMarketing) optMarketing.checked = !!preferences.marketing;
-                } catch(e) {}
-            }
-            
+    // 6. Unified trigger handler to open settings panel and show overlay
+    const openSettingsHandler = (e) => {
+        e.preventDefault();
+        
+        // Open settings panel inside the banner immediately
+        settingsPanel.style.display = 'flex';
+        saveSettingsBtn.style.display = 'block';
+        
+        toggleSettingsBtn.setAttribute('data-cs', 'SKRÝT NASTAVENÍ');
+        toggleSettingsBtn.setAttribute('data-en', 'HIDE PREFERENCES');
+        toggleSettingsBtn.textContent = currentLang === 'cs' ? 'SKRÝT NASTAVENÍ' : 'HIDE PREFERENCES';
+        
+        // Populate switches
+        const currentConsent = localStorage.getItem('karbyCookieConsent') || getCookie('karbyCookieConsent');
+        if (currentConsent) {
+            try {
+                const preferences = JSON.parse(currentConsent);
+                if (optAnalytics) optAnalytics.checked = !!preferences.analytics;
+                if (optMarketing) optMarketing.checked = !!preferences.marketing;
+            } catch(e) {}
+        }
+        
+        if (window.animateCookieBannerOpen) {
+            window.animateCookieBannerOpen();
+        } else {
             overlay.classList.add('active');
-        });
-    }
+        }
+
+        // Close mobile drawer menu if open
+        const mobileDrawer = document.getElementById('mobile-drawer');
+        const drawerOverlay = document.getElementById('mobile-drawer-overlay');
+        if (mobileDrawer && mobileDrawer.classList.contains('active')) {
+            mobileDrawer.classList.remove('active');
+            if (drawerOverlay) drawerOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
+
+    if (settingsTrigger) settingsTrigger.addEventListener('click', openSettingsHandler);
 
     // 7. Privacy Policy Modal Trigger Proxy
     const privacyLink = document.getElementById('cookie-privacy-link');
@@ -2259,7 +2310,13 @@ function initCookieConsent() {
             e.preventDefault();
             
             // Hide the cookie banner overlay temporarily so it doesn't block the legal text
-            overlay.classList.remove('active');
+            if (window.animateCookieBannerClose) {
+                window.animateCookieBannerClose(() => {
+                    overlay.classList.remove('active');
+                });
+            } else {
+                overlay.classList.remove('active');
+            }
             window.cookieBannerWasHiddenForLegal = true;
             
             const trigger = document.getElementById('legal-privacy-trigger');
@@ -2299,19 +2356,30 @@ function initCookieConsent() {
 
     function savePreferences(preferences) {
         localStorage.setItem('karbyCookieConsent', JSON.stringify(preferences));
+        setCookie('karbyCookieConsent', JSON.stringify(preferences), 365);
         applyCookiePreferences(preferences);
         
         // Hide overlay
-        overlay.classList.remove('active');
-        
-        // Reset display after animation completes
-        setTimeout(() => {
-            settingsPanel.style.display = 'none';
-            saveSettingsBtn.style.display = 'none';
-            toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
-            toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
-            toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
-        }, 600);
+        if (window.animateCookieBannerClose) {
+            window.animateCookieBannerClose(() => {
+                overlay.classList.remove('active');
+                // Reset display after animation completes
+                settingsPanel.style.display = 'none';
+                saveSettingsBtn.style.display = 'none';
+                toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
+                toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+            });
+        } else {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                settingsPanel.style.display = 'none';
+                saveSettingsBtn.style.display = 'none';
+                toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
+                toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+            }, 600);
+        }
         
         // Show success notification/toast if showToast is available
         if (typeof showToast === 'function') {
