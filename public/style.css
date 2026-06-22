@@ -2258,12 +2258,12 @@ body.admin-enabled .delete-btn {
 
     .folder-item:hover .folder-icon {
         transform: scale(1.05);
-        filter: drop-shadow(0 0 2px white) drop-shadow(0 0 5px rgba(255, 255, 255, 0.3)) drop-shadow(0 15px 30px rgba(255, 255, 255, 0.05));
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
     }
 
     .folder-item:hover .folder-name {
         color: var(--text-primary);
-        text-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+        text-shadow: 0 0 8px #ffffff, 0 0 15px rgba(255, 255, 255, 0.5);
     }
 }
 

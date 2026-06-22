@@ -205,52 +205,87 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             grid._marquee = marquee;
 
-            // Remove any old mouseover/mouseout event listeners
-            if (grid._marqueeOver) grid.removeEventListener('mouseover', grid._marqueeOver);
-            if (grid._marqueeOut) grid.removeEventListener('mouseout', grid._marqueeOut);
-
-            // Click-to-toggle pause logic (fixes mobile scrolling freeze and adds click-toggle)
-            let pausedCard = null;
-
-            const handleDocumentClick = (e) => {
-                const clickedCard = e.target.closest('.insta-dm-card');
-                
-                if (clickedCard) {
-                    e.stopPropagation();
-                    if (pausedCard === clickedCard) {
-                        // Clicked same card again -> resume
-                        marquee.play();
-                        gsap.to(grid, { opacity: 1, duration: 0.3 });
-                        clickedCard.classList.remove('card-paused');
-                        pausedCard = null;
-                    } else {
-                        // Clicked a different card or first card
-                        if (pausedCard) {
-                            pausedCard.classList.remove('card-paused');
-                        }
-                        marquee.pause();
-                        gsap.to(grid, { opacity: 0.8, duration: 0.3 });
-                        gsap.to(clickedCard, { opacity: 1, duration: 0.3 }); // Keep clicked card at full opacity
-                        clickedCard.classList.add('card-paused');
-                        pausedCard = clickedCard;
-                    }
-                } else {
-                    // Clicked outside any card -> resume if paused
-                    if (pausedCard) {
-                        pausedCard.classList.remove('card-paused');
-                        marquee.play();
-                        gsap.to(grid, { opacity: 1, duration: 0.3 });
-                        pausedCard = null;
-                    }
-                }
-            };
-
-            // Clean up any old click handler to prevent duplicates
+            // Clean up any old event listeners
             if (grid._marqueeClick) {
                 document.removeEventListener('click', grid._marqueeClick);
+                grid._marqueeClick = null;
             }
-            grid._marqueeClick = handleDocumentClick;
-            document.addEventListener('click', handleDocumentClick);
+            if (grid._marqueeHoverEnter && grid._marqueeHoverLeave) {
+                const oldCards = grid.querySelectorAll('.insta-dm-card');
+                oldCards.forEach(card => {
+                    card.removeEventListener('mouseenter', grid._marqueeHoverEnter);
+                    card.removeEventListener('mouseleave', grid._marqueeHoverLeave);
+                });
+            }
+
+            const isMobileDevice = window.innerWidth <= 768 || window.matchMedia('(hover: none)').matches;
+
+            if (isMobileDevice) {
+                // Click-to-toggle pause logic (fixes mobile scrolling freeze and adds click-toggle)
+                let pausedCard = null;
+
+                const handleDocumentClick = (e) => {
+                    const clickedCard = e.target.closest('.insta-dm-card');
+                    
+                    if (clickedCard) {
+                        e.stopPropagation();
+                        if (pausedCard === clickedCard) {
+                            // Clicked same card again -> resume
+                            marquee.play();
+                            gsap.to(grid, { opacity: 1, duration: 0.3 });
+                            clickedCard.classList.remove('card-paused');
+                            pausedCard = null;
+                        } else {
+                            // Clicked a different card or first card
+                            if (pausedCard) {
+                                pausedCard.classList.remove('card-paused');
+                            }
+                            marquee.pause();
+                            gsap.to(grid, { opacity: 0.8, duration: 0.3 });
+                            gsap.to(clickedCard, { opacity: 1, duration: 0.3 }); // Keep clicked card at full opacity
+                            clickedCard.classList.add('card-paused');
+                            pausedCard = clickedCard;
+                        }
+                    } else {
+                        // Clicked outside any card -> resume if paused
+                        if (pausedCard) {
+                            pausedCard.classList.remove('card-paused');
+                            marquee.play();
+                            gsap.to(grid, { opacity: 1, duration: 0.3 });
+                            pausedCard = null;
+                        }
+                    }
+                };
+
+                grid._marqueeClick = handleDocumentClick;
+                document.addEventListener('click', handleDocumentClick);
+            } else {
+                // Hover play/pause logic for PC
+                const cards = grid.querySelectorAll('.insta-dm-card');
+                
+                const onMouseEnter = (e) => {
+                    const card = e.currentTarget;
+                    marquee.pause();
+                    gsap.to(grid, { opacity: 0.8, duration: 0.3 });
+                    gsap.to(card, { opacity: 1, duration: 0.3 });
+                    card.classList.add('card-paused');
+                };
+
+                const onMouseLeave = (e) => {
+                    const card = e.currentTarget;
+                    marquee.play();
+                    gsap.to(grid, { opacity: 1, duration: 0.3 });
+                    card.classList.remove('card-paused');
+                };
+
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', onMouseEnter);
+                    card.addEventListener('mouseleave', onMouseLeave);
+                });
+
+                grid._marqueeHoverEnter = onMouseEnter;
+                grid._marqueeHoverLeave = onMouseLeave;
+            }
         }, 100);
     }
 
