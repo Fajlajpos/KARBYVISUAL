@@ -1500,9 +1500,53 @@ async function handleLogout() {
 }
 
 function initAuthUI() {
+    // 5-tap gesture on KARBYVISUALS logo to open login modal
+    let logoTapCount = 0;
+    let logoTapTimeout = null;
+
     // Global Event Delegation for Auth and Admin actions
     document.addEventListener('click', (e) => {
         const target = e.target;
+
+        // 5-tap gesture detection on logo
+        const logoLink = target.closest('.navbar .logo a, .mobile-nav-header .logo a');
+        if (logoLink) {
+            logoTapCount++;
+            if (logoTapTimeout) clearTimeout(logoTapTimeout);
+            
+            logoTapTimeout = setTimeout(() => {
+                logoTapCount = 0;
+            }, 800);
+
+            // Prevent default page navigation for subsequent rapid taps to avoid jitter/jumping
+            if (logoTapCount > 1) {
+                e.preventDefault();
+            }
+
+            if (logoTapCount === 5) {
+                logoTapCount = 0;
+                if (logoTapTimeout) {
+                    clearTimeout(logoTapTimeout);
+                    logoTapTimeout = null;
+                }
+
+                // If mobile drawer is open, close it by triggering a click on the close button
+                const drawerCloseBtn = document.getElementById('mobile-drawer-close');
+                if (drawerCloseBtn) {
+                    drawerCloseBtn.click();
+                }
+
+                // Open the auth modal
+                if (typeof openAuthModal === 'function') {
+                    openAuthModal('login-modal');
+                } else {
+                    const loginModal = document.getElementById('login-modal');
+                    if (loginModal) loginModal.classList.add('active');
+                }
+            }
+            return;
+        }
+
         const id = target.id || target.closest('[id]')?.id;
         
         // --- AUTH TRIGGERS ---
