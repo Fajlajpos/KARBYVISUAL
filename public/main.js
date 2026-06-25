@@ -1382,7 +1382,11 @@ async function handleContactSubmit(e) {
     const formData = new FormData(contactForm);
     const data = Object.fromEntries(formData.entries());
 
-    // Custom validation for hidden radio inputs to prevent silent submission blocking
+    // Collect all checked project types since they are now checkboxes
+    const checkedTypes = Array.from(contactForm.querySelectorAll('input[name="project_type"]:checked')).map(el => el.value);
+    data.project_type = checkedTypes.join(', ');
+
+    // Custom validation for inputs to prevent silent submission blocking
     if (!data.project_type || !data.budget) {
         const errorMsg = currentLang === 'cs' ? 'ZVOLTE TYP PROJEKTU A ROZPOČET.' : 'SELECT PROJECT TYPE AND BUDGET.';
         formStatus.innerHTML = `<div style="color: var(--accent); margin-top: 15px;">ERROR: ${errorMsg}</div>`;

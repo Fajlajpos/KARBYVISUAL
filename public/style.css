@@ -3037,7 +3037,8 @@ body.admin-enabled .delete-btn {
     grid-template-columns: repeat(3, 1fr) !important;
 }
 
-.matrix-grid input[type="radio"] {
+.matrix-grid input[type="radio"],
+.matrix-grid input[type="checkbox"] {
     display: none;
 }
 
@@ -3065,7 +3066,8 @@ body.admin-enabled .delete-btn {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.matrix-grid input[type="radio"]:checked+label {
+.matrix-grid input[type="radio"]:checked+label,
+.matrix-grid input[type="checkbox"]:checked+label {
     background: #fff;
     color: #000;
     font-weight: 800;
