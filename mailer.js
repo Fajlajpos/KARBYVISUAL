@@ -36,61 +36,63 @@ async function notifyAdmin(contactName, contactEmail, projectType, budget, messa
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta name="color-scheme" content="light dark">
-                <meta name="supported-color-schemes" content="light dark">
+                <meta name="color-scheme" content="dark">
+                <meta name="supported-color-schemes" content="dark">
                 <style>
                     :root {
-                        color-scheme: light dark;
-                        supported-color-schemes: light dark;
+                        color-scheme: dark;
+                        supported-color-schemes: dark;
                     }
-                    /* Force dark styles regardless of user's system preferences */
-                    @media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
-                        body, .email-bg {
-                            background-color: #000000 !important;
-                            color: #ffffff !important;
-                        }
-                        .email-card {
-                            background-color: #080808 !important;
-                            border-color: #1a1a1a !important;
-                        }
-                        .email-title {
-                            color: #ffffff !important;
-                        }
-                        .email-text {
-                            color: #dddddd !important;
-                        }
-                        .email-divider {
-                            border-color: #151515 !important;
-                        }
-                        .email-label {
-                            color: #888888 !important;
-                        }
-                        .email-box {
-                            background-color: #111111 !important;
-                            border-color: #1a1a1a !important;
-                        }
-                        .email-msg-box {
-                            background-color: #0b0b0b !important;
-                            border-color: #151515 !important;
-                        }
-                        .email-bold {
-                            color: #ffffff !important;
-                        }
-                        .email-footer {
-                            color: #444444 !important;
-                        }
-                        .email-detail-row {
-                            border-bottom-color: #151515 !important;
-                        }
-                        .email-status-val {
-                            color: #ffffff !important;
-                        }
+                    body, .email-bg {
+                        background-color: #000000 !important;
+                        background-image: linear-gradient(#000000, #000000) !important;
+                        color: #ffffff !important;
+                    }
+                    .email-card {
+                        background-color: #080808 !important;
+                        background-image: linear-gradient(#080808, #080808) !important;
+                        border-color: #1a1a1a !important;
+                        color: #ffffff !important;
+                    }
+                    .email-title {
+                        color: #ffffff !important;
+                    }
+                    .email-text {
+                        color: #dddddd !important;
+                    }
+                    .email-divider {
+                        border-color: #151515 !important;
+                    }
+                    .email-label {
+                        color: #888888 !important;
+                    }
+                    .email-box {
+                        background-color: #111111 !important;
+                        background-image: linear-gradient(#111111, #111111) !important;
+                        border-color: #1a1a1a !important;
+                    }
+                    .email-msg-box {
+                        background-color: #0b0b0b !important;
+                        background-image: linear-gradient(#0b0b0b, #0b0b0b) !important;
+                        border-color: #151515 !important;
+                    }
+                    .email-bold {
+                        color: #ffffff !important;
+                    }
+                    .email-footer {
+                        color: #444444 !important;
+                    }
+                    .email-detail-row {
+                        border-bottom-color: #151515 !important;
+                    }
+                    .email-status-val {
+                        color: #ffffff !important;
                     }
                 </style>
             </head>
-            <body style="margin: 0; padding: 0; background-color: #000000;">
-                <div class="email-bg" style="background-color: #000000; margin: 0; padding: 40px 0; font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif; width: 100%; text-align: left;">
-                    <div class="email-card" style="max-width: 600px; margin: 0 auto; background-color: #080808; border: 1px solid #1a1a1a; padding: 40px; color: #ffffff; box-sizing: border-box;">
+            <body style="margin: 0; padding: 0; background-color: #000000; background-image: linear-gradient(#000000, #000000);">
+                <div class="email-bg" style="background-color: #000000; background-image: linear-gradient(#000000, #000000); margin: 0; padding: 40px 0; font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif; width: 100%; text-align: left;">
+                    <div class="email-card" style="max-width: 600px; margin: 0 auto; background-color: #080808; background-image: linear-gradient(#080808, #080808); border: 1px solid #1a1a1a; padding: 40px; color: #ffffff; box-sizing: border-box;">
                         
                         <!-- Header with System Alert style -->
                         <div class="email-divider" style="text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #151515;">
@@ -143,7 +145,7 @@ async function notifyAdmin(contactName, contactEmail, projectType, budget, messa
                         <!-- Footer -->
                         <hr class="email-divider" style="border: none; border-top: 1px solid #151515; margin: 30px 0;" />
                         <div class="email-footer" style="font-family: 'Courier New', Courier, monospace; font-size: 10px; color: #444444; text-align: center; letter-spacing: 1px; text-transform: uppercase;">
-                            DIRECTED BY FAJLAJP // KARBYVISUALS Team
+                            KARBYVISUALS
                         </div>
                         
                     </div>
@@ -173,47 +175,47 @@ async function sendAutoReply(contactEmail, contactName) {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta name="color-scheme" content="light dark">
-                <meta name="supported-color-schemes" content="light dark">
+                <meta name="color-scheme" content="dark">
+                <meta name="supported-color-schemes" content="dark">
                 <style>
                     :root {
-                        color-scheme: light dark;
-                        supported-color-schemes: light dark;
+                        color-scheme: dark;
+                        supported-color-schemes: dark;
                     }
-                    /* Force dark styles regardless of user's system preferences */
-                    @media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
-                        body, .email-bg {
-                            background-color: #000000 !important;
-                            color: #ffffff !important;
-                        }
-                        .email-card {
-                            background-color: #080808 !important;
-                            border-color: #1a1a1a !important;
-                        }
-                        .email-title {
-                            color: #ffffff !important;
-                        }
-                        .email-text {
-                            color: #dddddd !important;
-                        }
-                        .email-divider {
-                            border-color: #151515 !important;
-                        }
-                        .email-bold {
-                            color: #ffffff !important;
-                        }
-                        .email-footer {
-                            color: #444444 !important;
-                        }
-                        .email-logo-sub {
-                            color: #888888 !important;
-                        }
+                    body, .email-bg {
+                        background-color: #000000 !important;
+                        background-image: linear-gradient(#000000, #000000) !important;
+                        color: #ffffff !important;
+                    }
+                    .email-card {
+                        background-color: #080808 !important;
+                        background-image: linear-gradient(#080808, #080808) !important;
+                        border-color: #1a1a1a !important;
+                        color: #ffffff !important;
+                    }
+                    .email-title {
+                        color: #ffffff !important;
+                    }
+                    .email-text {
+                        color: #dddddd !important;
+                    }
+                    .email-divider {
+                        border-color: #151515 !important;
+                    }
+                    .email-bold {
+                        color: #ffffff !important;
+                    }
+                    .email-footer {
+                        color: #444444 !important;
+                    }
+                    .email-logo-sub {
+                        color: #888888 !important;
                     }
                 </style>
             </head>
-            <body style="margin: 0; padding: 0; background-color: #000000;">
-                <div class="email-bg" style="background-color: #000000; margin: 0; padding: 40px 0; font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif; width: 100%; text-align: left;">
-                    <div class="email-card" style="max-width: 600px; margin: 0 auto; background-color: #080808; border: 1px solid #1a1a1a; padding: 40px; color: #ffffff; box-sizing: border-box;">
+            <body style="margin: 0; padding: 0; background-color: #000000; background-image: linear-gradient(#000000, #000000);">
+                <div class="email-bg" style="background-color: #000000; background-image: linear-gradient(#000000, #000000); margin: 0; padding: 40px 0; font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif; width: 100%; text-align: left;">
+                    <div class="email-card" style="max-width: 600px; margin: 0 auto; background-color: #080808; background-image: linear-gradient(#080808, #080808); border: 1px solid #1a1a1a; padding: 40px; color: #ffffff; box-sizing: border-box;">
                         
                         <!-- Header with Logo matching Hero -->
                         <div class="email-divider" style="text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #151515;">
@@ -231,22 +233,22 @@ async function sendAutoReply(contactEmail, contactName) {
                         </p>
                         
                         <p class="email-text" style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px;">
-                            děkuji za poptávku! Pro začátek prosím nahraj své podklady (moodboardy, loga, nápady či videa) na <strong class="email-bold" style="color: #ffffff;">Google Drive</strong> a pošli mi odkaz.
+                            moc děkuji za tvůj zájem o moji práci! Tvou zprávu jsem právě obdržel a už teď se těším na to, co společně vytvoříme.
                         </p>
                         
                         <p class="email-text" style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px;">
-                            <strong class="email-bold" style="color: #ffffff;">SAMUEL</strong> se ti ozve co nejdříve a domluvíte se na detailech.
+                            Osobně se ti ozvu co nejdříve zpět na e-mail nebo Instagram, abychom probrali všechny detaily a pustili se do toho.
                         </p>
                         
                         <p class="email-text" style="font-size: 15px; line-height: 1.6; color: #dddddd; margin-top: 30px; margin-bottom: 0;">
-                            Měj se fajn,<br>
-                            <strong class="email-bold" style="color: #ffffff;">Samuel Karban</strong>
+                            Děkuju,<br>
+                            <strong class="email-bold" style="color: #ffffff;">SAMUEL KARBAN</strong>
                         </p>
                         
                         <!-- Footer -->
                         <hr class="email-divider" style="border: none; border-top: 1px solid #151515; margin: 30px 0;" />
                         <div class="email-footer" style="font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #444444; text-align: center; letter-spacing: 1px; text-transform: uppercase;">
-                            DIRECTED BY FAJLAJP // KARBYVISUALS Team
+                            KARBYVISUALS
                         </div>
                         
                     </div>
