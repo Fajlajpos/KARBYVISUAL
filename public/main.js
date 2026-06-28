@@ -11,7 +11,12 @@ const lightboxMedia = document.getElementById('lightbox-media-container');
 // Localization
 const btnCS = document.getElementById('lang-cs');
 const btnEN = document.getElementById('lang-en');
-let currentLang = localStorage.getItem('karbyLang') || 'cs';
+const urlParams = new URLSearchParams(window.location.search);
+const langParam = urlParams.get('lang');
+let currentLang = (langParam === 'cs' || langParam === 'en') ? langParam : (localStorage.getItem('karbyLang') || 'cs');
+if (langParam === 'cs' || langParam === 'en') {
+    localStorage.setItem('karbyLang', currentLang);
+}
 
 // State
 let currentUser = null;
@@ -438,6 +443,7 @@ function switchLanguage(lang) {
 window.switchLanguage = switchLanguage;
 
 function updateLanguageUI(lang) {
+    document.documentElement.setAttribute('lang', lang);
     // Standard Text Nodes
     const translatableNodes = document.querySelectorAll('[data-cs][data-en]');
     translatableNodes.forEach(node => {
