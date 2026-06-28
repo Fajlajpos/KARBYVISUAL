@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function escapeJSAttr(str) {
+        if (!str) return '';
+        const jsEscaped = String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        return escapeHTML(jsEscaped);
+    }
+
     // Admin DASHBOARD Elements
     const dashboardModal = document.getElementById('admin-dashboard-modal');
     const closeDashboardBtn = document.getElementById('close-dashboard-btn');
@@ -187,8 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         foldersList.innerHTML += `
                             <div class="port-item" style="display:flex; justify-content:space-between; align-items:center; padding: 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
                                 <div>
-                                    <div class="mono-label" style="opacity:0.6; font-size: 0.6rem;">ID: ${f.category_id}</div>
-                                    <div style="font-weight: 500;">CS: ${f.title_cs} | EN: ${f.title_en}</div>
+                                    <div class="mono-label" style="opacity:0.6; font-size: 0.6rem;">ID: ${escapeHTML(f.category_id)}</div>
+                                    <div style="font-weight: 500;">CS: ${escapeHTML(f.title_cs)} | EN: ${escapeHTML(f.title_en)}</div>
                                 </div>
                                 <button type="button" class="action-btn-tactical btn-danger-tactical" onclick="window.deleteFolder(${f.id})"><i class="ph ph-trash"></i> DELETE</button>
                             </div>
@@ -483,13 +499,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="transmission-log-card ${msg.is_completed ? 'completed' : ''}">
                         <div class="meta-grid">
                             <div class="meta-item"><span>DATE</span><strong>${date}</strong></div>
-                            <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
-                            <div class="meta-item"><span>BUDGET_CLASS</span><strong>${msg.budget || 'N/A'}</strong></div>
+                            <div class="meta-item"><span>PROJECT_TYPE</span><strong>${escapeHTML(msg.project_type || 'N/A')}</strong></div>
+                            <div class="meta-item"><span>BUDGET_CLASS</span><strong>${escapeHTML(msg.budget || 'N/A')}</strong></div>
 
                         </div>
-                        <div class="msg-content">${msg.message}</div>
+                        <div class="msg-content">${escapeHTML(msg.message)}</div>
                         <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                            <button type="button" class="action-btn-tactical btn-status-toggle" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => window.openUserDetail('${email}', '${fullName}'))">
+                            <button type="button" class="action-btn-tactical btn-status-toggle" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => window.openUserDetail('${escapeJSAttr(email)}', '${escapeJSAttr(fullName)}'))">
                                 <i class="ph ${msg.is_completed ? 'ph-arrow-counter-clockwise' : 'ph-check'}"></i> 
                                 ${msg.is_completed ? 'REOPEN_MISSION' : 'MARK_COMPLETED'}
                             </button>
@@ -519,22 +535,22 @@ document.addEventListener('DOMContentLoaded', () => {
             let html = `
                 <div class="transmission-log-card">
                     <div class="meta-grid">
-                        <div class="meta-item"><span>SENDER_NAME</span><strong>${msg.name}</strong></div>
-                        <div class="meta-item"><span>SENDER_EMAIL</span><strong>${msg.email}</strong></div>
-                        <div class="meta-item"><span>INSTAGRAM</span><strong>${msg.instagram || 'N/A'}</strong></div>
+                        <div class="meta-item"><span>SENDER_NAME</span><strong>${escapeHTML(msg.name)}</strong></div>
+                        <div class="meta-item"><span>SENDER_EMAIL</span><strong>${escapeHTML(msg.email)}</strong></div>
+                        <div class="meta-item"><span>INSTAGRAM</span><strong>${escapeHTML(msg.instagram || 'N/A')}</strong></div>
                         <div class="meta-item"><span>DATE_RECEIVED</span><strong>${date}</strong></div>
-                        <div class="meta-item"><span>PROJECT_TYPE</span><strong>${msg.project_type || 'N/A'}</strong></div>
-                        <div class="meta-item"><span>BUDGET_VAL</span><strong>${msg.budget || 'N/A'}</strong></div>
+                        <div class="meta-item"><span>PROJECT_TYPE</span><strong>${escapeHTML(msg.project_type || 'N/A')}</strong></div>
+                        <div class="meta-item"><span>BUDGET_VAL</span><strong>${escapeHTML(msg.budget || 'N/A')}</strong></div>
 
                     </div>
-                    <div class="msg-content" style="border:1px dashed rgba(255,255,255,0.1); padding: 1.5rem; background: rgba(0,0,0,0.3);">${msg.message}</div>
+                    <div class="msg-content" style="border:1px dashed rgba(255,255,255,0.1); padding: 1.5rem; background: rgba(0,0,0,0.3);">${escapeHTML(msg.message)}</div>
                     
                     <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
                         <button type="button" class="action-btn-tactical btn-status-toggle" onclick="window.toggleMessageStatus(${msg.id}, ${!msg.is_completed}).then(() => closeDbDetailPanel())">
                             <i class="ph ${msg.is_completed ? 'ph-arrow-counter-clockwise' : 'ph-check'}"></i> 
                             ${msg.is_completed ? 'REOPEN_MISSION' : 'MARK_COMPLETED'}
                         </button>
-                        <a href="mailto:${msg.email}" class="action-btn-tactical" style="text-decoration:none;"><i class="ph ph-envelope-simple"></i> REPLY_LINK</a>
+                        <a href="mailto:${escapeHTML(msg.email)}" class="action-btn-tactical" style="text-decoration:none;"><i class="ph ph-envelope-simple"></i> REPLY_LINK</a>
                         <button type="button" class="action-btn-tactical btn-danger-tactical" style="padding: 0.6rem 1rem;" onclick="window.deleteDbRecordMsg(${msg.id})">
                             <i class="ph ph-trash"></i> DELETE
                         </button>
@@ -584,10 +600,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     html += `
                     <tr class="table-row-clickable ${isComp ? 'completed-row' : ''}">
                         <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${date}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.name}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.email}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.project_type}</td>
-                        <td onclick="window.openMessageDetail('${encodedMsg}')" title="${item.message}" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${item.message.substring(0,30)}...</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${escapeHTML(item.name)}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${escapeHTML(item.email)}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${escapeHTML(item.project_type)}</td>
+                        <td onclick="window.openMessageDetail('${encodedMsg}')" title="${escapeHTML(item.message)}" style="${isComp ? 'opacity:0.3; text-decoration:line-through;' : ''}">${escapeHTML(item.message.substring(0,30))}...</td>
                         <td style="display:flex; gap: 0.5rem; align-items: center;">
                             <button class="action-icon-btn btn-status-toggle" onclick="window.toggleMessageStatus(${item.id}, ${!isComp})" title="${isComp ? 'REOPEN' : 'COMPLETE'}" style="color: ${isComp ? '#4CAF50' : 'var(--accent)'}">
                                 <i class="ph ${isComp ? 'ph-check-circle' : 'ph-circle'}"></i>
@@ -598,10 +614,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     html += `
                     <tr class="table-row-clickable">
-                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">#${item.id}</td>
-                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">${item.full_name}</td>
-                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">${item.email}</td>
-                        <td onclick="window.openUserDetail('${item.email}', '${item.full_name}')">${item.role.toUpperCase()}</td>
+                        <td onclick="window.openUserDetail('${escapeJSAttr(item.email)}', '${escapeJSAttr(item.full_name)}')">#${item.id}</td>
+                        <td onclick="window.openUserDetail('${escapeJSAttr(item.email)}', '${escapeJSAttr(item.full_name)}')">${escapeHTML(item.full_name)}</td>
+                        <td onclick="window.openUserDetail('${escapeJSAttr(item.email)}', '${escapeJSAttr(item.full_name)}')">${escapeHTML(item.email)}</td>
+                        <td onclick="window.openUserDetail('${escapeJSAttr(item.email)}', '${escapeJSAttr(item.full_name)}')">${escapeHTML(item.role.toUpperCase())}</td>
                         <td>
                             <button class="action-icon-btn" onclick="window.deleteDbRecordUser(${item.id})" ${item.role === 'admin' ? 'disabled style="opacity:0.2"' : ''}><i class="ph ph-trash"></i></button>
                         </td>
@@ -804,7 +820,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const quoteEN = t.quote_en || '---';
                 
                 const avatarImg = t.avatar_url 
-                    ? `<img src="${t.avatar_url}" class="dm-avatar">` 
+                    ? `<img src="${escapeHTML(t.avatar_url)}" class="dm-avatar">` 
                     : `<div class="dm-avatar" style="background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;"><i class="ph ph-user" style="opacity: 0.3;"></i></div>`;
 
                 card.innerHTML = `
@@ -812,14 +828,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${avatarImg}
                     </div>
                     <div class="dm-content-wrapper">
-                        <span class="dm-username">${t.client_name.toLowerCase().replace(/\s/g, '_')}</span>
+                        <span class="dm-username">${escapeHTML(t.client_name.toLowerCase().replace(/\s/g, '_'))}</span>
                         <div class="dm-bubble" style="margin-bottom: 0.8rem;">
-                            <p class="dm-text"><span style="color: var(--accent); font-size: 0.6rem; opacity: 0.4; letter-spacing: 1px;">[CS]</span> ${quoteCS}</p>
+                            <p class="dm-text"><span style="color: var(--accent); font-size: 0.6rem; opacity: 0.4; letter-spacing: 1px;">[CS]</span> ${escapeHTML(quoteCS)}</p>
                             <div class="dm-scanner-line"></div>
                         </div>
                         ${quoteEN !== '---' ? `
                         <div class="dm-bubble">
-                            <p class="dm-text"><span style="color: var(--accent); font-size: 0.6rem; opacity: 0.4; letter-spacing: 1px;">[EN]</span> ${quoteEN}</p>
+                            <p class="dm-text"><span style="color: var(--accent); font-size: 0.6rem; opacity: 0.4; letter-spacing: 1px;">[EN]</span> ${escapeHTML(quoteEN)}</p>
                         </div>` : ''}
                         
                         <div class="card-actions" style="margin-top: 1rem; display: flex; gap: 1rem; opacity: 0.6;">
