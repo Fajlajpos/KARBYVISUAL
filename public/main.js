@@ -2297,9 +2297,9 @@ function initCookieConsent() {
                 saveSettingsBtn.style.display = 'none';
                 
                 // Reset translation attributes
-                toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
-                toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
-                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+                toggleSettingsBtn.setAttribute('data-cs', 'NASTAVENÍ COOKIES');
+                toggleSettingsBtn.setAttribute('data-en', 'COOKIE SETTINGS');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'NASTAVENÍ COOKIES' : 'COOKIE SETTINGS';
             }
         });
     }
@@ -2432,18 +2432,18 @@ function initCookieConsent() {
                 // Reset display after animation completes
                 settingsPanel.style.display = 'none';
                 saveSettingsBtn.style.display = 'none';
-                toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
-                toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
-                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+                toggleSettingsBtn.setAttribute('data-cs', 'NASTAVENÍ COOKIES');
+                toggleSettingsBtn.setAttribute('data-en', 'COOKIE SETTINGS');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'NASTAVENÍ COOKIES' : 'COOKIE SETTINGS';
             });
         } else {
             overlay.classList.remove('active');
             setTimeout(() => {
                 settingsPanel.style.display = 'none';
                 saveSettingsBtn.style.display = 'none';
-                toggleSettingsBtn.setAttribute('data-cs', 'PŘIZPŮSOBIT PROTOKOL');
-                toggleSettingsBtn.setAttribute('data-en', 'CUSTOMIZE PROTOCOL');
-                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'PŘIZPŮSOBIT PROTOKOL' : 'CUSTOMIZE PROTOCOL';
+                toggleSettingsBtn.setAttribute('data-cs', 'NASTAVENÍ COOKIES');
+                toggleSettingsBtn.setAttribute('data-en', 'COOKIE SETTINGS');
+                toggleSettingsBtn.textContent = currentLang === 'cs' ? 'NASTAVENÍ COOKIES' : 'COOKIE SETTINGS';
             }, 600);
         }
         
