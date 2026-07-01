@@ -681,7 +681,7 @@ function initMobileMenu() {
     drawerLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
+            if (href && href.startsWith('#') && href !== '#') {
                 e.preventDefault();
                 const targetEl = document.querySelector(href);
                 closeMenu();

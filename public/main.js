@@ -2347,15 +2347,27 @@ function initCookieConsent() {
 
         // Close mobile drawer menu if open
         const mobileDrawer = document.getElementById('mobile-drawer');
-        const drawerOverlay = document.getElementById('mobile-drawer-overlay');
-        if (mobileDrawer && mobileDrawer.classList.contains('active')) {
-            mobileDrawer.classList.remove('active');
-            if (drawerOverlay) drawerOverlay.classList.remove('active');
-            document.body.style.overflow = '';
+        if (mobileDrawer && (mobileDrawer.classList.contains('active') || mobileDrawer.classList.contains('open'))) {
+            const drawerCloseBtn = document.getElementById('mobile-drawer-close');
+            if (drawerCloseBtn) {
+                drawerCloseBtn.click();
+            } else {
+                mobileDrawer.classList.remove('active');
+                mobileDrawer.classList.remove('open');
+                const drawerOverlay = document.getElementById('mobile-drawer-overlay');
+                if (drawerOverlay) {
+                    drawerOverlay.classList.remove('active');
+                    drawerOverlay.classList.remove('open');
+                }
+                document.body.classList.remove('modal-open');
+                if (window.lenis) window.lenis.start();
+            }
         }
     };
 
     if (settingsTrigger) settingsTrigger.addEventListener('click', openSettingsHandler);
+    const menuSettingsTrigger = document.getElementById('menu-cookie-trigger');
+    if (menuSettingsTrigger) menuSettingsTrigger.addEventListener('click', openSettingsHandler);
 
     // 7. Privacy Policy Modal Trigger Proxy
     const privacyLink = document.getElementById('cookie-privacy-link');

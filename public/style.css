@@ -8260,7 +8260,7 @@ body > .sortable-fallback.port-item .port-info {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     height: 100dvh;
     z-index: 10005;
     background-color: #030303;
@@ -8337,6 +8337,7 @@ body > .sortable-fallback.port-item .port-info {
     box-sizing: border-box;
     z-index: 5;
     overflow-y: auto;
+    overflow-x: hidden;
     animation: menu-grid-drift 25s linear infinite; /* Slowly moving technical grid */
 }
 
@@ -8492,7 +8493,7 @@ body > .sortable-fallback.port-item .port-info {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.02) !important;
+    background: rgba(16, 16, 16, 0.95) !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
     font-size: 0.95rem !important;
@@ -8529,7 +8530,7 @@ body > .sortable-fallback.port-item .port-info {
 .mobile-nav-drawer .mobile-nav-link.btn-cad-primary:hover,
 .mobile-nav-drawer .mobile-nav-link.btn-cad-primary:active {
     color: #fff !important;
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: rgba(28, 28, 28, 0.95) !important;
     border-color: #fff !important;
     letter-spacing: 5px !important;
     transform: translateY(-2px) !important;
@@ -8644,7 +8645,8 @@ body > .sortable-fallback.port-item .port-info {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.drawer-instagram-link {
+.drawer-instagram-link,
+.drawer-cookie-link {
     color: var(--text-sec);
     text-decoration: none;
     font-family: var(--font-mono);
@@ -8654,9 +8656,11 @@ body > .sortable-fallback.port-item .port-info {
     gap: 8px;
     transition: all 0.3s;
     letter-spacing: 0.5px;
+    cursor: pointer;
 }
 
-.drawer-instagram-link:hover {
+.drawer-instagram-link:hover,
+.drawer-cookie-link:hover {
     color: #fff;
     letter-spacing: 1px;
 }
