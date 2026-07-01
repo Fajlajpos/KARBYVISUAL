@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build: .
@@ -11,6 +9,10 @@ services:
     env_file:
       - .env
     volumes:
+      # Propojení zdrojového kódu pro okamžité promítnutí změn
+      - .:/usr/src/app
+      # Ochrana node_modules před přepsáním z hostitelského PC (důležité pro Windows vs Linux binary)
+      - /usr/src/app/node_modules
       # Propojení databáze pro trvalé ukládání dat přímo na Váš disk
       - ./data:/usr/src/app/data
       # Propojení složky s nahranými obrázky pro trvalé ukládání

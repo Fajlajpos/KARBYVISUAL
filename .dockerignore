@@ -1,6 +1,9 @@
 node_modules
 npm-debug.log
 database.sqlite
+data/
+scratch/
+.env
 public/uploads
 .git
 .gitignore
