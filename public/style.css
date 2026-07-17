@@ -3468,7 +3468,8 @@ body.admin-enabled .delete-btn {
     padding: 6vh 0 2vh 0;
     z-index: 10;
     position: relative;
-    background: #000;
+    background: #000000 !important;
+    background-image: none !important;
 }
 
 .footer-main-grid {
@@ -8323,7 +8324,7 @@ body > .sortable-fallback.port-item .port-info {
     height: 100%;
     width: 100%;
     border: none; /* Removed inner boxed borders */
-    background-color: rgba(3, 3, 3, 0.97); /* Solid, sleek translucent backdrop */
+    background-color: rgba(3, 3, 3, 0.98); /* Solid, sleek translucent backdrop */
     background-image: 
         linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
         linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
@@ -8333,11 +8334,14 @@ body > .sortable-fallback.port-item .port-info {
     background-blend-mode: overlay, normal, normal, normal;
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
-    padding: max(2.5rem, calc(1.5rem + env(safe-area-inset-top, 0px))) 2rem max(2rem, calc(1.5rem + env(safe-area-inset-bottom, 0px))) 2rem;
+    padding: max(1.5rem, calc(1rem + env(safe-area-inset-top, 0px))) 1.5rem max(1.5rem, calc(1rem + env(safe-area-inset-bottom, 0px))) 1.5rem;
     box-sizing: border-box;
     z-index: 5;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
     animation: menu-grid-drift 25s linear infinite; /* Slowly moving technical grid */
 }
 
@@ -8475,13 +8479,13 @@ body > .sortable-fallback.port-item .port-info {
 .mobile-nav-drawer .mobile-nav-links {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: auto;
-    margin-bottom: auto;
-    flex-grow: 1;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
     border: none;
-    padding: 2rem 0;
+    padding: 0.5rem 0;
 }
 
 .mobile-nav-drawer .mobile-nav-link.btn-cad-primary {
@@ -8681,7 +8685,9 @@ body > .sortable-fallback.port-item .port-info {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: auto;
+    margin-top: 1rem;
+    flex-shrink: 0;
+    padding-bottom: 2rem;
 }
 
 /* Navbar optimization */
@@ -8850,6 +8856,8 @@ body > .sortable-fallback.port-item .port-info {
 /* Footer Safe Area */
 @media (max-width: 768px) {
     .footer {
+        background-color: #000000 !important;
+        background-image: none !important;
         padding-bottom: max(3vh, calc(2vh + env(safe-area-inset-bottom, 12px))) !important;
     }
 }
