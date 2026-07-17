@@ -8071,7 +8071,7 @@ body > .sortable-fallback.port-item .port-info {
         border-radius: 18px 18px 18px 4px !important;
     }
     .insta-dm-card .dm-text {
-        font-size: 0.95rem !important;
+        font-size: 0.88rem !important;
         line-height: 1.4 !important;
     }
 
@@ -8134,7 +8134,8 @@ body > .sortable-fallback.port-item .port-info {
     
     .hero-sales-desc {
         max-width: 100% !important;
-        font-size: 0.95rem !important;
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
     }
     
     .hs-video-container {
@@ -8183,6 +8184,21 @@ body > .sortable-fallback.port-item .port-info {
         width: 55px !important;
         height: 55px !important;
         font-size: 2.4rem !important;
+    }
+
+    .about-me-text .cell-desc {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .node-desc {
+        font-size: 0.78rem !important;
+        line-height: 1.4 !important;
+    }
+
+    #lightbox-desc-text {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
     }
 }
 
