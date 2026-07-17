@@ -3466,7 +3466,7 @@ body.admin-enabled .delete-btn {
 .footer {
     border-top: var(--border-thin);
     padding: 6vh 0 2vh 0;
-    z-index: 10;
+    z-index: 9995; /* Raised above tv-noise (9987) and scanlines (9988) */
     position: relative;
     background: #000000 !important;
     background-image: none !important;
@@ -8264,12 +8264,8 @@ body > .sortable-fallback.port-item .port-info {
     width: 100%;
     height: 100dvh;
     z-index: 10005;
-    background-color: #030303;
-    background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 30px 30px;
-    background-position: center;
+    background-color: #000000 !important;
+    background-image: none !important;
     transform: translateY(-100%);
     visibility: hidden;
     display: flex;
@@ -8280,26 +8276,9 @@ body > .sortable-fallback.port-item .port-info {
     box-sizing: border-box;
 }
 
-.mobile-nav-drawer::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: url('/assets/kolaz_v5.jpg') repeat-y top center / 100% auto;
-    opacity: 0.45;
-    filter: brightness(0.9);
-    z-index: -2;
-    pointer-events: none;
-}
-
+.mobile-nav-drawer::before,
 .mobile-nav-drawer::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--noise-bg);
-    opacity: 0.05;
-    mix-blend-mode: screen;
-    z-index: -1;
-    pointer-events: none;
+    display: none !important;
 }
 
 .mobile-nav-drawer.open {
@@ -8324,16 +8303,10 @@ body > .sortable-fallback.port-item .port-info {
     height: 100%;
     width: 100%;
     border: none; /* Removed inner boxed borders */
-    background-color: rgba(3, 3, 3, 0.98); /* Solid, sleek translucent backdrop */
-    background-image: 
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
-    background-size: 100% 4px, 30px 30px, 30px 30px, 100% 100%;
-    background-blend-mode: overlay, normal, normal, normal;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    background-color: #000000 !important; /* Pure solid black background */
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     padding: max(1.5rem, calc(1rem + env(safe-area-inset-top, 0px))) 1.5rem max(1.5rem, calc(1rem + env(safe-area-inset-bottom, 0px))) 1.5rem;
     box-sizing: border-box;
     z-index: 5;
