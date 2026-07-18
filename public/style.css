@@ -6574,24 +6574,31 @@ body.admin-enabled .delete-btn {
 
 .batch-actions-bar {
     position: fixed;
-    bottom: -100px;
+    bottom: -150px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 1rem 2rem;
-    display: flex;
+    display: none !important;
     align-items: center;
     gap: 2rem;
     z-index: 100000;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
     box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.05);
     border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
 }
 
 .batch-actions-bar.active {
-    bottom: 40px;
+    display: flex !important;
+    bottom: max(30px, calc(15px + env(safe-area-inset-bottom, 0px)));
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
 }
 
 .selection-info {
