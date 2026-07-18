@@ -452,9 +452,7 @@ body.modal-open {
 .preloader {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: var(--bg-color);
     z-index: 10000;
     display: flex;
     flex-direction: column;
@@ -7973,6 +7971,10 @@ body > .sortable-fallback.port-item .port-info {
         mask-image: none !important;
         -webkit-mask-image: none !important;
         opacity: 0.35 !important;
+    }
+
+    .portfolio-section {
+        padding-bottom: 6rem !important;
     }
     
     /* Option Selector budget matrix to display in 3 cols on mobile */
