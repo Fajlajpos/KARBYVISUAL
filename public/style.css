@@ -441,7 +441,7 @@ h4,
 }
 
 body.loading {
-    overflow: hidden;
+    /* Removed overflow: hidden so WebKit renders dynamic translucent glass immediately on load */
 }
 
 body.modal-open {
@@ -452,7 +452,9 @@ body.modal-open {
 .preloader {
     position: fixed;
     inset: 0;
-    background: var(--bg-color);
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 10000;
     display: flex;
     flex-direction: column;
