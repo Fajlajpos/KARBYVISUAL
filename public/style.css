@@ -26,14 +26,12 @@
 html {
     color-scheme: dark;
     background-color: #000000 !important;
-    background: #000000 !important;
     overflow-x: clip;
     min-height: 100%;
-    min-height: -webkit-fill-available;
 }
 
 body {
-    background-color: #000000 !important;
+    background-color: transparent !important;
     color: var(--text-primary);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -7949,6 +7947,12 @@ body > .sortable-fallback.port-item .port-info {
     
     .global-site-bg::after {
         background: rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .bg-pattern {
+        mask-image: none !important;
+        -webkit-mask-image: none !important;
+        opacity: 0.35 !important;
     }
     
     /* Option Selector budget matrix to display in 3 cols on mobile */

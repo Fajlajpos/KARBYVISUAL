@@ -3,32 +3,28 @@ gsap.registerPlugin(ScrollTrigger);
 // ==========================================================================
 // Setup Lenis (Smooth Scroll)
 // ==========================================================================
-const _isMobile = window.innerWidth <= 768;
-const lenis = new Lenis({
-    duration: _isMobile ? 1.0 : 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    direction: 'vertical',
-    gestureDirection: 'vertical',
-    smooth: true,
-    mouseMultiplier: 1,
-    smoothTouch: false,
-    touchMultiplier: _isMobile ? 1.2 : 2,
-    infinite: false,
-})
+const _isMobile = window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 1024);
+let lenis = null;
 
-window.lenis = lenis; // Expose for main.js control
+if (!_isMobile && typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        mouseMultiplier: 1,
+        infinite: false,
+    });
+    window.lenis = lenis; // Expose for main.js control
 
-function raf(time) {
-    lenis.raf(time)
-    requestAnimationFrame(raf)
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+        if (lenis) lenis.raf(time * 1000);
+    });
+} else {
+    window.lenis = null;
 }
-requestAnimationFrame(raf)
-
-// Integrate Lenis with ScrollTrigger
-lenis.on('scroll', ScrollTrigger.update)
-gsap.ticker.add((time)=>{
-  lenis.raf(time * 1000)
-})
 
 
 // ==========================================================================
