@@ -155,7 +155,14 @@ body.modal-open {
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    visibility: hidden;
+    transition: opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0.5s ease;
+}
+
+.registration-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
 }
 
 .registration-modal.active {
@@ -3634,13 +3641,15 @@ body.admin-enabled .delete-btn {
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s;
+    visibility: hidden;
+    transition: opacity 0.4s, visibility 0.4s ease;
     backdrop-filter: blur(10px);
 }
 
 .modal.active {
     opacity: 1;
     pointer-events: all;
+    visibility: visible;
 }
 
 #lightbox-title {
@@ -7507,14 +7516,16 @@ body > .sortable-fallback.port-item .port-info {
     z-index: 100000;
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
     backdrop-filter: blur(0px) saturate(100%);
     -webkit-backdrop-filter: blur(0px) saturate(100%);
-    transition: opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0.5s ease;
 }
 
 .cookie-overlay.active {
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
@@ -8621,12 +8632,14 @@ body > .sortable-fallback.port-item .port-info {
     -webkit-backdrop-filter: blur(10px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
 .mobile-drawer-overlay.open {
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
 }
 
 .drawer-lang-switcher {

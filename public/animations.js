@@ -127,6 +127,11 @@ document.addEventListener("DOMContentLoaded", () => {
         onComplete: () => {
             document.body.classList.remove('loading');
             document.body.style.overflow = ''; // Re-enable lenis without overriding CSS overflow-x: clip
+            const preloader = document.querySelector('.preloader');
+            if (preloader) {
+                preloader.style.display = 'none';
+                preloader.style.visibility = 'hidden';
+            }
             ScrollTrigger.refresh(); // Ensure triggers are calculated correctly
         }
     })
