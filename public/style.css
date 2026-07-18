@@ -28,6 +28,7 @@ html {
     background-color: #000000 !important;
     overflow-x: clip;
     min-height: 100%;
+    min-height: 100lvh;
 }
 
 body {
@@ -39,6 +40,7 @@ body {
     line-height: 1.6;
     position: relative;
     min-height: 100%;
+    min-height: 100lvh;
 }
 
 /* Prevent telephone numbers from turning blue/styled as default links */
@@ -710,6 +712,7 @@ body.modal-open {
     bottom: 0;
     width: 100%;
     min-height: 100%;
+    min-height: 100lvh;
     z-index: -5;
     background: url('/assets/kolaz_v5.jpg') repeat-y top center / 100% auto;
     opacity: 0.45;
