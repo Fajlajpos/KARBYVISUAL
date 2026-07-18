@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: 'power4.inOut',
         onComplete: () => {
             document.body.classList.remove('loading');
-            document.body.style.overflow = 'auto'; // Re-enable lenis
+            document.body.style.overflow = ''; // Re-enable lenis without overriding CSS overflow-x: clip
             ScrollTrigger.refresh(); // Ensure triggers are calculated correctly
         }
     })
