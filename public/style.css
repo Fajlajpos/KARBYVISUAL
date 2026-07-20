@@ -149,8 +149,9 @@ body.modal-open {
     inset: 0;
     z-index: 11000;
     background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(20px);
-    display: flex;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    display: none;
     align-items: center;
     justify-content: center;
     opacity: 0;
@@ -160,6 +161,9 @@ body.modal-open {
 }
 
 .registration-modal.active {
+    display: flex;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
@@ -3636,17 +3640,21 @@ body.admin-enabled .delete-btn {
     inset: 0;
     background: rgba(0, 0, 0, 0.8);
     z-index: 20000;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
     transition: opacity 0.4s, visibility 0.4s ease;
-    backdrop-filter: blur(10px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .modal.active {
+    display: flex;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     opacity: 1;
     pointer-events: all;
     visibility: visible;
@@ -5324,12 +5332,21 @@ body.admin-enabled .delete-btn {
     inset: 0;
     background: #000;
     z-index: 10000;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     visibility: hidden;
     opacity: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.admin-success-overlay.active {
+    display: flex;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 1;
+    visibility: visible;
 }
 
 .success-content {
@@ -7517,17 +7534,19 @@ body > .sortable-fallback.port-item .port-info {
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
-    backdrop-filter: blur(0px) saturate(100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    display: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     transition: opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0.5s ease;
 }
 
 .cookie-overlay.active {
+    display: flex !important;
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 }
 
 .cookie-banner-v3 {
@@ -7811,15 +7830,19 @@ body > .sortable-fallback.port-item .port-info {
     inset: 0;
     z-index: 10005;
     background: rgba(5, 5, 5, 0.95);
-    backdrop-filter: blur(25px) saturate(150%);
-    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     opacity: 0;
     pointer-events: none;
+    display: none;
     transform: translateX(100%);
     transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
 }
 
 .mobile-nav-overlay.active {
+    display: block;
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
     opacity: 1;
     pointer-events: auto;
     transform: translateX(0);
@@ -8632,15 +8655,19 @@ body > .sortable-fallback.port-item .port-info {
     inset: 0;
     z-index: 10004;
     background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
+    display: none;
     transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
 .mobile-drawer-overlay.open {
+    display: block;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     opacity: 1;
     pointer-events: auto;
     visibility: visible;

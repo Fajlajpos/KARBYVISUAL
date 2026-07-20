@@ -353,6 +353,7 @@ window.animateCookieBannerOpen = function() {
     // Set initial values if they are not already visible
     if (!overlay.classList.contains('active')) {
         gsap.set(overlay, { 
+            display: "flex",
             opacity: 0,
             backdropFilter: "blur(0px) saturate(100%)",
             webkitBackdropFilter: "blur(0px) saturate(100%)"
@@ -396,7 +397,7 @@ window.animateCookieBannerClose = function(callback) {
     const tl = gsap.timeline({
         onComplete: () => {
             overlay.classList.remove('active');
-            gsap.set(overlay, { clearProps: "opacity,backdropFilter,webkitBackdropFilter" });
+            gsap.set(overlay, { clearProps: "display,opacity,backdropFilter,webkitBackdropFilter" });
             gsap.set(banner, { clearProps: "opacity,transform" });
             if (callback) callback();
         }
