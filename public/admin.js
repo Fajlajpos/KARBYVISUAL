@@ -172,25 +172,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // FOLDERS LOGIC
     async function fetchFoldersAdmin() {
         const categorySelect = document.getElementById('p-category');
+        const parentSelect = document.getElementById('folder-parent-id');
         const foldersList = document.getElementById('admin-folders-list');
         
         try {
             const res = await fetch('/api/folders');
             const data = await res.json();
             
-            // Populate select
+            // Build tree representation
+            const tree = [];
+            function buildTree(nodes, parentId = null, depth = 0) {
+                const children = nodes.filter(n => (parentId === null ? !n.parent_id : n.parent_id === parentId));
+                children.forEach(c => {
+                    tree.push({ folder: c, depth });
+                    buildTree(nodes, c.id, depth + 1);
+                });
+            }
+            buildTree(data, null, 0);
+
+            // Populate categorySelect
             if (categorySelect) {
                 categorySelect.innerHTML = '';
-                data.forEach(f => {
+                tree.forEach(({ folder, depth }) => {
                     const opt = document.createElement('option');
-                    opt.value = f.category_id;
+                    opt.value = folder.category_id;
                     const isCS = (typeof currentLang !== 'undefined' ? currentLang : 'cs') === 'cs';
-                    opt.textContent = isCS ? f.title_cs : f.title_en;
-                    // Pro zachování překladů pokud by user přepínal jazyk i v adminu:
-                    opt.setAttribute('data-cs', f.title_cs);
-                    opt.setAttribute('data-en', f.title_en);
+                    const prefix = depth > 0 ? '— '.repeat(depth) : '';
+                    opt.textContent = prefix + (isCS ? folder.title_cs : folder.title_en);
+                    opt.setAttribute('data-cs', prefix + folder.title_cs);
+                    opt.setAttribute('data-en', prefix + folder.title_en);
                     categorySelect.appendChild(opt);
                 });
+            }
+
+            // Populate parentSelect
+            if (parentSelect) {
+                const currentParentVal = parentSelect.value;
+                parentSelect.innerHTML = '<option value="">-- HLAVNÍ SLOŽKA (ŽÁDNÁ) --</option>';
+                data.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f.id;
+                    const isCS = (typeof currentLang !== 'undefined' ? currentLang : 'cs') === 'cs';
+                    opt.textContent = (isCS ? f.title_cs : f.title_en) + (f.parent_id ? ' (Podsložka)' : '');
+                    parentSelect.appendChild(opt);
+                });
+                parentSelect.value = currentParentVal || '';
             }
 
             // Populate list
@@ -199,11 +225,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     foldersList.innerHTML = '<div class="mono-label" style="opacity: 0.5;">NO FOLDERS CONFIGURED.</div>';
                 } else {
                     foldersList.innerHTML = '';
-                    data.forEach(f => {
+                    tree.forEach(({ folder: f, depth }) => {
+                        const indent = depth * 24;
                         foldersList.innerHTML += `
-                            <div class="port-item" style="display:flex; justify-content:space-between; align-items:center; padding: 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
+                            <div class="port-item" style="display:flex; justify-content:space-between; align-items:center; padding: 0.8rem 1rem; margin-left: ${indent}px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-left: ${depth > 0 ? '3px solid var(--accent, #fff)' : '1px solid rgba(255,255,255,0.1)'};">
                                 <div>
-                                    <div class="mono-label" style="opacity:0.6; font-size: 0.6rem;">ID: ${escapeHTML(f.category_id)}</div>
+                                    <div class="mono-label" style="opacity:0.6; font-size: 0.6rem;">${depth > 0 ? 'PODSLOŽKA | ' : ''}ID: ${escapeHTML(f.category_id)}</div>
                                     <div style="font-weight: 500;">CS: ${escapeHTML(f.title_cs)} | EN: ${escapeHTML(f.title_en)}</div>
                                 </div>
                                 <button type="button" class="action-btn-tactical btn-danger-tactical" onclick="window.deleteFolder(${f.id})"><i class="ph ph-trash"></i> DELETE</button>
@@ -227,13 +254,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const titleCS = document.getElementById('folder-title-cs').value;
             const titleEN = document.getElementById('folder-title-en').value;
+            const parentIdSelect = document.getElementById('folder-parent-id');
+            const parentId = parentIdSelect ? parentIdSelect.value : null;
             
             try {
                 const res = await fetch('/api/folders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ titleCS, titleEN })
+                    body: JSON.stringify({ titleCS, titleEN, parentId })
                 });
                 
                 if (res.ok) {

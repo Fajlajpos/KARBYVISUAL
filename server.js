@@ -210,7 +210,7 @@ app.get('/api/portfolio', async (req, res) => {
 
 app.get('/api/folders', async (req, res) => {
     try {
-        const folders = await dbAsync.all('SELECT * FROM folders ORDER BY id ASC');
+        const folders = await dbAsync.all('SELECT * FROM folders ORDER BY sort_order ASC, id ASC');
         res.json(folders);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -405,17 +405,45 @@ app.put('/api/portfolio/:id', verifyToken, requireAdmin, async (req, res) => {
 
 app.post('/api/folders', verifyToken, requireAdmin, async (req, res) => {
     try {
-        const { titleCS, titleEN } = req.body;
+        const { titleCS, titleEN, parentId } = req.body;
         if (!titleCS || !titleEN) return res.status(400).json({ error: 'Titles are required' });
         
-        // Generate category_id from English title (uppercase, no spaces)
-        const categoryId = titleEN.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+        let baseSlug = titleEN.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+        if (!baseSlug) baseSlug = 'FOLDER';
+
+        let categoryId = baseSlug;
+        const parentIdValue = parentId ? parseInt(parentId, 10) : null;
+
+        if (parentIdValue) {
+            categoryId = 'SUB_' + baseSlug + '_' + Date.now().toString(36).toUpperCase();
+        } else {
+            const existing = await dbAsync.get('SELECT id FROM folders WHERE category_id = ?', [baseSlug]);
+            if (existing) {
+                categoryId = baseSlug + '_' + Date.now().toString(36).toUpperCase();
+            }
+        }
         
         await dbAsync.run(
-            'INSERT INTO folders (title_cs, title_en, category_id) VALUES (?, ?, ?)',
-            [titleCS, titleEN, categoryId]
+            'INSERT INTO folders (title_cs, title_en, category_id, parent_id) VALUES (?, ?, ?, ?)',
+            [titleCS, titleEN, categoryId, parentIdValue]
         );
-        res.json({ message: 'Folder created successfully' });
+        res.json({ message: 'Folder created successfully', category_id: categoryId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/folders/reorder', verifyToken, requireAdmin, async (req, res) => {
+    try {
+        const { orders } = req.body;
+        if (!Array.isArray(orders)) return res.status(400).json({ error: 'Orders array is required' });
+        
+        for (const item of orders) {
+            if (item.id) {
+                await dbAsync.run('UPDATE folders SET sort_order = ? WHERE id = ?', [item.sort_order || 0, item.id]);
+            }
+        }
+        res.json({ message: 'Folders reordered successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -423,30 +451,34 @@ app.post('/api/folders', verifyToken, requireAdmin, async (req, res) => {
 
 app.delete('/api/folders/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = parseInt(req.params.id, 10);
         
-        // 1. Get folder info to find category_id
-        const folder = await dbAsync.get('SELECT category_id FROM folders WHERE id = ?', [id]);
-        if (!folder) return res.status(404).json({ error: 'Folder not found' });
-
-        const categoryId = folder.category_id;
-
-        // 2. Find all items in this category
-        const items = await dbAsync.all('SELECT id, media_url, thumbnail_url FROM portfolio_items WHERE category = ?', [categoryId]);
-
-        // 3. Delete files for each item
-        for (const item of items) {
-            safeDeleteFile(item.media_url);
-            if (item.thumbnail_url !== item.media_url) {
-                safeDeleteFile(item.thumbnail_url);
+        async function deleteSingleFolder(folderId) {
+            const folder = await dbAsync.get('SELECT id, category_id FROM folders WHERE id = ?', [folderId]);
+            if (!folder) return;
+            
+            // Delete all subfolders first recursively
+            const subfolders = await dbAsync.all('SELECT id FROM folders WHERE parent_id = ?', [folderId]);
+            for (const sf of subfolders) {
+                await deleteSingleFolder(sf.id);
             }
+
+            // Find all items in this category
+            const items = await dbAsync.all('SELECT id, media_url, thumbnail_url FROM portfolio_items WHERE category = ?', [folder.category_id]);
+            for (const item of items) {
+                safeDeleteFile(item.media_url);
+                if (item.thumbnail_url !== item.media_url) {
+                    safeDeleteFile(item.thumbnail_url);
+                }
+            }
+            await dbAsync.run('DELETE FROM portfolio_items WHERE category = ?', [folder.category_id]);
+            await dbAsync.run('DELETE FROM folders WHERE id = ?', [folderId]);
         }
 
-        // 4. Delete items from DB
-        await dbAsync.run('DELETE FROM portfolio_items WHERE category = ?', [categoryId]);
+        const targetFolder = await dbAsync.get('SELECT id FROM folders WHERE id = ?', [id]);
+        if (!targetFolder) return res.status(404).json({ error: 'Folder not found' });
 
-        // 5. Finally delete the folder
-        await dbAsync.run('DELETE FROM folders WHERE id = ?', [id]);
+        await deleteSingleFolder(id);
 
         res.json({ message: 'Folder and all its content deleted successfully' });
     } catch (err) {

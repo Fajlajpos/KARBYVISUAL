@@ -82,8 +82,25 @@ async function initDb() {
         title_en TEXT NOT NULL,
         category_id TEXT UNIQUE NOT NULL,
         icon_url TEXT DEFAULT '/assets/folder-icon.png',
+        parent_id INTEGER DEFAULT NULL,
+        sort_order INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
+
+    // Migration for folders table (parent_id, sort_order)
+    try {
+        const columns = await dbAsync.all("PRAGMA table_info(folders)");
+        const hasParentId = columns.some(c => c.name === 'parent_id');
+        if (!hasParentId) {
+            await dbAsync.run("ALTER TABLE folders ADD COLUMN parent_id INTEGER DEFAULT NULL");
+        }
+        const hasSortOrder = columns.some(c => c.name === 'sort_order');
+        if (!hasSortOrder) {
+            await dbAsync.run("ALTER TABLE folders ADD COLUMN sort_order INTEGER DEFAULT 0");
+        }
+    } catch (err) {
+        console.error('Error checking folders columns:', err.message);
+    }
 
     // Check if full_name column exists (migration helper for existing tables)
     try {

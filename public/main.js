@@ -27,6 +27,7 @@ let currentLightboxIndex = -1;
 // Admin Selection & Reordering State
 let isSelectionMode = false;
 let selectedItems = new Set();
+let selectedSubfolders = new Set();
 let sortableInstance = null;
 
 // Init
@@ -167,6 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Reset admin modes
                     isSelectionMode = false;
                     selectedItems.clear();
+                    selectedSubfolders.clear();
+                    window.currentFolderStack = [];
                     if (typeof updateBatchBar === 'function') updateBatchBar();
                     if (sortableInstance) {
                         sortableInstance.destroy();
@@ -201,11 +204,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    if (closeFolderBtn) closeFolderBtn.addEventListener('click', closeFolder);
-    if (closeFolderDot) closeFolderDot.addEventListener('click', closeFolder);
+    const handleFolderCloseOrBack = () => {
+        if (window.currentFolderStack && window.currentFolderStack.length > 1) {
+            window.currentFolderStack.pop();
+            const parentState = window.currentFolderStack[window.currentFolderStack.length - 1];
+            openFolderModal(parentState.category, parentState.titles, parentState.originEl);
+        } else {
+            closeFolder();
+        }
+    };
+
+    if (closeFolderBtn) closeFolderBtn.addEventListener('click', handleFolderCloseOrBack);
+    if (closeFolderDot) closeFolderDot.addEventListener('click', handleFolderCloseOrBack);
     
     if (folderModal) {
-        folderModal.querySelector('.modal-overlay')?.addEventListener('click', closeFolder);
+        folderModal.querySelector('.modal-overlay')?.addEventListener('click', handleFolderCloseOrBack);
     }
 
     // Contact Form Event
@@ -307,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') {
             if (activeModal.id === 'lightbox-modal') closeLightbox();
             else if (activeModal.classList.contains('auth-modal')) closeAuthModal(activeModal.id);
-            else if (activeModal.id === 'folder-modal') closeFolder();
+            else if (activeModal.id === 'folder-modal') handleFolderCloseOrBack();
             else if (activeModal.id === 'admin-dashboard-modal') document.getElementById('close-dashboard-btn').click();
         }
 
@@ -439,6 +452,18 @@ function switchLanguage(lang) {
     const drawerEN = document.querySelector('.drawer-lang-btn.en-btn');
     if (drawerCS) drawerCS.classList.toggle('active', lang === 'cs');
     if (drawerEN) drawerEN.classList.toggle('active', lang === 'en');
+
+    // Refresh active folder modal if open
+    const folderModal = document.getElementById('folder-modal');
+    if (folderModal && folderModal.classList.contains('active') && window.currentFolderStack && window.currentFolderStack.length > 0) {
+        const activeState = window.currentFolderStack[window.currentFolderStack.length - 1];
+        openFolderModal(activeState.category, activeState.titles, activeState.originEl);
+    }
+
+    // Refresh main page folders language display
+    if (typeof loadFolders === 'function') {
+        loadFolders();
+    }
 }
 window.switchLanguage = switchLanguage;
 
@@ -515,10 +540,13 @@ window.loadFolders = async function() {
         const res = await fetch('/api/folders');
         if (!res.ok) throw new Error('API fetch failed');
         const folders = await res.json();
+        window.allFoldersData = folders;
         
         if (folders && folders.length > 0) {
             grid.innerHTML = '';
-            folders.forEach((f, idx) => {
+            const rootFolders = folders.filter(f => !f.parent_id);
+            const displayFolders = rootFolders.length > 0 ? rootFolders : folders;
+            displayFolders.forEach((f, idx) => {
                 const div = document.createElement('div');
                 div.className = 'folder-item reveal-fade';
                 div.setAttribute('data-category', f.category_id);
@@ -541,10 +569,12 @@ window.loadFolders = async function() {
                             return; // Handle via dblclick
                         }
                         clickTimeout = setTimeout(() => {
+                            window.currentFolderStack = [{ category: f.category_id, titles: { cs: f.title_cs, en: f.title_en, id: f.id }, originEl: div }];
                             openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en, id: f.id }, div);
                             clickTimeout = null;
                         }, 250);
                     } else {
+                        window.currentFolderStack = [{ category: f.category_id, titles: { cs: f.title_cs, en: f.title_en, id: f.id }, originEl: div }];
                         openFolderModal(f.category_id, { cs: f.title_cs, en: f.title_en, id: f.id }, div);
                     }
                 });
@@ -667,16 +697,53 @@ function openFolderModal(category, titles, originEl) {
 
     if (!modal || !grid) return;
 
+    if (!window.currentFolderStack || window.currentFolderStack.length === 0) {
+        window.currentFolderStack = [{ category, titles, originEl }];
+    }
+
     // Save origin
     if (originEl) {
         modal.dataset.originId = originEl.getAttribute('data-id') || '';
     }
 
-    // Update Title
-    const displayTitle = currentLang === 'cs' ? titles.cs : titles.en;
-    titleEl.innerHTML = `<span class="title-text" data-cs="[ ${titles.cs} ]" data-en="[ ${titles.en} ]">[ ${displayTitle} ]</span>`;
+    const currentStackItem = window.currentFolderStack[window.currentFolderStack.length - 1];
+    const activeCategory = currentStackItem.category;
+    const activeTitles = currentStackItem.titles;
 
-    // Admin Controls (Selection & Reorder)
+    // Update Title & Back Button
+    const backBtn = document.getElementById('folder-modal-back-btn');
+    const displayTitle = currentLang === 'cs' ? activeTitles.cs : activeTitles.en;
+    
+    titleEl.innerHTML = `<span class="title-text" data-cs="[ ${activeTitles.cs} ]" data-en="[ ${activeTitles.en} ]">[ ${displayTitle} ]</span>`;
+
+    if (window.currentFolderStack.length > 1) {
+        const prevStackItem = window.currentFolderStack[window.currentFolderStack.length - 2];
+        const prevTitleCS = prevStackItem.titles.cs;
+        const prevTitleEN = prevStackItem.titles.en;
+        const backPrefix = currentLang === 'cs' ? 'ZPĚT DO' : 'BACK TO';
+        const targetTitle = (currentLang === 'cs' ? prevTitleCS : prevTitleEN).toUpperCase();
+        
+        if (backBtn) {
+            backBtn.classList.remove('hidden');
+            backBtn.setAttribute('data-cs', `ZPĚT DO ${prevTitleCS.toUpperCase()}`);
+            backBtn.setAttribute('data-en', `BACK TO ${prevTitleEN.toUpperCase()}`);
+
+            const backTextEl = backBtn.querySelector('.back-text');
+            if (backTextEl) backTextEl.textContent = `${backPrefix} ${targetTitle}`;
+            else backBtn.innerHTML = `<i class="ph ph-arrow-left"></i> <span class="back-text">${backPrefix} ${targetTitle}</span>`;
+            
+            backBtn.onclick = (e) => {
+                e.stopPropagation();
+                window.currentFolderStack.pop();
+                const parentState = window.currentFolderStack[window.currentFolderStack.length - 1];
+                openFolderModal(parentState.category, parentState.titles, parentState.originEl);
+            };
+        }
+    } else {
+        if (backBtn) backBtn.classList.add('hidden');
+    }
+
+    // Admin Controls (Selection, Reorder & Add Subfolder)
     if (window.isAdmin) {
         // Remove existing controls to avoid duplicates
         const existingControls = modal.querySelector('.folder-admin-controls');
@@ -701,113 +768,282 @@ function openFolderModal(category, titles, originEl) {
         reorderBtn.innerHTML = sortableInstance ? '<i class="ph ph-check"></i> SAVE ORDER' : '<i class="ph ph-arrows-out-cardinal"></i> ENABLE SORTING';
         reorderBtn.onclick = () => toggleSortingMode(grid);
         
+        const addSubfolderBtn = document.createElement('button');
+        addSubfolderBtn.className = 'btn-admin-mode btn-add-subfolder';
+        addSubfolderBtn.innerHTML = `<i class="ph ph-folder-plus"></i> ${currentLang === 'cs' ? 'VYTVOŘIT PODSLOŽKU' : 'CREATE SUBFOLDER'}`;
+        addSubfolderBtn.onclick = () => {
+            let inlineForm = controlsWrap.querySelector('.create-subfolder-inline');
+            if (inlineForm) {
+                inlineForm.remove();
+                return;
+            }
+            inlineForm = document.createElement('div');
+            inlineForm.className = 'create-subfolder-inline';
+            inlineForm.style.cssText = 'display:flex; gap:8px; align-items:center; margin-top:8px; padding:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:4px; width:100%; grid-column: 1 / -1;';
+            inlineForm.innerHTML = `
+                <input type="text" class="subfolder-cs-input tactical-input-sm" placeholder="NÁZEV PODSLOŽKY (CZ)" style="flex:1;">
+                <input type="text" class="subfolder-en-input tactical-input-sm" placeholder="NÁZEV PODSLOŽKY (EN)" style="flex:1;">
+                <button class="btn-admin-mode btn-confirm-subfolder" style="color:#4CAF50;"><i class="ph ph-check"></i> ${currentLang === 'cs' ? 'VYTVOŘIT' : 'CREATE'}</button>
+                <button class="btn-admin-mode btn-cancel-subfolder"><i class="ph ph-x"></i></button>
+            `;
+            
+            const csInput = inlineForm.querySelector('.subfolder-cs-input');
+            const enInput = inlineForm.querySelector('.subfolder-en-input');
+            const confirmBtn = inlineForm.querySelector('.btn-confirm-subfolder');
+            const cancelBtn = inlineForm.querySelector('.btn-cancel-subfolder');
+            
+            cancelBtn.onclick = () => inlineForm.remove();
+            
+            const doCreate = async () => {
+                const cs = csInput.value.trim();
+                let en = enInput.value.trim() || cs;
+                if (!cs) {
+                    if (window.showToast) window.showToast('NÁZEV JE POVINNÝ', 'error');
+                    return;
+                }
+                try {
+                    const res = await fetch('/api/folders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ titleCS: cs, titleEN: en, parentId: activeTitles.id })
+                    });
+                    if (res.ok) {
+                        if (window.showToast) window.showToast('PODSLOŽKA VYTVOŘENA', 'success');
+                        inlineForm.remove();
+                        const freshRes = await fetch('/api/folders');
+                        if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                        openFolderModal(activeCategory, activeTitles, originEl);
+                    } else {
+                        const errData = await res.json().catch(() => ({}));
+                        if (window.showToast) window.showToast('CHYBA: ' + (errData.error || 'Neznámá chyba'), 'error');
+                    }
+                } catch (err) {
+                    if (window.showToast) window.showToast('NETWORK ERROR', 'error');
+                }
+            };
+            
+            confirmBtn.onclick = doCreate;
+            [csInput, enInput].forEach(inp => {
+                inp.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') doCreate();
+                    if (e.key === 'Escape') inlineForm.remove();
+                });
+            });
+
+            controlsWrap.appendChild(inlineForm);
+            csInput.focus();
+        };
+
         controlsWrap.appendChild(selectionBtn);
         controlsWrap.appendChild(selectAllBtn);
         controlsWrap.appendChild(reorderBtn);
+        controlsWrap.appendChild(addSubfolderBtn);
         
         grid.parentNode.insertBefore(controlsWrap, grid);
     }
     
     // Admin Rename Feature (Double Click & Pencil Icon)
-    if (window.isAdmin && titles.id) {
+    if (window.isAdmin && activeTitles.id) {
         const titleText = titleEl.querySelector('.title-text');
-        titleText.style.cursor = 'pointer';
-        titleText.title = "DOUBLE_CLICK_TO_RENAME";
-        
-        const renameBtn = document.createElement('button');
-        renameBtn.className = 'btn-tactical-subtle';
-        renameBtn.style.marginLeft = '1rem';
-        renameBtn.innerHTML = '<i class="ph ph-pencil-simple"></i>';
-        renameBtn.title = "RENAME_FOLDER";
-        
-        const startRename = () => {
-            const originalContent = titleEl.innerHTML;
-            titleEl.innerHTML = `
-                <div class="folder-rename-mini-menu">
-                    <input type="text" class="rename-cs-input tactical-input-sm" value="${titles.cs}" placeholder="CZ NAME">
-                    <input type="text" class="rename-en-input tactical-input-sm" value="${titles.en}" placeholder="EN NAME">
-                    <button id="save-rename" class="btn-tactical-subtle" style="color:#4CAF50;"><i class="ph ph-check"></i></button>
-                    <button id="cancel-rename" class="btn-tactical-subtle"><i class="ph ph-x"></i></button>
-                </div>
-            `;
+        if (titleText) {
+            titleText.style.cursor = 'pointer';
+            titleText.title = "DOUBLE_CLICK_TO_RENAME";
             
-            titleEl.querySelector('#cancel-rename').onclick = () => {
-                openFolderModal(category, titles, originEl); // Reload modal state
-            };
+            const renameBtn = document.createElement('button');
+            renameBtn.className = 'btn-tactical-subtle';
+            renameBtn.style.marginLeft = '1rem';
+            renameBtn.innerHTML = '<i class="ph ph-pencil-simple"></i>';
+            renameBtn.title = "RENAME_FOLDER";
             
-            let isSaving = false;
-            const saveAction = async () => {
-                if (isSaving) return;
-                const newCS = titleEl.querySelector('.rename-cs-input').value;
-                const newEN = titleEl.querySelector('.rename-en-input').value;
+            const startRename = () => {
+                titleEl.innerHTML = `
+                    <div class="folder-rename-mini-menu">
+                        <input type="text" class="rename-cs-input tactical-input-sm" value="${activeTitles.cs}" placeholder="CZ NAME">
+                        <input type="text" class="rename-en-input tactical-input-sm" value="${activeTitles.en}" placeholder="EN NAME">
+                        <button id="save-rename" class="btn-tactical-subtle" style="color:#4CAF50;"><i class="ph ph-check"></i></button>
+                        <button id="cancel-rename" class="btn-tactical-subtle"><i class="ph ph-x"></i></button>
+                    </div>
+                `;
                 
-                if (newCS && newEN) {
-                    isSaving = true;
-                    try {
-                        const res = await fetch(`/api/admin/folders/update/${titles.id}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
-                        });
-                        if (res.ok) {
-                            showToast('FOLDER_RENAMED', 'success');
-                            titles.cs = newCS;
-                            titles.en = newEN;
-                            openFolderModal(category, titles, originEl);
-                            if (window.loadFolders) window.loadFolders();
-                        } else {
-                            const errData = await res.json().catch(() => ({}));
-                            showToast(`RENAME_FAILED: ${res.status} ${errData.error || ''}`, 'error');
+                titleEl.querySelector('#cancel-rename').onclick = () => {
+                    openFolderModal(activeCategory, activeTitles, originEl); // Reload modal state
+                };
+                
+                let isSaving = false;
+                const saveAction = async () => {
+                    if (isSaving) return;
+                    const newCS = titleEl.querySelector('.rename-cs-input').value;
+                    const newEN = titleEl.querySelector('.rename-en-input').value;
+                    
+                    if (newCS && newEN) {
+                        isSaving = true;
+                        try {
+                            const res = await fetch(`/api/admin/folders/update/${activeTitles.id}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
+                            });
+                            if (res.ok) {
+                                showToast('FOLDER_RENAMED', 'success');
+                                activeTitles.cs = newCS;
+                                activeTitles.en = newEN;
+                                const freshRes = await fetch('/api/folders');
+                                if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                                openFolderModal(activeCategory, activeTitles, originEl);
+                                if (window.loadFolders) window.loadFolders();
+                            } else {
+                                const errData = await res.json().catch(() => ({}));
+                                showToast(`RENAME_FAILED: ${res.status} ${errData.error || ''}`, 'error');
+                                isSaving = false;
+                            }
+                        } catch (err) {
+                            showToast('RENAME_NETWORK_ERROR', 'error');
                             isSaving = false;
                         }
-                    } catch (err) {
-                        showToast('RENAME_NETWORK_ERROR', 'error');
-                        isSaving = false;
                     }
-                }
+                };
+
+                const inputs = titleEl.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('keydown', (ke) => {
+                        if (ke.key === 'Enter') saveAction();
+                        if (ke.key === 'Escape') openFolderModal(activeCategory, activeTitles, originEl);
+                    });
+                    input.addEventListener('blur', () => {
+                        setTimeout(() => {
+                            if (!titleEl.contains(document.activeElement)) {
+                                saveAction();
+                            }
+                        }, 150);
+                    });
+                });
+
+                titleEl.querySelector('#save-rename').onclick = saveAction;
             };
 
-            const inputs = titleEl.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('keydown', (ke) => {
-                    if (ke.key === 'Enter') saveAction();
-                    if (ke.key === 'Escape') openFolderModal(category, titles, originEl);
-                });
-                input.addEventListener('blur', () => {
-                    setTimeout(() => {
-                        if (!titleEl.contains(document.activeElement)) {
-                            saveAction();
-                        }
-                    }, 150);
-                });
-            });
-
-            titleEl.querySelector('#save-rename').onclick = saveAction;
-        };
-
-        renameBtn.onclick = startRename;
-        titleText.ondblclick = startRename;
-        titleEl.appendChild(renameBtn);
+            renameBtn.onclick = startRename;
+            titleText.ondblclick = startRename;
+            titleEl.appendChild(renameBtn);
+        }
     }
 
-    // Filter Items (Standardized Categories)
+    // Filter Portfolio Items (Standardized Categories)
     let filtered = portfolioData.filter(item => {
         const dbCat = item.category.toUpperCase();
-        const targetCat = category.toUpperCase();
+        const targetCat = activeCategory.toUpperCase();
         
         if (dbCat === targetCat) return true;
         
-        // Legacy fallbacks for old DB records
-        if (targetCat === 'PHOTOGRAPHY' || targetCat === 'FOTKY') return dbCat === 'PHOTOGRAPHY';
-        if (targetCat === 'VIDEOKLIPY') return dbCat === 'VIDEOKLIPY' || dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
+        // Legacy fallbacks for old DB records on root folders
+        if (window.currentFolderStack.length === 1) {
+            if (targetCat === 'PHOTOGRAPHY' || targetCat === 'FOTKY') return dbCat === 'PHOTOGRAPHY';
+            if (targetCat === 'VIDEOKLIPY') return dbCat === 'VIDEOKLIPY' || dbCat === 'EDITING' || dbCat === 'CINEMATOGRAPHY';
+        }
         
         return false;
     });
 
     currentFolderItems = filtered;
     
-    // Use DocumentFragment for better performance and fluidity
+    // DocumentFragment for performance
     const fragment = document.createDocumentFragment();
+
+    // Render Subfolders first
+    const currentFolderId = activeTitles ? activeTitles.id : null;
+    const subfolders = (window.allFoldersData || []).filter(f => f.parent_id && f.parent_id === currentFolderId);
+    subfolders.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    if (subfolders.length > 0) {
+        subfolders.forEach(sf => {
+            const div = document.createElement('div');
+            div.className = `folder-item subfolder-card reveal-fade active ${isSelectionMode ? 'selecting' : ''} ${selectedSubfolders.has(sf.id) ? 'selected' : ''}`;
+            div.setAttribute('data-category', sf.category_id);
+            div.setAttribute('data-id', sf.id);
+            div.setAttribute('data-type', 'folder');
+            
+            div.innerHTML = `
+                <div class="folder-icon-wrap">
+                    <img src="${sf.icon_url || '/assets/folder-icon.png'}" alt="Folder" class="folder-icon">
+                </div>
+                <span class="folder-name" data-cs="${sf.title_cs}" data-en="${sf.title_en}">${currentLang === 'cs' ? sf.title_cs : sf.title_en}</span>
+                ${window.isAdmin ? `
+                    <div class="subfolder-admin-actions" onclick="event.stopPropagation()">
+                        <button class="btn-subfolder-rename" title="Přejmenovat"><i class="ph ph-pencil-simple"></i></button>
+                        <button class="btn-subfolder-delete" title="Smazat"><i class="ph ph-trash"></i></button>
+                    </div>
+                ` : ''}
+            `;
+            
+            div.addEventListener('click', (e) => {
+                if (e.target.closest('.subfolder-admin-actions')) return;
+                
+                if (isSelectionMode) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleSubfolderSelection(sf.id, div);
+                } else {
+                    window.currentFolderStack.push({
+                        category: sf.category_id,
+                        titles: { cs: sf.title_cs, en: sf.title_en, id: sf.id },
+                        originEl: div
+                    });
+                    openFolderModal(sf.category_id, { cs: sf.title_cs, en: sf.title_en, id: sf.id }, div);
+                }
+            });
+
+            if (window.isAdmin) {
+                const renameBtn = div.querySelector('.btn-subfolder-rename');
+                const deleteBtn = div.querySelector('.btn-subfolder-delete');
+
+                if (renameBtn) {
+                    renameBtn.onclick = async (e) => {
+                        e.stopPropagation();
+                        const newCS = prompt('Nové CZ jméno podsložky:', sf.title_cs);
+                        if (!newCS) return;
+                        const newEN = prompt('Nové EN jméno podsložky:', sf.title_en) || newCS;
+                        try {
+                            const res = await fetch(`/api/admin/folders/update/${sf.id}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
+                            });
+                            if (res.ok) {
+                                if (window.showToast) window.showToast('PODSLOŽKA PŘEJMENOVÁNA', 'success');
+                                const freshRes = await fetch('/api/folders');
+                                if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                                openFolderModal(activeCategory, activeTitles, originEl);
+                            }
+                        } catch (err) {
+                            if (window.showToast) window.showToast('RENAME_ERROR', 'error');
+                        }
+                    };
+                }
+
+                if (deleteBtn) {
+                    deleteBtn.onclick = async (e) => {
+                        e.stopPropagation();
+                        const confirmed = await window.customConfirm('OPRAVDU SMAZAT TUTO PODSLOŽKU I S JEJÍM OBSAHEM?');
+                        if (!confirmed) return;
+                        try {
+                            const res = await fetch(`/api/folders/${sf.id}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                if (window.showToast) window.showToast('PODSLOŽKA SMAZÁNA', 'success');
+                                const freshRes = await fetch('/api/folders');
+                                if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                                openFolderModal(activeCategory, activeTitles, originEl);
+                                if (window.loadFolders) window.loadFolders();
+                            }
+                        } catch (err) {
+                            if (window.showToast) window.showToast('DELETE_ERROR', 'error');
+                        }
+                    };
+                }
+            }
+
+            fragment.appendChild(div);
+        });
+    }
 
     if (filtered.length > 0) {
         filtered.forEach(item => {
@@ -896,15 +1132,6 @@ function openFolderModal(category, titles, originEl) {
             `;
 
             if (window.isAdmin) {
-                div.addEventListener('click', (e) => {
-                    if (isSelectionMode) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleItemSelection(item.id, div);
-                        return;
-                    }
-                });
-
                 div.querySelector('.delete-btn').addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const confirmMsg = currentLang === 'cs' ? 'OPRAVDU SMAZAT TENTO ZÁZNAM?' : 'REALLY DELETE THIS RECORD?';
@@ -955,7 +1182,7 @@ function openFolderModal(category, titles, originEl) {
             });
             fragment.appendChild(div);
         });
-    } else {
+    } else if (subfolders.length === 0) {
         for (let i = 0; i < 3; i++) {
             const card = document.createElement('div');
             card.className = 'placeholder-card reveal-fade active';
@@ -2017,7 +2244,7 @@ function toggleSelectionMode() {
         allBtn.classList.toggle('hidden', !isSelectionMode);
     }
     
-    const items = document.querySelectorAll('.port-item');
+    const items = document.querySelectorAll('.port-item, .subfolder-card');
     items.forEach(el => {
         el.classList.toggle('selecting', isSelectionMode);
         if (!isSelectionMode) {
@@ -2027,16 +2254,21 @@ function toggleSelectionMode() {
     
     if (!isSelectionMode) {
         selectedItems.clear();
+        selectedSubfolders.clear();
     }
     updateBatchBar();
 }
 
 function toggleSelectAll() {
-    const items = document.querySelectorAll('.port-item');
-    const allSelected = Array.from(items).every(el => el.classList.contains('selected'));
+    const portItems = document.querySelectorAll('#folder-items-grid .port-item');
+    const subfolderCards = document.querySelectorAll('#folder-items-grid .subfolder-card');
+
+    const allPortSelected = portItems.length > 0 ? Array.from(portItems).every(el => el.classList.contains('selected')) : true;
+    const allSubSelected = subfolderCards.length > 0 ? Array.from(subfolderCards).every(el => el.classList.contains('selected')) : true;
+    const allSelected = allPortSelected && allSubSelected && (portItems.length > 0 || subfolderCards.length > 0);
     
-    items.forEach(el => {
-        const id = parseInt(el.dataset.id);
+    portItems.forEach(el => {
+        const id = parseInt(el.dataset.id, 10);
         if (allSelected) {
             el.classList.remove('selected');
             selectedItems.delete(id);
@@ -2045,6 +2277,18 @@ function toggleSelectAll() {
             selectedItems.add(id);
         }
     });
+
+    subfolderCards.forEach(el => {
+        const id = parseInt(el.dataset.id, 10);
+        if (allSelected) {
+            el.classList.remove('selected');
+            selectedSubfolders.delete(id);
+        } else {
+            el.classList.add('selected');
+            selectedSubfolders.add(id);
+        }
+    });
+
     updateBatchBar();
 }
 
@@ -2059,14 +2303,26 @@ function toggleItemSelection(id, element) {
     updateBatchBar();
 }
 
+function toggleSubfolderSelection(id, element) {
+    if (selectedSubfolders.has(id)) {
+        selectedSubfolders.delete(id);
+        element.classList.remove('selected');
+    } else {
+        selectedSubfolders.add(id);
+        element.classList.add('selected');
+    }
+    updateBatchBar();
+}
+
 function updateBatchBar() {
     const bar = document.getElementById('batch-actions-bar');
     if (!bar) return;
     const countEl = bar.querySelector('.selection-count');
+    const totalSelected = selectedItems.size + selectedSubfolders.size;
     
-    if (isSelectionMode && selectedItems.size > 0) {
+    if (isSelectionMode && totalSelected > 0) {
         bar.classList.add('active');
-        countEl.textContent = `${selectedItems.size} ITEMS_SELECTED`;
+        countEl.textContent = `${totalSelected} ITEMS_SELECTED`;
     } else {
         bar.classList.remove('active');
     }
@@ -2078,10 +2334,11 @@ document.addEventListener('DOMContentLoaded', () => {
         batchCancelBtn.onclick = () => {
             isSelectionMode = false;
             selectedItems.clear();
+            selectedSubfolders.clear();
             updateBatchBar();
             const grid = document.getElementById('folder-items-grid');
             if (grid) {
-                grid.querySelectorAll('.port-item').forEach(el => {
+                grid.querySelectorAll('.port-item, .subfolder-card').forEach(el => {
                     el.classList.remove('selecting', 'selected');
                 });
             }
@@ -2091,26 +2348,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const batchDeleteBtn = document.getElementById('batch-delete-btn');
     if (batchDeleteBtn) {
         batchDeleteBtn.onclick = async () => {
-            const ids = Array.from(selectedItems);
-            const confirmMsg = currentLang === 'cs' ? `OPRAVDU SMAZAT ${ids.length} POLOŽEK?` : `REALLY DELETE ${ids.length} ITEMS?`;
+            const totalSelected = selectedItems.size + selectedSubfolders.size;
+            if (totalSelected === 0) return;
+
+            const confirmMsg = currentLang === 'cs' 
+                ? `OPRAVDU SMAZAT ${totalSelected} POLOŽEK (VČETNĚ VYBRANÝCH PODSLOŽEK A JEJICH OBSAHU)?` 
+                : `REALLY DELETE ${totalSelected} ITEMS (INCLUDING SELECTED SUBFOLDERS AND THEIR CONTENTS)?`;
             const confirmed = await window.customConfirm(confirmMsg);
             if (!confirmed) return;
 
             try {
-                const res = await fetch('/api/portfolio/batch-delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ids })
-                });
-                if (res.ok) {
-                    showToast('BATCH_DELETE_SUCCESS', 'success');
-                    selectedItems.clear();
-                    isSelectionMode = false;
-                    updateBatchBar();
-                    loadPortfolio().then(() => {
-                        const closeBtn = document.getElementById('close-folder-modal');
-                        if (closeBtn) closeBtn.click();
+                // Delete selected subfolders first (which recursively cleans files from disk and DB)
+                for (const sfId of selectedSubfolders) {
+                    await fetch(`/api/folders/${sfId}`, { method: 'DELETE' });
+                }
+
+                // Delete selected portfolio items
+                if (selectedItems.size > 0) {
+                    const ids = Array.from(selectedItems);
+                    await fetch('/api/portfolio/batch-delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ids })
                     });
+                }
+
+                showToast('BATCH_DELETE_SUCCESS', 'success');
+                selectedItems.clear();
+                selectedSubfolders.clear();
+                isSelectionMode = false;
+                updateBatchBar();
+
+                // Refresh data and re-render modal
+                const freshRes = await fetch('/api/folders');
+                if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                await loadPortfolio();
+
+                const currentStackItem = window.currentFolderStack[window.currentFolderStack.length - 1];
+                if (currentStackItem) {
+                    openFolderModal(currentStackItem.category, currentStackItem.titles, currentStackItem.originEl);
+                } else {
+                    const closeBtn = document.getElementById('close-folder-modal');
+                    if (closeBtn) closeBtn.click();
                 }
             } catch (err) {
                 showToast('BATCH_DELETE_FAILED', 'error');
@@ -2128,49 +2407,72 @@ function toggleSortingMode(grid) {
         sortableInstance = null;
         btn.innerHTML = '<i class="ph ph-arrows-out-cardinal"></i> ENABLE SORTING';
         btn.classList.remove('active');
-        grid.querySelectorAll('.port-media-container').forEach(h => h.style.cursor = '');
+        grid.querySelectorAll('.port-media-container, .subfolder-card').forEach(h => h.style.cursor = '');
     } else {
         // Enable
         sortableInstance = new Sortable(grid, {
             animation: 150,
             ghostClass: 'sortable-ghost',
             dragClass: 'sortable-drag',
-            handle: '.port-media-container',
+            filter: '.subfolder-admin-actions, .admin-badge-container',
+            preventOnFilter: true,
             forceFallback: true,
             fallbackOnBody: true,
             fallbackClass: 'sortable-fallback',
             onStart: () => { document.body.classList.add('is-dragging'); },
             onEnd: () => { 
                 document.body.classList.remove('is-dragging');
-                console.log('Item moved'); 
             }
         });
         btn.innerHTML = '<i class="ph ph-check"></i> SAVE ORDER';
         btn.classList.add('active');
-        grid.querySelectorAll('.port-media-container').forEach(h => h.style.cursor = 'grab');
-        showToast('SORTING_MODE_ACTIVE', 'info');
+        grid.querySelectorAll('.port-media-container, .subfolder-card').forEach(h => h.style.cursor = 'grab');
+        if (window.showToast) window.showToast('SORTING_MODE_ACTIVE', 'info');
     }
 }
 
 async function saveNewOrder(grid) {
-    const items = Array.from(grid.querySelectorAll('.port-item'));
-    const orders = items.map((el, index) => ({
-        id: parseInt(el.dataset.id),
-        sort_order: index
-    }));
+    const portItems = Array.from(grid.querySelectorAll('.port-item'));
+    const subfolderCards = Array.from(grid.querySelectorAll('.subfolder-card'));
 
-    try {
-        const res = await fetch('/api/portfolio/reorder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orders })
-        });
-        if (res.ok) {
-            showToast('ORDER_SYNCHRONIZED', 'success');
-            loadPortfolio();
+    if (subfolderCards.length > 0) {
+        const folderOrders = subfolderCards.map((el, index) => ({
+            id: parseInt(el.dataset.id),
+            sort_order: index
+        }));
+        try {
+            const res = await fetch('/api/folders/reorder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orders: folderOrders })
+            });
+            if (res.ok) {
+                const freshRes = await fetch('/api/folders');
+                if (freshRes.ok) window.allFoldersData = await freshRes.json();
+            }
+        } catch (err) {
+            console.error('Error saving folder order:', err);
         }
-    } catch (err) {
-        showToast('ORDER_SYNC_FAILED', 'error');
+    }
+
+    if (portItems.length > 0) {
+        const itemOrders = portItems.map((el, index) => ({
+            id: parseInt(el.dataset.id),
+            sort_order: index
+        }));
+        try {
+            const res = await fetch('/api/portfolio/reorder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orders: itemOrders })
+            });
+            if (res.ok) {
+                if (window.showToast) window.showToast('ORDER_SYNCHRONIZED', 'success');
+                loadPortfolio();
+            }
+        } catch (err) {
+            if (window.showToast) window.showToast('ORDER_SYNC_FAILED', 'error');
+        }
     }
 }
 

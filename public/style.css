@@ -2292,6 +2292,161 @@ body.admin-enabled .delete-btn {
     }
 }
 
+/* Subfolder cards inside folder content modal (frameless, matching main page folders) */
+.folder-content-modal #folder-items-grid .subfolder-card {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    width: 100%;
+    padding: 1rem 0;
+    box-sizing: border-box;
+    aspect-ratio: unset !important;
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card:hover {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: translateY(-8px);
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card .folder-icon-wrap {
+    width: clamp(130px, 12vw, 170px);
+    margin-bottom: 1.2rem;
+    position: relative;
+    padding: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card .folder-icon {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card:hover .folder-icon {
+    transform: scale(1.08);
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.7));
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card .folder-name {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    text-transform: none;
+    letter-spacing: 0.12em;
+    text-align: center;
+    word-break: break-word;
+    transition: all 0.3s ease;
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card:hover .folder-name {
+    color: var(--text-primary);
+    text-shadow: 0 0 8px #ffffff, 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card.selected .folder-icon-wrap {
+    border-color: #4CAF50 !important;
+    background: rgba(76, 175, 80, 0.18) !important;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5) !important;
+    border-radius: 8px;
+}
+
+.folder-content-modal #folder-items-grid .subfolder-card.selected .folder-name {
+    color: #4CAF50 !important;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+}
+
+.subfolder-admin-actions {
+    position: absolute;
+    top: -5px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.subfolder-card:hover .subfolder-admin-actions {
+    opacity: 1;
+}
+
+.subfolder-admin-actions button {
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.subfolder-admin-actions button:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Styled Back Button for Subfolders */
+.btn-folder-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    margin-left: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.btn-folder-back:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #000000 !important;
+    border-color: #ffffff;
+    transform: translateX(-3px);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+}
+
+.btn-folder-back i {
+    font-size: 0.85rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-folder-back:hover i {
+    transform: translateX(-2px);
+}
+
+@media (max-width: 768px) {
+    .btn-folder-back {
+        display: none !important;
+    }
+}
+
 /* FOLDER CONTENT MODAL (macOS GLASS VERSION) */
 .folder-content-modal {
     width: 95vw;
@@ -2320,11 +2475,14 @@ body.admin-enabled .delete-btn {
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     cursor: default;
+    position: relative;
 }
 
 .window-controls-left {
     display: flex;
+    align-items: center;
     gap: 10px;
+    z-index: 5;
 }
 
 .win-dot {
@@ -2370,6 +2528,11 @@ body.admin-enabled .delete-btn {
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     font-weight: 600;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    white-space: nowrap;
 }
 
 .window-controls-right {
