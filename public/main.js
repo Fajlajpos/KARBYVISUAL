@@ -617,6 +617,7 @@ window.loadFolders = async function() {
                                     const res = await fetch(`/api/admin/folders/update/${f.id}`, {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
+                                        credentials: 'include',
                                         body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
                                     });
                                     if (res.ok) {
@@ -844,7 +845,19 @@ function openFolderModal(category, titles, originEl) {
     }
     
     // Admin Rename Feature (Double Click & Pencil Icon)
-    if (window.isAdmin && activeTitles.id) {
+    const targetFolderId = (activeTitles ? activeTitles.id : null) || (window.allFoldersData && window.allFoldersData.find(f => 
+        (activeCategory && f.category_id && f.category_id.toUpperCase() === activeCategory.toUpperCase()) ||
+        (f.title_cs && activeTitles && f.title_cs === activeTitles.cs) ||
+        (f.title_en && activeTitles && f.title_en === activeTitles.en)
+    )?.id);
+
+    if (window.isAdmin && targetFolderId) {
+        if (activeTitles && !activeTitles.id) {
+            activeTitles.id = targetFolderId;
+        }
+
+        titleEl.style.pointerEvents = 'auto';
+
         const titleText = titleEl.querySelector('.title-text');
         if (titleText) {
             titleText.style.cursor = 'pointer';
@@ -856,70 +869,94 @@ function openFolderModal(category, titles, originEl) {
             renameBtn.innerHTML = '<i class="ph ph-pencil-simple"></i>';
             renameBtn.title = "RENAME_FOLDER";
             
-            const startRename = () => {
+            const startRename = (e) => {
+                if (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+
                 titleEl.innerHTML = `
-                    <div class="folder-rename-mini-menu">
-                        <input type="text" class="rename-cs-input tactical-input-sm" value="${activeTitles.cs}" placeholder="CZ NAME">
-                        <input type="text" class="rename-en-input tactical-input-sm" value="${activeTitles.en}" placeholder="EN NAME">
-                        <button id="save-rename" class="btn-tactical-subtle" style="color:#4CAF50;"><i class="ph ph-check"></i></button>
-                        <button id="cancel-rename" class="btn-tactical-subtle"><i class="ph ph-x"></i></button>
+                    <div class="folder-rename-mini-menu" onclick="event.stopPropagation()">
+                        <input type="text" class="rename-cs-input tactical-input-sm" value="${activeTitles.cs || ''}" placeholder="CZ NAME">
+                        <input type="text" class="rename-en-input tactical-input-sm" value="${activeTitles.en || ''}" placeholder="EN NAME">
+                        <button id="save-rename" class="btn-tactical-subtle" style="color:#4CAF50;" title="Uložit"><i class="ph ph-check"></i></button>
+                        <button id="cancel-rename" class="btn-tactical-subtle" title="Zrušit"><i class="ph ph-x"></i></button>
                     </div>
                 `;
                 
-                titleEl.querySelector('#cancel-rename').onclick = () => {
-                    openFolderModal(activeCategory, activeTitles, originEl); // Reload modal state
+                const csInput = titleEl.querySelector('.rename-cs-input');
+                const enInput = titleEl.querySelector('.rename-en-input');
+                const saveBtn = titleEl.querySelector('#save-rename');
+                const cancelBtn = titleEl.querySelector('#cancel-rename');
+
+                if (csInput) csInput.focus();
+
+                const cancelAction = (ce) => {
+                    if (ce) ce.stopPropagation();
+                    openFolderModal(activeCategory, activeTitles, originEl);
                 };
-                
+
                 let isSaving = false;
-                const saveAction = async () => {
+                const saveAction = async (se) => {
+                    if (se) se.stopPropagation();
                     if (isSaving) return;
-                    const newCS = titleEl.querySelector('.rename-cs-input').value;
-                    const newEN = titleEl.querySelector('.rename-en-input').value;
+
+                    const curCsInput = titleEl.querySelector('.rename-cs-input');
+                    const curEnInput = titleEl.querySelector('.rename-en-input');
+                    if (!curCsInput || !curEnInput) return;
+
+                    const newCS = curCsInput.value.trim();
+                    const newEN = curEnInput.value.trim();
                     
-                    if (newCS && newEN) {
-                        isSaving = true;
-                        try {
-                            const res = await fetch(`/api/admin/folders/update/${activeTitles.id}`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
-                            });
-                            if (res.ok) {
-                                showToast('FOLDER_RENAMED', 'success');
-                                activeTitles.cs = newCS;
-                                activeTitles.en = newEN;
-                                const freshRes = await fetch('/api/folders');
-                                if (freshRes.ok) window.allFoldersData = await freshRes.json();
-                                openFolderModal(activeCategory, activeTitles, originEl);
-                                if (window.loadFolders) window.loadFolders();
-                            } else {
-                                const errData = await res.json().catch(() => ({}));
-                                showToast(`RENAME_FAILED: ${res.status} ${errData.error || ''}`, 'error');
-                                isSaving = false;
-                            }
-                        } catch (err) {
-                            showToast('RENAME_NETWORK_ERROR', 'error');
+                    if (!newCS || !newEN) {
+                        if (window.showToast) window.showToast('NÁZEV NESMÍ BÝT PRÁZDNÝ', 'error');
+                        return;
+                    }
+
+                    isSaving = true;
+                    try {
+                        const res = await fetch(`/api/admin/folders/update/${targetFolderId}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
+                        });
+                        if (res.ok) {
+                            if (window.showToast) window.showToast('FOLDER_RENAMED', 'success');
+                            activeTitles.cs = newCS;
+                            activeTitles.en = newEN;
+                            activeTitles.id = targetFolderId;
+                            const freshRes = await fetch('/api/folders');
+                            if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                            openFolderModal(activeCategory, activeTitles, originEl);
+                            if (window.loadFolders) window.loadFolders();
+                        } else {
+                            const errData = await res.json().catch(() => ({}));
+                            if (window.showToast) window.showToast(`RENAME_FAILED: ${res.status} ${errData.error || ''}`, 'error');
                             isSaving = false;
                         }
+                    } catch (err) {
+                        if (window.showToast) window.showToast('RENAME_NETWORK_ERROR', 'error');
+                        isSaving = false;
                     }
                 };
 
-                const inputs = titleEl.querySelectorAll('input');
-                inputs.forEach(input => {
+                if (cancelBtn) cancelBtn.onclick = cancelAction;
+                if (saveBtn) saveBtn.onclick = saveAction;
+
+                [csInput, enInput].forEach(input => {
+                    if (!input) return;
                     input.addEventListener('keydown', (ke) => {
-                        if (ke.key === 'Enter') saveAction();
-                        if (ke.key === 'Escape') openFolderModal(activeCategory, activeTitles, originEl);
-                    });
-                    input.addEventListener('blur', () => {
-                        setTimeout(() => {
-                            if (!titleEl.contains(document.activeElement)) {
-                                saveAction();
-                            }
-                        }, 150);
+                        if (ke.key === 'Enter') {
+                            ke.preventDefault();
+                            saveAction(ke);
+                        }
+                        if (ke.key === 'Escape') {
+                            ke.preventDefault();
+                            cancelAction(ke);
+                        }
                     });
                 });
-
-                titleEl.querySelector('#save-rename').onclick = saveAction;
             };
 
             renameBtn.onclick = startRename;
@@ -1006,6 +1043,7 @@ function openFolderModal(category, titles, originEl) {
                             const res = await fetch(`/api/admin/folders/update/${sf.id}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
                                 body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
                             });
                             if (res.ok) {

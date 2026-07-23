@@ -2531,7 +2531,8 @@ body.admin-enabled .delete-btn {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    pointer-events: none;
+    pointer-events: auto;
+    z-index: 10;
     white-space: nowrap;
 }
 
