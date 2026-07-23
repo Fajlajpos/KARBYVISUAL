@@ -1034,27 +1034,98 @@ function openFolderModal(category, titles, originEl) {
                 const deleteBtn = div.querySelector('.btn-subfolder-delete');
 
                 if (renameBtn) {
-                    renameBtn.onclick = async (e) => {
+                    renameBtn.onclick = (e) => {
                         e.stopPropagation();
-                        const newCS = prompt('Nové CZ jméno podsložky:', sf.title_cs);
-                        if (!newCS) return;
-                        const newEN = prompt('Nové EN jméno podsložky:', sf.title_en) || newCS;
-                        try {
-                            const res = await fetch(`/api/admin/folders/update/${sf.id}`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include',
-                                body: JSON.stringify({ titleCS: newCS, titleEN: newEN })
-                            });
-                            if (res.ok) {
-                                if (window.showToast) window.showToast('PODSLOŽKA PŘEJMENOVÁNA', 'success');
-                                const freshRes = await fetch('/api/folders');
-                                if (freshRes.ok) window.allFoldersData = await freshRes.json();
-                                openFolderModal(activeCategory, activeTitles, originEl);
+                        e.preventDefault();
+
+                        const nameEl = div.querySelector('.folder-name');
+                        if (!nameEl || nameEl.querySelector('input')) return;
+
+                        const originalCS = sf.title_cs;
+                        const originalEN = sf.title_en;
+
+                        nameEl.innerHTML = `
+                            <div class="folder-grid-rename subfolder-inline-rename" onclick="event.stopPropagation()">
+                                <input type="text" value="${originalCS}" class="edit-cs-input tactical-input-xs" placeholder="CZ NÁZEV">
+                                <input type="text" value="${originalEN}" class="edit-en-input tactical-input-xs" placeholder="EN NÁZEV">
+                                <div style="display:flex; gap:6px; margin-top:4px;">
+                                    <button class="save-subfolder-rename save-grid-rename" style="background:#4CAF50; color:#fff;" title="Uložit"><i class="ph ph-check"></i></button>
+                                    <button class="cancel-subfolder-rename save-grid-rename" style="background:rgba(255,255,255,0.2); color:#fff;" title="Zrušit"><i class="ph ph-x"></i></button>
+                                </div>
+                            </div>
+                        `;
+
+                        const csInput = nameEl.querySelector('.edit-cs-input');
+                        const enInput = nameEl.querySelector('.edit-en-input');
+                        const saveBtn = nameEl.querySelector('.save-subfolder-rename');
+                        const cancelBtn = nameEl.querySelector('.cancel-subfolder-rename');
+
+                        if (csInput) csInput.focus();
+
+                        const cancelAction = (ce) => {
+                            if (ce) ce.stopPropagation();
+                            openFolderModal(activeCategory, activeTitles, originEl);
+                        };
+
+                        let isSaving = false;
+                        const performSave = async (se) => {
+                            if (se) se.stopPropagation();
+                            if (isSaving) return;
+
+                            const curCs = nameEl.querySelector('.edit-cs-input')?.value.trim();
+                            const curEn = nameEl.querySelector('.edit-en-input')?.value.trim();
+
+                            if (!curCs || !curEn) {
+                                if (window.showToast) window.showToast('NÁZEV NESMÍ BÝT PRÁZDNÝ', 'error');
+                                return;
                             }
-                        } catch (err) {
-                            if (window.showToast) window.showToast('RENAME_ERROR', 'error');
-                        }
+
+                            if (curCs === originalCS && curEn === originalEN) {
+                                cancelAction();
+                                return;
+                            }
+
+                            isSaving = true;
+                            try {
+                                const res = await fetch(`/api/admin/folders/update/${sf.id}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ titleCS: curCs, titleEN: curEn })
+                                });
+                                if (res.ok) {
+                                    if (window.showToast) window.showToast('PODSLOŽKA PŘEJMENOVÁNA', 'success');
+                                    const freshRes = await fetch('/api/folders');
+                                    if (freshRes.ok) window.allFoldersData = await freshRes.json();
+                                    openFolderModal(activeCategory, activeTitles, originEl);
+                                    if (window.loadFolders) window.loadFolders();
+                                } else {
+                                    const errData = await res.json().catch(() => ({}));
+                                    if (window.showToast) window.showToast('CHYBA: ' + (errData.error || 'Neznámá chyba'), 'error');
+                                    isSaving = false;
+                                }
+                            } catch (err) {
+                                if (window.showToast) window.showToast('RENAME_ERROR', 'error');
+                                isSaving = false;
+                            }
+                        };
+
+                        if (saveBtn) saveBtn.onclick = performSave;
+                        if (cancelBtn) cancelBtn.onclick = cancelAction;
+
+                        [csInput, enInput].forEach(inp => {
+                            if (!inp) return;
+                            inp.addEventListener('keydown', (ke) => {
+                                if (ke.key === 'Enter') {
+                                    ke.preventDefault();
+                                    performSave(ke);
+                                }
+                                if (ke.key === 'Escape') {
+                                    ke.preventDefault();
+                                    cancelAction(ke);
+                                }
+                            });
+                        });
                     };
                 }
 
