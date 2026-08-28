@@ -1806,7 +1806,12 @@
             { id: 'tn_z',     label: 'tv-noise: pod obsah (z-index -1)',      css: '.tv-noise{z-index:-1!important}' },
             { id: 'tn_pos',   label: 'tv-noise: absolute misto fixed',        css: '.tv-noise{position:absolute!important}' },
             { id: 'tn_img',   label: 'tv-noise: bez PNG (jen prazdna vrstva)', css: '.tv-noise{background-image:none!important}' },
-            { id: 'tn_fix',   label: '>> KANDIDATNI OPRAVA (ma vypadat stejne)', css: ".tv-noise{opacity:1!important;background-image:url('/assets/noise-05.png')!important}" }
+            { id: 'tn_fix',   label: '16 nefungovala - preskoc',              css: ".tv-noise{opacity:1!important;background-image:url('/assets/noise-05.png')!important}" },
+            /* --- 14 (absolute) i 15 (bez PNG) pruh opravily -> viník je fixed vrstva
+                   kreslici rastrovy obrazek. Tri kandidatni opravy: --- */
+            { id: 'fixA',     label: '>> OPRAVA A: absolute pres cely dokument', css: '.tv-noise{position:absolute!important;top:0!important;bottom:0!important;height:auto!important}' },
+            { id: 'fixB',     label: '>> OPRAVA B: PNG bez alpha kanalu',      css: ".tv-noise{background-image:url('/assets/noise-rgb.png')!important}" },
+            { id: 'fixC',     label: '>> OPRAVA C: vlastni GPU vrstva',        css: '.tv-noise{transform:translateZ(0)!important;will-change:transform!important}' }
         ];
 
         var KEY = 'kv_debug_switches';
