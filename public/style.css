@@ -742,8 +742,13 @@ body.modal-open {
     min-height: 100lvh;
     z-index: -5;
     background: url('/assets/kolaz_v5.jpg') repeat-y top center / 100% auto;
-    opacity: 0.45;
-    filter: brightness(0.99);
+    /* POZOR: zadne `opacity` ani `filter` na tomto prvku.
+       Je vysoky jako cely dokument (~6800px). opacity/filter z nej v WebKitu udelaji
+       jednu composited vrstvu, kterou iOS Safari na vetsich displejich nestihne
+       cely rasterizovat -> nevykresleny cerny pruh u spodni hrany obrazovky.
+       Ztmaveni proto resi cerny prekryv v ::after, ne opacity (vysledek je identicky,
+       protoze za timto prvkem je jen cerne pozadi <html>). */
+    opacity: 1;
     pointer-events: none;
 }
 
@@ -751,8 +756,8 @@ body.modal-open {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    /* Balanced overlay */
+    /* 0.685 = drive `opacity: 0.45` na rodici + rgba(0,0,0,0.3) zde */
+    background: rgba(0, 0, 0, 0.685);
     pointer-events: none;
 }
 
@@ -8163,11 +8168,12 @@ body > .sortable-fallback.port-item .port-info {
     /* Background Scaling & Visible Mask overlay to match PC aesthetics exactly */
     .global-site-bg {
         background: url('/assets/kolaz_v5.jpg') repeat-y top center / 100% auto !important;
-        opacity: 0.45 !important;
+        opacity: 1 !important;
     }
     
     .global-site-bg::after {
-        background: rgba(0, 0, 0, 0.45) !important;
+        /* 0.7525 = drive `opacity: 0.45` na rodici + rgba(0,0,0,0.45) zde */
+        background: rgba(0, 0, 0, 0.7525) !important;
     }
 
     .bg-pattern {
