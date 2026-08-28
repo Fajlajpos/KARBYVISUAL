@@ -58,7 +58,12 @@ body.modal-open {
     position: fixed;
     inset: 0;
     width: 100%;
-    height: 100%;
+    /* iOS Safari: fixed vrstvy se počítají vůči small viewportu (s rozbalenou spodní lištou).
+       Když se lišta při scrollu sbalí, odkryje se pruh, který už overlay nepřekrývá → tmavší pás dole.
+       100lvh = vždy nejvyšší stav viewportu, takže překryv sedí i po sbalení lišty. */
+    bottom: auto;
+    height: 100vh;
+    height: 100lvh;
     pointer-events: none;
     z-index: -1;
     background-image: linear-gradient(to right, #111 1px, transparent 1px), linear-gradient(to bottom, #111 1px, transparent 1px);
@@ -71,6 +76,12 @@ body.modal-open {
 .tv-noise {
     position: fixed;
     inset: 0;
+    /* iOS Safari: fixed vrstvy se počítají vůči small viewportu (s rozbalenou spodní lištou).
+       Když se lišta při scrollu sbalí, odkryje se pruh, který už overlay nepřekrývá → tmavší pás dole.
+       100lvh = vždy nejvyšší stav viewportu, takže překryv sedí i po sbalení lišty. */
+    bottom: auto;
+    height: 100vh;
+    height: 100lvh;
     z-index: 9987;
     pointer-events: none;
     background: var(--noise-bg);
@@ -94,7 +105,12 @@ body.modal-open {
     position: fixed;
     inset: 0;
     width: 100%;
-    height: 100%;
+    /* iOS Safari: fixed vrstvy se počítají vůči small viewportu (s rozbalenou spodní lištou).
+       Když se lišta při scrollu sbalí, odkryje se pruh, který už overlay nepřekrývá → tmavší pás dole.
+       100lvh = vždy nejvyšší stav viewportu, takže překryv sedí i po sbalení lišty. */
+    bottom: auto;
+    height: 100vh;
+    height: 100lvh;
     pointer-events: none;
     z-index: -1;
     overflow: hidden;
