@@ -1800,7 +1800,13 @@
             { id: 'glow',     label: 'glow-blob (5x blur 120px)',             css: '.glow-blob{display:none!important}' },
             { id: 'bdf',      label: 'vsechny backdrop-filter (vc. navbaru)', css: '*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}' },
             { id: 'clip',     label: 'overflow-x:clip na html/body',          css: 'html,body{overflow-x:visible!important}' },
-            { id: 'nomain',   label: 'veskery obsah <main>',                  css: 'main{visibility:hidden!important}' }
+            { id: 'nomain',   label: 'veskery obsah <main>',                  css: 'main{visibility:hidden!important}' },
+            /* --- jemnejsi izolace .tv-noise (vypinac 4 uz potvrdil, ze viník je ona) --- */
+            { id: 'tn_op',    label: 'tv-noise: opacity (bude videt zrno!)',  css: '.tv-noise{opacity:1!important}' },
+            { id: 'tn_z',     label: 'tv-noise: pod obsah (z-index -1)',      css: '.tv-noise{z-index:-1!important}' },
+            { id: 'tn_pos',   label: 'tv-noise: absolute misto fixed',        css: '.tv-noise{position:absolute!important}' },
+            { id: 'tn_img',   label: 'tv-noise: bez PNG (jen prazdna vrstva)', css: '.tv-noise{background-image:none!important}' },
+            { id: 'tn_fix',   label: '>> KANDIDATNI OPRAVA (ma vypadat stejne)', css: ".tv-noise{opacity:1!important;background-image:url('/assets/noise-05.png')!important}" }
         ];
 
         var KEY = 'kv_debug_switches';
