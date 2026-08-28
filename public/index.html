@@ -1811,7 +1811,12 @@
                    kreslici rastrovy obrazek. Tri kandidatni opravy: --- */
             { id: 'fixA',     label: '>> OPRAVA A: absolute pres cely dokument', css: '.tv-noise{position:absolute!important;top:0!important;bottom:0!important;height:auto!important}' },
             { id: 'fixB',     label: '>> OPRAVA B: PNG bez alpha kanalu',      css: ".tv-noise{background-image:url('/assets/noise-rgb.png')!important}" },
-            { id: 'fixC',     label: '>> OPRAVA C: vlastni GPU vrstva',        css: '.tv-noise{transform:translateZ(0)!important;will-change:transform!important}' }
+            { id: 'fixC',     label: '17-19 nefungovaly - preskoc',           css: '.tv-noise{transform:translateZ(0)!important;will-change:transform!important}' },
+            /* --- Posledni dve varianty: kopiruji strukturu .global-site-bg, coz je
+                   jedina rastr kreslici vrstva na webu, ktera pruh nedela. --- */
+            { id: 'fixD',     label: '>> OPRAVA D: zrno pod obsah',           css: '.tv-noise{position:absolute!important;top:0!important;bottom:0!important;height:auto!important;z-index:-4!important}' },
+            { id: 'fixE',     label: '>> OPRAVA E: pod obsah, bez blendu',    css: ".tv-noise{position:absolute!important;top:0!important;bottom:0!important;height:auto!important;z-index:-4!important;mix-blend-mode:normal!important;opacity:1!important;background-image:url('/assets/noise-05.png')!important}" },
+            { id: 'fixF',     label: '>> ZALOHA F: zrno uplne pryc',          css: '.tv-noise{display:none!important}' }
         ];
 
         var KEY = 'kv_debug_switches';
