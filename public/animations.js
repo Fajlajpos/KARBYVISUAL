@@ -191,6 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Calculate height of one full set of items
             // We use the top of the first clone as the offset for totalHeight
             const firstClone = grid.querySelector('.is-clone');
+            if (!firstClone) return; // zadne recenze -> neni co posouvat
             const totalHeight = firstClone.offsetTop - grid.offsetTop;
             
             // Kill previous marquee if exists to prevent stacking
@@ -205,6 +206,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 lazy: true
             });
             grid._marquee = marquee;
+
+            // Nekonecny tween by jinak drzel GSAP ticker na 60 fps po celou
+            // navstevu, i kdyz jsou recenze tisice pixelu mimo obrazovku.
+            if (grid._marqueeObserver) grid._marqueeObserver.disconnect();
+            if ('IntersectionObserver' in window) {
+                grid._marqueeObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            marquee.play();
+                        } else {
+                            marquee.pause();
+                        }
+                    });
+                }, { rootMargin: '200px' });
+                grid._marqueeObserver.observe(viewport);
+            }
 
             // Clean up any old event listeners
             if (grid._marqueeClick) {
@@ -290,11 +307,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 
-    // Initialize marquee if elements exist
+    // Marquee se inicializuje az z main.js po dotazeni /api/testimonials.
+    // Drive se volal i tady, ale #reviews-grid je v HTML prazdny - ten prvni
+    // beh tedy jen naklonoval nic, vynutil layout a hned ho prepsal ten druhy.
     window.initReviewsMarquee = initReviewsMarquee;
-    if (document.querySelector('.reviews-marquee-viewport')) {
-        initReviewsMarquee();
-    }
 
     // ==========================================================================
     // Form Interaction V3
@@ -551,26 +567,9 @@ if (document.querySelector('.auth-btn')) {
     initAuthEntrance();
 }
 
-// ==========================================================================
-// Navbar Scroll Effect
-// ==========================================================================
-function initNavbarScroll() {
-    const nav = document.querySelector('.navbar');
-    if (!nav) return;
-
-    const updateNav = () => {
-        if (window.scrollY > 50) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
-    };
-
-    window.addEventListener('scroll', updateNav);
-    updateNav(); // Initial check
-}
-
-document.addEventListener('DOMContentLoaded', initNavbarScroll);
+// Pozn.: drive tu byla initNavbarScroll() - netlumeny scroll listener, ktery
+// na .navbar prepinal tridu .scrolled. Ta ale nemela jedine CSS pravidlo ani
+// jedno cteni v JS, takze nedelala nic krome prace na hlavnim vlakne.
 
 function initMobileMenu() {
     const menuBtn = document.querySelector('.mobile-menu-btn');

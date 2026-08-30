@@ -1833,18 +1833,6 @@ function updateNavAuth(authenticated) {
     updateLanguageUI(currentLang);
 }
 
-async function handleLogout() {
-    try {
-        const res = await fetch('/api/logout', { method: 'POST' });
-        if (res.ok) {
-            showToast(currentLang === 'cs' ? 'Odhlášení úspěšné.' : 'Logged out successfully.', 'success');
-            checkAuth();
-        }
-    } catch (err) {
-        showToast('Logout failed.', 'error');
-    }
-}
-
 function initAuthUI() {
     // 5-tap gesture on KARBYVISUALS logo to open login modal
     let logoTapCount = 0;

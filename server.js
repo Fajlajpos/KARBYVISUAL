@@ -6,6 +6,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 require('dotenv').config();
 
 const rateLimit = require('express-rate-limit');
@@ -126,13 +127,42 @@ const uploadAvatar = multer({
 });
 
 // Middlewares
+// Komprese musi byt PRED express.static, jinak se staticke soubory neobali.
+// Bez ni sla prvni navsteva po drate jako ~509 kB nekomprimovaneho HTML/CSS/JS.
+app.use(compression());
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Static Files - serve 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+        // HTML se musi revalidovat - obsahuje odkazy s ?v= cache busterem.
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+            return;
+        }
+        // CSS/JS: rok jen kdyz prislo ?v=... Bez nej kratka platnost, aby
+        // zapomenuty cache buster neuvezl navstevniky na stare verzi.
+        if (/\.(css|js)$/i.test(filePath)) {
+            res.setHeader('Cache-Control', res.req.query && res.req.query.v
+                ? 'public, max-age=31536000, immutable'
+                : 'public, max-age=3600');
+            return;
+        }
+        // Uploady maji v nazvu timestamp, takze se nikdy neprepisuji -> rok.
+        if (filePath.includes(path.sep + 'uploads' + path.sep)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            return;
+        }
+        // Zbytek (/assets) ma pevna jmena a muze se rucne prepsat, proto
+        // 30 dni misto roku - jinak by prepsany soubor navstevnikum neprisel.
+        res.setHeader('Cache-Control', 'public, max-age=2592000');
+    }
+}));
 
 
 // Rate Limiting
