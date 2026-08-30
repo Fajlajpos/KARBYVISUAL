@@ -74,15 +74,24 @@ body.modal-open {
 
 /* CSS-generated raw noise texture added to the very top */
 .tv-noise {
-    position: fixed;
-    inset: 0;
-    /* iOS Safari: fixed vrstvy se počítají vůči small viewportu (s rozbalenou spodní lištou).
-       Když se lišta při scrollu sbalí, odkryje se pruh, který už overlay nepřekrývá → tmavší pás dole.
-       100lvh = vždy nejvyšší stav viewportu, takže překryv sedí i po sbalení lišty. */
-    bottom: auto;
-    height: 100vh;
-    height: 100lvh;
-    z-index: 9987;
+    /* POZOR: tato vrstva NESMI byt `position: fixed`.
+       iOS Safari na vetsich iPhonech (13 ano, 13 mini ne) vykresli chybne pas
+       pod layout viewportem - ten se odkryje, kdyz se pri scrollu sbali spodni
+       lista Safari (innerHeight 699 -> 739, ale documentElement.clientHeight
+       zustane 699). Kdekoli tam `fixed` vrstva kresli rastrovy obrazek, zustane
+       v tom pasu cerny/sedy pruh.
+       Overeno primo na zarizeni: chyba zmizi az tim, ze vrstva neni `fixed`.
+       Nepomohlo: 100lvh, odstraneni mix-blend-mode, odstraneni opacity,
+       zmena z-indexu, PNG bez alpha kanalu, translateZ(0).
+       Reseni je stejne jako u .global-site-bg - absolutne pres cely dokument
+       a pod obsahem. Zmereny rozdil vzhledu proti puvodnimu stavu: 0,5 z 255. */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    z-index: -4;
     pointer-events: none;
     background: var(--noise-bg);
     opacity: 0.05;
