@@ -14,7 +14,7 @@
     --font-body: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --border-thin: 1px solid var(--border-color);
-    --noise-bg: url('/assets/noise.png');
+    --noise-bg: url('/assets/noise.webp');
 }
 
 * {
@@ -129,8 +129,15 @@ body.modal-open {
     position: absolute;
     width: 50vw;
     height: 50vw;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
-    filter: blur(150px);
+    /* Predpocitany mekky gradient misto `filter: blur(150px)`.
+       Blur velke plochy je nejdrazsi operace na strance - GPU ho prerastrovava
+       kazdy snimek, protoze animace meni scale. Profil stopu nize je nafitovany
+       na vzhled rozmazane verze (stredni odchylka 0,34 z 255). */
+    background: radial-gradient(circle,
+            rgba(255, 255, 255, 0.018) 0%,
+            rgba(255, 255, 255, 0.012) 35%,
+            rgba(255, 255, 255, 0.005) 65%,
+            transparent 100%);
     border-radius: 50%;
     animation: floating-blur 20s ease-in-out infinite alternate;
     will-change: transform;
@@ -750,7 +757,10 @@ body.modal-open {
     min-height: 100%;
     min-height: 100lvh;
     z-index: -5;
-    background: url('/assets/kolaz_v5.jpg') repeat-y top center / 100% auto;
+    /* WebP je zakodovany uz predztmaveny (img * 0.315), protoze za timto prvkem
+       je jen cerne pozadi <html> - vysledek je identicky s puvodnim JPG pod
+       prekryvem rgba(0,0,0,0.685), ale soubor ma 558 kB misto 2625 kB. */
+    background: url('/assets/kolaz_v5.webp') repeat-y top center / 100% auto;
     /* POZOR: zadne `opacity` ani `filter` na tomto prvku.
        Je vysoky jako cely dokument (~6800px). opacity/filter z nej v WebKitu udelaji
        jednu composited vrstvu, kterou iOS Safari na vetsich displejich nestihne
@@ -765,8 +775,10 @@ body.modal-open {
     content: '';
     position: absolute;
     inset: 0;
-    /* 0.685 = drive `opacity: 0.45` na rodici + rgba(0,0,0,0.3) zde */
-    background: rgba(0, 0, 0, 0.685);
+    /* Ztmaveni je nove zapecene primo do kolaz_v5.webp, prekryv uz nic nedela.
+       Prvek zustava kvuli mobilnimu override nize a kvuli iOS chovani popsanemu
+       u rodice - jen uz nekresli. */
+    background: transparent;
     pointer-events: none;
 }
 
@@ -2063,13 +2075,24 @@ body.modal-open {
     position: relative;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    /* Drive `transition: all` - hover meni jen tyhle tri vlastnosti, takze nema
+       smysl nechavat prohlizec hlidat i layoutove. */
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                border-color 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                background-color 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     display: flex;
     flex-direction: column;
     width: 100%;
-    will-change: transform, opacity;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+}
+
+/* `will-change` natrvalo drzelo kompozitni vrstvu pro kazdou polozku mrizky.
+   Ve slozce jich jsou desitky, takze to zbytecne zabiralo GPU pamet i kdyz se
+   nic nehybalo. Vrstva se ted vytvari az tesne pred animaci. */
+.port-item:hover {
+    will-change: transform;
 }
 
 .port-item:hover {
@@ -2233,7 +2256,8 @@ body.admin-enabled .delete-btn {
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    /* Drive `transition: all`; hover na tomto prvku meni jen transform. */
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .folder-icon-wrap {
@@ -6443,34 +6467,39 @@ body.admin-enabled .delete-btn {
 .glow-blob {
     position: absolute;
     border-radius: 50%;
-    filter: blur(120px);
+    /* Drive `background: <plna barva>` + `filter: blur(120px)`. Gradient dava
+       stejny vysledek bez filtru; zakladni scale(1.9) v @keyframes nahrazuje
+       plochu, kterou drive pokryl rozptyl blurru. */
+    background: radial-gradient(circle, var(--glow-color) 0%, rgba(0, 0, 0, 0) 62%);
     opacity: 0.08;
     animation: blob-float 20s ease-in-out infinite alternate;
 }
 
 .gb-orange {
-    background: #ff9500;
+    --glow-color: #ff9500;
 }
 
 .gb-purple {
-    background: #7000ff;
+    --glow-color: #7000ff;
 }
 
 .gb-cyan {
-    background: #00f2ff;
+    --glow-color: #00f2ff;
 }
 
 .gb-blue {
-    background: #0066ff;
+    --glow-color: #0066ff;
 }
 
 @keyframes blob-float {
     0% {
-        transform: translate(0, 0) scale(1);
+        /* 1.9 / 2.47 misto 1 / 1.3 - pomer 1,3 mezi krajnimi stavy zustava,
+           takze pohyb vypada stejne jako drive. */
+        transform: translate(0, 0) scale(1.9);
     }
 
     100% {
-        transform: translate(60px, 80px) scale(1.3);
+        transform: translate(60px, 80px) scale(2.47);
     }
 }
 
@@ -8176,13 +8205,14 @@ body > .sortable-fallback.port-item .port-info {
 @media (max-width: 768px) {
     /* Background Scaling & Visible Mask overlay to match PC aesthetics exactly */
     .global-site-bg {
-        background: url('/assets/kolaz_v5.jpg') repeat-y top center / 100% auto !important;
+        background: url('/assets/kolaz_v5.webp') repeat-y top center / 100% auto !important;
         opacity: 1 !important;
     }
     
     .global-site-bg::after {
-        /* 0.7525 = drive `opacity: 0.45` na rodici + rgba(0,0,0,0.45) zde */
-        background: rgba(0, 0, 0, 0.7525) !important;
+        /* Mobil chce vyslednou svetlost 0.2475, obrazek uz nese 0.315.
+           1 - (0.2475 / 0.315) = 0.2143 -> tolik jeste dobrat prekryvem. */
+        background: rgba(0, 0, 0, 0.2143) !important;
     }
 
     .bg-pattern {
@@ -9230,6 +9260,8 @@ body > .sortable-fallback.port-item .port-info {
         animation-delay: -1ms !important;
         animation-duration: 1ms !important;
         animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        transition-delay: 0ms !important;
         background-attachment: initial !important;
         scroll-behavior: auto !important;
     }

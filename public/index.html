@@ -88,13 +88,16 @@
         rel="stylesheet">
 
     <!-- Icons -->
-    <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- Presna verze i cesta: drive sly na tenhle soubor dva redirecty navic
+         (/@phosphor-icons/web -> @2.1.2 -> /src/index.js). -->
+    <script defer src="https://unpkg.com/@phosphor-icons/web@2.1.2/src/index.js"></script>
+    <!-- Sortable se nacita az s admin.js, viz loadAdminBundle() v main.js. -->
 
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="/assets/K%20FAVICON%20IKON.jpg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/png" href="/favicon.png">
 
-    <link rel="stylesheet" href="/style.css?v=53">
+    <link rel="stylesheet" href="/style.css?v=54">
 </head>
 
 <body class="loading">
@@ -280,7 +283,7 @@
                         <div class="frame-corners"><i class="ph ph-focus"></i></div>
                         <div class="about-me-photo-wrapper">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" loading="lazy" src="/assets/about-me.jpg" alt="Sam Karban - KARBYVISUALS" class="about-me-photo"
+                            <img decoding="async" loading="lazy" src="/assets/about-me.webp" alt="Sam Karban - KARBYVISUALS" class="about-me-photo"
                                 width="500" height="600">
                         </div>
                     </div>
@@ -362,7 +365,7 @@
                     <div class="folder-item reveal-fade" data-category="PHOTOGRAPHY">
                         <div class="folder-icon-wrap">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" src="/assets/folder-icon.png" alt="Složka - Fotografie" class="folder-icon" width="64"
+                            <img decoding="async" src="/assets/folder-icon.webp" alt="Složka - Fotografie" class="folder-icon" width="64"
                                 height="64">
                         </div>
                         <span class="folder-name" data-cs="Fotky" data-en="Photos">Fotky</span>
@@ -370,7 +373,7 @@
                     <div class="folder-item reveal-fade" data-category="VIDEOKLIPY">
                         <div class="folder-icon-wrap">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" src="/assets/folder-icon.png" alt="Složka - Videoklipy" class="folder-icon" width="64"
+                            <img decoding="async" src="/assets/folder-icon.webp" alt="Složka - Videoklipy" class="folder-icon" width="64"
                                 height="64">
                         </div>
                         <span class="folder-name" data-cs="Videoklipy" data-en="Music Videos">Videoklipy</span>
@@ -378,7 +381,7 @@
                     <div class="folder-item reveal-fade" data-category="TIKTOK">
                         <div class="folder-icon-wrap">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" src="/assets/folder-icon.png" alt="Složka - Tiktok videa" class="folder-icon"
+                            <img decoding="async" src="/assets/folder-icon.webp" alt="Složka - Tiktok videa" class="folder-icon"
                                 width="64" height="64">
                         </div>
                         <span class="folder-name" data-cs="Tiktok videa" data-en="Tiktok Videos">Tiktok videa</span>
@@ -386,7 +389,7 @@
                     <div class="folder-item reveal-fade" data-category="INSTAGRAM">
                         <div class="folder-icon-wrap">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" src="/assets/folder-icon.png" alt="Složka - Instagram videa" class="folder-icon"
+                            <img decoding="async" src="/assets/folder-icon.webp" alt="Složka - Instagram videa" class="folder-icon"
                                 width="64" height="64">
                         </div>
                         <span class="folder-name" data-cs="Instagram videa" data-en="Instagram Videos">Instagram
@@ -395,7 +398,7 @@
                     <div class="folder-item reveal-fade" data-category="YOUTUBE">
                         <div class="folder-icon-wrap">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" src="/assets/folder-icon.png" alt="Složka - Youtube videa" class="folder-icon"
+                            <img decoding="async" src="/assets/folder-icon.webp" alt="Složka - Youtube videa" class="folder-icon"
                                 width="64" height="64">
                         </div>
                         <span class="folder-name" data-cs="Youtube videa" data-en="Youtube Videos">Youtube videa</span>
@@ -403,7 +406,7 @@
                     <div class="folder-item reveal-fade" data-category="AKCE">
                         <div class="folder-icon-wrap">
                             <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
-                            <img decoding="async" src="/assets/folder-icon.png" alt="Složka - Akce" class="folder-icon" width="64"
+                            <img decoding="async" src="/assets/folder-icon.webp" alt="Složka - Akce" class="folder-icon" width="64"
                                 height="64">
                         </div>
                         <span class="folder-name" data-cs="Akce" data-en="Events">Akce</span>
@@ -1532,7 +1535,7 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script defer src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-    <script defer src="/animations.js?v=53"></script>
+    <script defer src="/animations.js?v=54"></script>
     <!-- Batch Actions Bar -->
     <div id="batch-actions-bar" class="batch-actions-bar">
         <div class="selection-info">
@@ -1779,8 +1782,8 @@
         </div>
     </div>
 
-    <script defer src="/main.js?v=53"></script>
-    <script defer src="/admin.js?v=50"></script>
+    <script defer src="/main.js?v=54"></script>
+    <!-- admin.js nacita loadAdminBundle() v main.js jen prihlasenemu adminovi. -->
 </body>
 
 </html>

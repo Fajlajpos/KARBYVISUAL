@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Skript se nacita az po prihlaseni admina (viz loadAdminBundle v main.js),
+// takze v tu chvili uz je DOMContentLoaded davno po. Spousti se proto podle
+// aktualniho readyState, ne bezpodminecne pres posluchac.
+function initAdminUI() {
     function escapeHTML(str) {
         if (!str) return '';
         return String(str)
@@ -966,4 +969,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminUI);
+} else {
+    initAdminUI();
+}

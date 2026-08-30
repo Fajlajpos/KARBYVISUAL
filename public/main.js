@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPortfolio();
     if (typeof window.loadFolders === 'function') window.loadFolders();
     loadTestimonials();
-    checkAuth(); 
+    checkAuth().then(loadAdminBundle);
     initAuthUI(); 
 
 
@@ -357,6 +357,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // SETTINGS
 // ==========================================
+// Preloader konci odstranenim tridy `loading` z <body> (animations.js).
+// Pokud uz je pryc - treba pri navratu z bfcache - callback bezi hned.
+function whenPageRevealed(fn) {
+    if (!document.body.classList.contains('loading')) {
+        fn();
+        return;
+    }
+    const observer = new MutationObserver(() => {
+        if (!document.body.classList.contains('loading')) {
+            observer.disconnect();
+            clearTimeout(fallback);
+            fn();
+        }
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    // Pojistka, kdyby preloader z jakehokoli duvodu nedobehl.
+    const fallback = setTimeout(() => { observer.disconnect(); fn(); }, 6000);
+}
+
 async function loadSettings() {
     const defaultUrl = 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=1&mute=1&loop=1&playlist=_VWkv_ONEiM&modestbranding=1&rel=0&controls=1';
     const heroIframe = document.querySelector('.hs-video-iframe');
@@ -378,7 +397,10 @@ async function loadSettings() {
             heroIframe.style.opacity = '1';
         }, { once: true });
         
-        heroIframe.src = url;
+        // YouTube embed stahne pres pul megabajtu skriptu a hned zacne prehravat.
+        // Pod bezicim preloaderem stejne neni videt, takze se pripoji az kdyz
+        // preloader skonci - dotaz na /api/settings pritom probehne hned.
+        whenPageRevealed(() => { heroIframe.src = url; });
     };
 
     try {
@@ -501,6 +523,36 @@ function getLocalizedDesc(descObjOrStr) {
     }
 }
 
+// Nahledova videa v mrizce slozky mela drive `autoplay` primo v markupu, takze
+// deset polozek znamenalo deset soubezne bezicich dekoderu - i u tech, ktere byly
+// stovky pixelu mimo obrazovku. Prehravaji se proto az kdyz jsou skutecne videt.
+// Z pohledu uzivatele je chovani stejne, jen se nedekoduje to, na co se nikdo nediva.
+function initGridVideoAutoplay(grid) {
+    if (grid._videoObserver) grid._videoObserver.disconnect();
+
+    const videos = grid.querySelectorAll('video.port-video-preview');
+    if (!videos.length) return;
+
+    if (!('IntersectionObserver' in window)) {
+        videos.forEach(v => v.play().catch(() => {}));
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            const v = entry.target;
+            if (entry.isIntersecting) {
+                v.play().catch(() => {}); // autoplay policy muze play() odmitnout
+            } else if (!v.paused) {
+                v.pause();
+            }
+        });
+    }, { root: grid, rootMargin: '200px' });
+
+    videos.forEach(v => observer.observe(v));
+    grid._videoObserver = observer;
+}
+
 // ==========================================
 // PORTFOLIO
 // ==========================================
@@ -555,7 +607,7 @@ window.loadFolders = async function() {
                 
                 div.innerHTML = `
                     <div class="folder-icon-wrap">
-                        <img src="${f.icon_url || '/assets/folder-icon.png'}" alt="Folder" class="folder-icon">
+                        <img src="${f.icon_url || '/assets/folder-icon.webp'}" alt="Folder" class="folder-icon">
                     </div>
                     <span class="folder-name" data-cs="${f.title_cs}" data-en="${f.title_en}">${currentLang === 'cs' ? f.title_cs : f.title_en}</span>
                 `;
@@ -1001,7 +1053,7 @@ function openFolderModal(category, titles, originEl) {
             
             div.innerHTML = `
                 <div class="folder-icon-wrap">
-                    <img src="${sf.icon_url || '/assets/folder-icon.png'}" alt="Folder" class="folder-icon">
+                    <img src="${sf.icon_url || '/assets/folder-icon.webp'}" alt="Folder" class="folder-icon">
                 </div>
                 <span class="folder-name" data-cs="${sf.title_cs}" data-en="${sf.title_en}">${currentLang === 'cs' ? sf.title_cs : sf.title_en}</span>
                 ${window.isAdmin ? `
@@ -1180,7 +1232,7 @@ function openFolderModal(category, titles, originEl) {
                 const posterAttr = item.thumbnail_url ? ` poster="${item.thumbnail_url}"` : '';
                 mediaHtml = `
                     <div class="port-video-wrap img-loading-trigger">
-                        <video src="${item.media_url}"${posterAttr} autoplay muted loop playsinline class="port-video-preview img-reveal-hidden" onloadeddata="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')"></video>
+                        <video src="${item.media_url}"${posterAttr} muted loop playsinline preload="metadata" class="port-video-preview img-reveal-hidden" onloadeddata="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')"></video>
                         <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
                     </div>
                 `;
@@ -1190,21 +1242,21 @@ function openFolderModal(category, titles, originEl) {
                     const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
                     const igShortcode = igMatch ? igMatch[1] : null;
                     const isPost = url.includes('/p/');
-                    displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg';
+                    displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/thumb-placeholder.webp';
                 }
                 if (!displayThumb) {
-                    displayThumb = '/assets/kolaz_v5.jpg';
+                    displayThumb = '/assets/thumb-placeholder.webp';
                 }
                 mediaHtml = `
                     <div class="port-img-wrap img-loading-trigger">
                         <img src="${displayThumb}" alt="${item.title}" class="port-img img-reveal-hidden" loading="lazy" 
                              onload="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')" 
-                             onerror="this.src='/assets/kolaz_v5.jpg'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
+                             onerror="this.src='/assets/thumb-placeholder.webp'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
                         <div class="video-grid-overlay"><i class="ph ph-play"></i></div>
                     </div>
                 `;
             } else {
-                let displayThumb = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+                let displayThumb = item.thumbnail_url || '/assets/thumb-placeholder.webp';
                 
                 // Auto-generate YouTube thumbnail if possible
                 if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -1221,7 +1273,7 @@ function openFolderModal(category, titles, originEl) {
                     <div class="port-img-wrap img-loading-trigger">
                         <img src="${displayThumb}" alt="${item.title}" class="port-img img-reveal-hidden" loading="lazy" 
                              onload="this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')" 
-                             onerror="this.src='/assets/kolaz_v5.jpg'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
+                             onerror="this.src='/assets/thumb-placeholder.webp'; this.classList.add('img-reveal-visible'); this.parentElement.classList.remove('img-loading-trigger')">
                         ${isVideo ? '<div class="video-grid-overlay"><i class="ph ph-video-camera"></i></div>' : ''}
                     </div>
                 `;
@@ -1304,6 +1356,7 @@ function openFolderModal(category, titles, originEl) {
 
     grid.innerHTML = '';
     grid.appendChild(fragment);
+    initGridVideoAutoplay(grid);
 
     // Only override maxHeight to prevent GSAP animation overflow bleed.
     // All other layout properties are controlled by .folder-content-modal #folder-items-grid in CSS.
@@ -1398,14 +1451,14 @@ function openLightbox(item) {
                 const igMatch = rawUrl.match(/\/(?:reel|p)\/([A-Za-z0-9_-]+)/i);
                 const igShortcode = igMatch ? igMatch[1] : null;
                 const isPost = url.includes('/p/');
-                displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/kolaz_v5.jpg';
+                displayThumb = igShortcode ? `https://www.instagram.com/${isPost ? 'p' : 'reel'}/${igShortcode}/media/?size=l` : '/assets/thumb-placeholder.webp';
             }
             lightboxMedia.innerHTML = `
                 <div class="social-redirect-container ig-theme">
                     <div class="social-ambient-glow" style="background-image: url('${displayThumb}')"></div>
                     <a href="${rawUrl}" target="_blank" rel="noopener noreferrer" class="social-redirect-card">
                         <div class="social-cover-wrapper">
-                            <img src="${displayThumb}" class="social-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
+                            <img src="${displayThumb}" class="social-cover" onerror="this.src='/assets/thumb-placeholder.webp'">
                             <div class="social-card-overlay"></div>
                         </div>
                         
@@ -1442,13 +1495,13 @@ function openLightbox(item) {
             `;
             updateLanguageUI(currentLang);
         } else if (url.includes('tiktok.com')) {
-            const displayThumb = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+            const displayThumb = item.thumbnail_url || '/assets/thumb-placeholder.webp';
             lightboxMedia.innerHTML = `
                 <div class="social-redirect-container tiktok-theme">
                     <div class="social-ambient-glow" style="background-image: url('${displayThumb}')"></div>
                     <a href="${rawUrl}" target="_blank" rel="noopener noreferrer" class="social-redirect-card">
                         <div class="social-cover-wrapper">
-                            <img src="${displayThumb}" class="social-cover" onerror="this.src='/assets/kolaz_v5.jpg'">
+                            <img src="${displayThumb}" class="social-cover" onerror="this.src='/assets/thumb-placeholder.webp'">
                             <div class="social-card-overlay"></div>
                         </div>
                         
@@ -1519,7 +1572,7 @@ function openLightbox(item) {
              lightboxMedia.innerHTML = `<img src="${item.media_url}" alt="${item.title}" style="max-height:100%; object-fit: contain;">`;
         }
     } else {
-        let displayThumb = item.thumbnail_url || '/assets/kolaz_v5.jpg';
+        let displayThumb = item.thumbnail_url || '/assets/thumb-placeholder.webp';
         const url = (item.media_url || '').toLowerCase();
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             let ytId = '';
@@ -1530,7 +1583,7 @@ function openLightbox(item) {
             
             if (ytId) displayThumb = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
         }
-        lightboxMedia.innerHTML = `<img src="${displayThumb}" alt="${item.title}" style="max-height:100%; object-fit: contain;" onerror="this.src='/assets/kolaz_v5.jpg'">`;
+        lightboxMedia.innerHTML = `<img src="${displayThumb}" alt="${item.title}" style="max-height:100%; object-fit: contain;" onerror="this.src='/assets/thumb-placeholder.webp'">`;
     }
     
     const isAlreadyActive = lightboxModal.classList.contains('active');
@@ -1767,6 +1820,32 @@ async function handleContactSubmit(e) {
 // ==========================================
 // AUTH & TOASTS
 // ==========================================
+
+// admin.js (~40 kB) a Sortable z CDN pouziva jen prihlaseny admin, drive se ale
+// stahovaly a parsovaly kazdemu navstevnikovi. Nacitaji se proto az podle vysledku
+// /api/me. Sortable je potreba az pri zapnuti razeni, takze staci nacist po nem.
+let adminBundlePromise = null;
+function loadAdminBundle() {
+    if (!window.isAdmin || adminBundlePromise) return adminBundlePromise;
+
+    const load = (src) => new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = src;
+        el.onload = resolve;
+        el.onerror = () => reject(new Error('Nepodarilo se nacist ' + src));
+        document.head.appendChild(el);
+    });
+
+    adminBundlePromise = Promise.all([
+        load('https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js'),
+        load('/admin.js?v=51')
+    ]).catch(err => {
+        console.error('[ADMIN] ' + err.message);
+        adminBundlePromise = null;
+    });
+
+    return adminBundlePromise;
+}
 
 async function checkAuth() {
     try {
@@ -2495,8 +2574,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function toggleSortingMode(grid) {
+async function toggleSortingMode(grid) {
     const btn = document.getElementById('reorder-btn');
+    if (typeof Sortable === 'undefined') {
+        await loadAdminBundle();
+        if (typeof Sortable === 'undefined') {
+            showToast('Nepodarilo se nacist razeni', 'error');
+            return;
+        }
+    }
     if (sortableInstance) {
         // Save and Disable
         saveNewOrder(grid);
