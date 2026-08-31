@@ -96,7 +96,63 @@
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="/assets/K%20FAVICON%20IKON.jpg">
 
-    <link rel="stylesheet" href="/style.css?v=56">
+    <!-- KRITICKE CSS - musi zustat inline a PRED style.css.
+         Vsechny modaly a prekryvy jsou schovane az v style.css (37 kB gzip).
+         Nez se stahne, prohlizec je vykresli jako obycejne bloky v toku - na
+         pomalem pripojeni tak na chvili probliknou zalozky admin dashboardu,
+         tlacitka potvrzovaciho dialogu i cookie lista. Merene na 400 kbps:
+         style.css dorazil az za 3,0 s, do te doby bylo videt 11 takovych vrstev.
+         Hodnoty nize presne kopiruji vychozi stavy z style.css, takze pravidla
+         s .active/.open ho normalne prebiji a po nacteni je hlavni soubor
+         (stoji az za timto blokem) autoritou. -->
+    <style>
+        html, body { background: #000; margin: 0; }
+
+        /* Preloader musi opravdu prekryvat - bez stylu je `position: static`
+           a jen sedi ve flow mezi ostatnim obsahem. */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Bez techto pravidel je text preloaderu cerny na cernem - barvy se
+           berou z promennych v :root, ktere jsou taky az v style.css.
+           Hodnoty odpovidaji --text-sec, --border-color a --font-mono. */
+        .preloader-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: #888888;
+        }
+
+        .preloader-progress {
+            width: 250px;
+            height: 1px;
+            background: #1a1a1a;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        /* display: none - stejne jako v style.css */
+        .modal,
+        .registration-modal,
+        .admin-success-overlay,
+        .cookie-overlay,
+        .batch-actions-bar,
+        .mobile-drawer-overlay { display: none; }
+
+        /* visibility: hidden - stejne jako v style.css */
+        .auth-modal,
+        .mobile-nav-drawer { visibility: hidden; }
+    </style>
+
+    <link rel="stylesheet" href="/style.css?v=57">
 </head>
 
 <body class="loading">
