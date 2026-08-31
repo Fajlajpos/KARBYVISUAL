@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" class="css-pending">
 
 <head>
     <meta charset="UTF-8">
@@ -150,9 +150,42 @@
         /* visibility: hidden - stejne jako v style.css */
         .auth-modal,
         .mobile-nav-drawer { visibility: hidden; }
+
+        /* HLAVNI POJISTKA. Vyjmenovavat jednotlive prekryvy nestacilo - na
+           iPhonu se tlacitka objevovala i pote. Tohle pravidlo nezavisi na tom,
+           jestli jsem na nejaky selektor zapomnel: dokud neni style.css
+           prokazatelne nactene, nevykresli se nic krome preloaderu.
+           Zamerne `visibility`, ne `display` - display:none by vyradil prvky
+           z layoutu a SplitType se ScrollTriggerem v animations.js meri rozmery
+           pri inicializaci, takze by vysly spatne. */
+        html.css-pending body > *:not(.preloader) {
+            visibility: hidden !important;
+        }
     </style>
 
-    <link rel="stylesheet" href="/style.css?v=57">
+    <link rel="stylesheet" href="/style.css?v=58"
+        onload="document.documentElement.classList.remove('css-pending')"
+        onerror="document.documentElement.classList.remove('css-pending')">
+    <script>
+        // Kdyby `onload` z jakehokoli duvodu nedobehl, stranka by zustala
+        // neviditelna - proto tri nezavisle cesty, jak tridu odstranit.
+        (function () {
+            var root = document.documentElement;
+            var reveal = function () { root.classList.remove('css-pending'); };
+            // a) stylesheet uz je hotovy driv, nez se tenhle skript spustil
+            try {
+                var link = document.querySelector('link[rel="stylesheet"][href*="style.css"]');
+                if (link && link.sheet) { reveal(); return; }
+            } catch (e) { /* cross-origin pristup k .sheet muze hodit vyjimku */ }
+            // b) az bude DOM hotovy, zkusit znovu
+            document.addEventListener('DOMContentLoaded', function () {
+                var l = document.querySelector('link[rel="stylesheet"][href*="style.css"]');
+                if (l && l.sheet) reveal();
+            });
+            // c) tvrdy strop - radeji nestylovana stranka nez zadna
+            setTimeout(reveal, 8000);
+        })();
+    </script>
 </head>
 
 <body class="loading">
