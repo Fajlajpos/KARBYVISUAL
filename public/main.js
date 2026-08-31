@@ -304,8 +304,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Body Scroll Lock Helper
+    // Hero video hraje v iframu pod modalem, kde ho neni videt. Kazdy jeho snimek
+    // ale meni backdrop pod `backdrop-filter` prekryvu, takze prohlizec musi
+    // rozmazani pocitat porad dokola. Po zavreni se video zase rozjede - jen
+    // navazuje tam, kde skoncilo, misto aby beho na pozadi naprazdno.
+    function setHeroVideoPlayback(play) {
+        const iframe = document.querySelector('.hs-video-iframe');
+        if (!iframe || !iframe.contentWindow || !iframe.src.includes('enablejsapi=1')) return;
+        try {
+            iframe.contentWindow.postMessage(JSON.stringify({
+                event: 'command',
+                func: play ? 'playVideo' : 'pauseVideo',
+                args: []
+            }), 'https://www.youtube.com');
+        } catch (err) {
+            // Prehravac jeste nemusi byt pripraveny - neni to nic kritickeho.
+        }
+    }
+
     window.toggleBodyLock = function(lock) {
         document.body.classList.toggle('modal-open', lock);
+        setHeroVideoPlayback(!lock);
         if (window.lenis) {
             if (lock) window.lenis.stop();
             else window.lenis.start();
@@ -377,7 +396,7 @@ function whenPageRevealed(fn) {
 }
 
 async function loadSettings() {
-    const defaultUrl = 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=1&mute=1&loop=1&playlist=_VWkv_ONEiM&modestbranding=1&rel=0&controls=1';
+    const defaultUrl = 'https://www.youtube.com/embed/_VWkv_ONEiM?autoplay=1&mute=1&loop=1&playlist=_VWkv_ONEiM&modestbranding=1&rel=0&controls=1&enablejsapi=1';
     const heroIframe = document.querySelector('.hs-video-iframe');
     
     // Helper to safely set src and handle fade-in/out transition
@@ -428,7 +447,7 @@ async function loadSettings() {
             }
 
             if (ytId) {
-                url = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&modestbranding=1&rel=0&controls=1`;
+                url = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&modestbranding=1&rel=0&controls=1&enablejsapi=1`;
             } else if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
                 const vidId = url.split('vimeo.com/')[1].split(/[?#]/)[0];
                 url = `https://player.vimeo.com/video/${vidId}?autoplay=1&muted=1&loop=1&controls=1`;

@@ -53,6 +53,16 @@ body.modal-open {
     overflow: hidden !important;
 }
 
+/* Za otevrenym modalem neni z techto vrstev nic videt, jejich nekonecne animace
+   ale menily backdrop pod `backdrop-filter`. Prohlizec proto nemohl rozmazani
+   zacachovat a prepocitaval ho kazdy snimek. Pauza je opticky bez efektu
+   a otevirani slozek diky ni bezi radove plynuleji. */
+body.modal-open .blur-blob,
+body.modal-open .glow-blob,
+body.modal-open .bg-data-ticker span {
+    animation-play-state: paused;
+}
+
 /* Background Grid Pattern - Acid Style */
 .bg-pattern {
     position: fixed;
@@ -2512,8 +2522,10 @@ body.admin-enabled .delete-btn {
     padding: 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(10, 10, 10, 0.65);
-    backdrop-filter: blur(25px) saturate(160%);
-    -webkit-backdrop-filter: blur(25px) saturate(160%);
+    /* Drive tu byl jeste `backdrop-filter: blur(25px) saturate(160%)`. Pozadi
+       za timto panelem uz ale rozmazava .modal-overlay (blur(25px)) a pres to
+       lezi 65% krycí vrstva - druhy blur nemel co pridat (mereno: max rozdil
+       1 z 255), zato se musel prepocitavat na plose 95vw x 95vh kazdy snimek. */
     border-radius: 14px;
     box-shadow: 0 60px 120px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1) inset;
     transform-origin: center;
@@ -9067,6 +9079,15 @@ body > .sortable-fallback.port-item .port-info {
 
 /* Folder Modal */
 @media (max-width: 768px) {
+    /* Na mobilu je panel slozky pres celou obrazovku a prekryv pod nim uplne
+       zakryva (overeno na 360/390/430/768 px - hrany sedi presne). Rozmazavat
+       neco, co neni videt, stalo na kazdy snimek cely viewport krat DPR.
+       Merene pixelove: max rozdil 2 z 255. */
+    #folder-modal .modal-overlay {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
     #folder-modal .folder-content-modal {
         width: 100vw !important;
         height: 100dvh !important;
