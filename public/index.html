@@ -262,11 +262,12 @@
     <!-- Sortable se nacita az s admin.js, viz loadAdminBundle() v main.js. -->
 
     <!-- Favicon -->
-    <!-- SVG jako primarni (ostry v kazde velikosti), PNG jako fallback pro
-         prohlizece bez podpory. Puvodni cesta mirila na JPEG s mezerami
-         v nazvu souboru - krehke a zbytecne velke. -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32">
+    <!-- Vsechny ikony vychazi z jednoho jedineho zdroje: assets/K FAVICON IKON.jpg.
+         favicon.png je z nej oriznuty nateseno kolem "K" (na 32 px se jinak
+         ztraci v cernem okraji), vetsi ikony pouzivaji cele platno.
+         Sem NEPRIDAVAT <link rel="icon"> na SVG - SVG ma u prohlizecu prednost
+         pred PNG a prebilo by znackovou ikonu. -->
+    <link rel="icon" href="/favicon.png?v=2" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
     <link rel="manifest" href="/site.webmanifest">
 
