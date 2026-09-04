@@ -9287,3 +9287,55 @@ body > .sortable-fallback.port-item .port-info {
         scroll-behavior: auto !important;
     }
 }
+
+
+/* =============================================
+   PRISTUPNOST & SEMANTIKA
+   ============================================= */
+
+/* Skip-link. Prvni prvek v <body>, mimo obrazovku dokud nedostane fokus -
+   pak sjede shora pres preloader i navbar. Uzivatel klavesnice se timhle
+   dostane rovnou na obsah misto proklikavani cele navigace. */
+.skip-link {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -120%);
+    z-index: 100000;
+    padding: 0.9rem 1.6rem;
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.skip-link:focus-visible,
+.skip-link:focus {
+    transform: translate(-50%, 0);
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Disciplíny v heru jsou nove <ul>/<li> misto <div>/<span> kvuli semantice.
+   Layout drzi flex z .hero-disciplines, staci tedy shodit odrazky
+   a vychozi odsazeni seznamu - vizualne se nic nemeni. */
+ul.hero-disciplines {
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+}
+
+li.discipline-tag {
+    display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skip-link {
+        transition: none;
+    }
+}

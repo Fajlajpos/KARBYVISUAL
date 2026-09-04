@@ -13,6 +13,7 @@ const rateLimit = require('express-rate-limit');
 const { dbAsync, dbInitialized } = require('./db');
 const { createToken, verifyToken, requireAdmin } = require('./auth');
 const { notifyAdmin, sendAutoReply } = require('./mailer');
+const seo = require('./seo');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -134,6 +135,59 @@ app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], crede
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// ==========================================================================
+// SEO / GEO routy
+// ==========================================================================
+// POZOR NA PORADI: tenhle blok musi zustat PRED express.static nize.
+// express.static ma ve vychozim stavu `index: 'index.html'`, takze by
+// pozadavek na "/" odbavil sam ze souboru a k renderIndex() by se to nikdy
+// nedostalo - canonical i SSR recenzi by tichem prestaly fungovat.
+
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(seo.robotsTxt());
+});
+
+app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(seo.sitemapXml());
+});
+
+// Kanonizace: /index.html je stejna stranka jako /. Bez presmerovani
+// vznikaji dve URL se stejnym obsahem.
+app.get('/index.html', (req, res) => {
+    const qs = req.originalUrl.includes('?')
+        ? '?' + req.originalUrl.split('?').slice(1).join('?')
+        : '';
+    res.redirect(301, '/' + qs);
+});
+
+// Homepage - jazykove varianty hlavicky + server-side render recenzi.
+app.get('/', async (req, res, next) => {
+    try {
+        const testimonials = await dbAsync.all(
+            'SELECT * FROM testimonials ORDER BY created_at DESC'
+        );
+        res.type('text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache');
+        // Odpoved se lisi podle ?lang=, takze case musi rozlisovat query string.
+        res.setHeader('Vary', 'Accept-Encoding');
+        res.send(seo.renderIndex(req, testimonials));
+    } catch (err) {
+        // Kdyz selze databaze, stranka se posle aspon bez recenzi -
+        // lepsi nez 500 na homepage.
+        console.error('[SEO] renderIndex selhal:', err.message);
+        try {
+            res.type('text/html; charset=utf-8');
+            res.send(seo.renderIndex(req, []));
+        } catch (inner) {
+            next(inner);
+        }
+    }
+});
 
 // Static Files - serve 'public' directory
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -787,8 +841,18 @@ app.all('/api/*', (req, res) => {
     res.status(404).json({ error: `Route ${req.method} ${req.url} not found` });
 });
 
-// SPA Catch-all
+// Catch-all pro nezname adresy.
+//
+// Drive se tady posilalo index.html se statusem 200. Google to vyhodnocuje
+// jako "soft 404" a donekonecna crawluje neexistujici URL - na jednostrankovem
+// webu ciste plytvani crawl budgetem.
+//
+// Uzivatel dal uvidi web (aby se neztratil), ale robot dostane spravny signal:
+// status 404 + X-Robots-Tag: noindex. Klientsky routing tu neni - navigace jede
+// pres hash kotvy (#about, #portfolio, ...), takze se timhle nic nerozbije.
 app.get('*', (req, res) => {
+    res.status(404);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

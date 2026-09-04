@@ -15,63 +15,231 @@
     <meta name="keywords"
         content="KARBYVISUALS, videoklipy, střih videa, videograf Praha, fotograf Praha, focení akcí, portrétní fotograf, YouTube editor, video production, režisér">
     <meta name="author" content="KARBYVISUALS">
-    <link rel="canonical" href="https://karbyvisual.com/">
-    <link rel="alternate" hreflang="cs" href="https://karbyvisual.com/">
-    <link rel="alternate" hreflang="en" href="https://karbyvisual.com/?lang=en">
-    <link rel="alternate" hreflang="x-default" href="https://karbyvisual.com/">
+
+    <!-- Indexovani: max-image-preview:large je podminka pro velky nahled
+         v Google Discover a v AI Overviews. Bez nej se ukaze jen ikonka. -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Canonical a hreflang. Server na /?lang=en prepise canonical na sebe sama
+         (viz renderIndex() v server.js) - bez toho by Google EN variantu zahodil
+         jako duplicitu, protoze self-canonical musi sedet s hreflang parem. -->
+    <link rel="canonical" href="https://karbyvisuals.cz/">
+    <link rel="alternate" hreflang="cs-CZ" href="https://karbyvisuals.cz/">
+    <link rel="alternate" hreflang="en" href="https://karbyvisuals.cz/?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://karbyvisuals.cz/">
 
     <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:site_name" content="KARBYVISUALS">
     <meta property="og:title" content="KARBYVISUALS | Videoklipy, Střih & Foto Praha">
     <meta property="og:description"
         content="Profesionální natáčení hudebních videoklipů, střih videa v Praze a umělecká fotografie. Syrová, temná a precizní vizuální tvorba.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://karbyvisual.com/">
-    <meta property="og:image" content="https://karbyvisual.com/assets/about-me.jpg">
+    <meta property="og:url" content="https://karbyvisuals.cz/">
+    <meta property="og:locale" content="cs_CZ">
+    <meta property="og:locale:alternate" content="en_US">
+    <!-- og-cover.jpg je 1200x630 - povinny pomer pro summary_large_image.
+         Puvodni about-me.jpg byl portret 1000x1777 a nahled se orezaval. -->
+    <meta property="og:image" content="https://karbyvisuals.cz/assets/og-cover.jpg">
+    <meta property="og:image:secure_url" content="https://karbyvisuals.cz/assets/og-cover.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Ukázky videoklipů a fotografií od KARBYVISUALS">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="KARBYVISUALS | Videoklipy, Střih & Foto Praha">
+    <meta name="twitter:description"
+        content="Profesionální natáčení hudebních videoklipů, střih videa v Praze a umělecká fotografie. Syrová, temná a precizní vizuální tvorba.">
+    <meta name="twitter:image" content="https://karbyvisuals.cz/assets/og-cover.jpg">
+    <meta name="twitter:image:alt" content="Ukázky videoklipů a fotografií od KARBYVISUALS">
 
-    <!-- JSON-LD Entity Graph -->
+    <!-- JSON-LD Entity Graph.
+         Provazany graf pres @id: Organization <-> Person <-> ProfessionalService
+         <-> WebSite <-> WebPage. AI modely z toho skladaji fakta o znacce.
+         Zamerne tu NEJSOU geo souradnice, openingHours, aggregateRating ani
+         VideoObject - presnou adresu ani datum publikace showreelu nemame overene
+         a vlastni recenze na vlastnim webu Google u LocalBusiness stejne ignoruje. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://karbyvisual.com/#organization",
+          "@id": "https://karbyvisuals.cz/#organization",
           "name": "KARBYVISUALS",
-          "url": "https://karbyvisual.com/",
-          "logo": "https://karbyvisual.com/assets/about-me.jpg",
+          "alternateName": ["Karbyvisuals", "KARBYVISUAL"],
+          "url": "https://karbyvisuals.cz/",
+          "description": "Videoprodukce, natáčení hudebních videoklipů, střih videa a komerční fotografie v Praze.",
+          "email": "samkarban@gmail.com",
+          "telephone": "+420737516301",
+          "logo": {
+            "@type": "ImageObject",
+            "@id": "https://karbyvisuals.cz/#logo",
+            "url": "https://karbyvisuals.cz/assets/og-cover.jpg",
+            "contentUrl": "https://karbyvisuals.cz/assets/og-cover.jpg",
+            "width": 1200,
+            "height": 630,
+            "caption": "KARBYVISUALS"
+          },
+          "image": { "@id": "https://karbyvisuals.cz/#logo" },
+          "founder": { "@id": "https://karbyvisuals.cz/#samkarban" },
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "email": "samkarban@gmail.com",
+              "telephone": "+420737516301",
+              "availableLanguage": ["cs", "en"],
+              "areaServed": "CZ"
+            }
+          ],
           "sameAs": [
             "https://www.instagram.com/karbyvisuals/"
           ]
         },
         {
-          "@type": "LocalBusiness",
-          "@id": "https://karbyvisual.com/#localbusiness",
+          "@type": "Person",
+          "@id": "https://karbyvisuals.cz/#samkarban",
+          "name": "Sam Karban",
+          "jobTitle": "Režisér a vizuální umělec",
+          "url": "https://karbyvisuals.cz/",
+          "worksFor": { "@id": "https://karbyvisuals.cz/#organization" },
+          "knowsLanguage": ["cs", "en"],
+          "knowsAbout": [
+            "Natáčení hudebních videoklipů",
+            "Střih videa",
+            "Color grading",
+            "Postprodukce",
+            "Natáčení akcí a eventů",
+            "Komerční fotografie",
+            "Tvorba obsahu pro YouTube, Instagram a TikTok"
+          ],
+          "sameAs": [
+            "https://www.instagram.com/karbyvisuals/"
+          ]
+        },
+        {
+          "@type": "ProfessionalService",
+          "@id": "https://karbyvisuals.cz/#localbusiness",
           "name": "KARBYVISUALS",
-          "url": "https://karbyvisual.com/",
-          "image": "https://karbyvisual.com/assets/about-me.jpg",
+          "url": "https://karbyvisuals.cz/",
+          "image": { "@id": "https://karbyvisuals.cz/#logo" },
+          "description": "Kompletní video produkce na klíč: hudební videoklipy, natáčení akcí, střih videa, color grading a komerční fotografie v Praze a okolí.",
           "telephone": "+420737516301",
           "email": "samkarban@gmail.com",
           "priceRange": "$$",
+          "currenciesAccepted": "CZK",
+          "parentOrganization": { "@id": "https://karbyvisuals.cz/#organization" },
+          "founder": { "@id": "https://karbyvisuals.cz/#samkarban" },
+          "employee": { "@id": "https://karbyvisuals.cz/#samkarban" },
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Praha",
             "addressRegion": "Hlavní město Praha",
             "postalCode": "10000",
             "addressCountry": "CZ"
-          }
+          },
+          "areaServed": [
+            { "@type": "City", "name": "Praha" },
+            { "@type": "AdministrativeArea", "name": "Středočeský kraj" },
+            { "@type": "Country", "name": "Česko" }
+          ],
+          "availableLanguage": ["cs", "en"],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Služby KARBYVISUALS",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Natáčení hudebních videoklipů",
+                  "description": "Kompletní realizace hudebního videoklipu od kreativního návrhu přes natáčení až po finální export.",
+                  "serviceType": "Videoklipy",
+                  "provider": { "@id": "https://karbyvisuals.cz/#organization" },
+                  "areaServed": { "@type": "City", "name": "Praha" }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Natáčení akcí a eventů",
+                  "description": "Videodokumentace firemních akcí, koncertů a eventů včetně postprodukce.",
+                  "serviceType": "Natáčení akcí",
+                  "provider": { "@id": "https://karbyvisuals.cz/#organization" },
+                  "areaServed": { "@type": "City", "name": "Praha" }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Střih videa",
+                  "description": "Profesionální střih videa s důrazem na dynamiku a diváckou retenci.",
+                  "serviceType": "Střih",
+                  "provider": { "@id": "https://karbyvisuals.cz/#organization" }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Color grading",
+                  "description": "Precizní barevná korekce a grading pro jednotný vizuální styl.",
+                  "serviceType": "Color grading",
+                  "provider": { "@id": "https://karbyvisuals.cz/#organization" }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "YouTube edit",
+                  "description": "Střih obsahu pro YouTube, Instagram a TikTok se zaměřením na vysokou diváckou retenci.",
+                  "serviceType": "YouTube edit",
+                  "provider": { "@id": "https://karbyvisuals.cz/#organization" }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Komerční fotografie",
+                  "description": "Portrétní a komerční fotografie včetně postprodukce.",
+                  "serviceType": "Fotografie",
+                  "provider": { "@id": "https://karbyvisuals.cz/#organization" },
+                  "areaServed": { "@type": "City", "name": "Praha" }
+                }
+              }
+            ]
+          },
+          "sameAs": [
+            "https://www.instagram.com/karbyvisuals/"
+          ]
         },
         {
           "@type": "WebSite",
-          "@id": "https://karbyvisual.com/#website",
-          "url": "https://karbyvisual.com/",
+          "@id": "https://karbyvisuals.cz/#website",
+          "url": "https://karbyvisuals.cz/",
           "name": "KARBYVISUALS",
-          "publisher": {
-            "@id": "https://karbyvisual.com/#organization"
-          }
+          "alternateName": "KARBYVISUALS | Videoklipy, střih a fotografie Praha",
+          "inLanguage": ["cs-CZ", "en"],
+          "publisher": { "@id": "https://karbyvisuals.cz/#organization" }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://karbyvisuals.cz/#webpage",
+          "url": "https://karbyvisuals.cz/",
+          "name": "KARBYVISUALS | Videoklipy, Střih & Fotografie Praha",
+          "description": "KARBYVISUALS - Profesionální natáčení hudebních videoklipů, střih videa a komerční fotografie v Praze a okolí. Avantgardní vizuální produkce na klíč.",
+          "inLanguage": "cs-CZ",
+          "isPartOf": { "@id": "https://karbyvisuals.cz/#website" },
+          "about": { "@id": "https://karbyvisuals.cz/#organization" },
+          "primaryImageOfPage": { "@id": "https://karbyvisuals.cz/#logo" }
         }
       ]
     }
@@ -94,7 +262,13 @@
     <!-- Sortable se nacita az s admin.js, viz loadAdminBundle() v main.js. -->
 
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="/assets/K%20FAVICON%20IKON.jpg">
+    <!-- SVG jako primarni (ostry v kazde velikosti), PNG jako fallback pro
+         prohlizece bez podpory. Puvodni cesta mirila na JPEG s mezerami
+         v nazvu souboru - krehke a zbytecne velke. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+    <link rel="manifest" href="/site.webmanifest">
 
     <!-- KRITICKE CSS - musi zustat inline a PRED style.css.
          Vsechny modaly a prekryvy jsou schovane az v style.css (37 kB gzip).
@@ -163,7 +337,7 @@
         }
     </style>
 
-    <link rel="stylesheet" href="/style.css?v=58"
+    <link rel="stylesheet" href="/style.css?v=59"
         onload="document.documentElement.classList.remove('css-pending')"
         onerror="document.documentElement.classList.remove('css-pending')">
     <script>
@@ -189,6 +363,10 @@
 </head>
 
 <body class="loading">
+    <!-- Skip-link: prvni fokusovatelny prvek stranky, viditelny az pri Tabu.
+         Bez nej musi uzivatel klavesnice proklikat celou navigaci. -->
+    <a class="skip-link" href="#main-content" data-cs="Přeskočit na obsah"
+        data-en="Skip to content">Přeskočit na obsah</a>
     <!-- Clean Overlays -->
     <div class="tv-noise"></div>
     <div class="blur-container">
@@ -250,7 +428,8 @@
             <button id="lang-en" class="lang-btn">EN</button>
         </div>
 
-        <div class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+        <div class="mobile-menu-btn" id="mobile-menu-btn" role="button" tabindex="0"
+            aria-label="Otevřít menu" aria-controls="mobile-drawer" aria-expanded="false">
             <div class="cad-focus-frame">
                 <span></span><span></span><span></span><span></span>
             </div>
@@ -277,7 +456,7 @@
 
         <section id="hero" class="hero-sales-v3">
             <div class="giant-branding-wrapper reveal-fade">
-                <h1 class="giant-branding" fetchpriority="high" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">
+                <h1 class="giant-branding" data-cs="KARBYVISUALS" data-en="KARBYVISUALS">
                     KARBYVISUALS</h1>
                 <div class="hero-subline mono-label" data-cs="Cinematographer & Photographer"
                     data-en="Cinematographer & Photographer">Cinematographer & Photographer</div>
@@ -286,7 +465,7 @@
 
                 <!-- LEFT: Sales Copy & CTA -->
                 <div class="hero-sales-content">
-                    <h2 class="hero-sales-title" fetchpriority="high"
+                    <h2 class="hero-sales-title"
                         data-cs="Video produkce, natáčení akcí a střih videa."
                         data-en="Video production, event filming & video editing.">Video produkce, natáčení akcí a střih
                         videa.</h2>
@@ -302,16 +481,16 @@
                     </p>
 
                     <!-- Disciplines Tags -->
-                    <div class="hero-disciplines">
-                        <span class="discipline-tag" data-cs="VIDEOKLIPY" data-en="MUSIC VIDEOS">VIDEOKLIPY</span>
-                        <span class="discipline-tag" data-cs="NATÁČENÍ AKCÍ" data-en="EVENT FILMING">NATÁČENÍ
-                            AKCÍ</span>
-                        <span class="discipline-tag" data-cs="STŘIH" data-en="EDITING">STŘIH</span>
-                        <span class="discipline-tag" data-cs="COLOR GRADING" data-en="COLOR GRADING">COLOR
-                            GRADING</span>
-                        <span class="discipline-tag" data-cs="YOUTUBE EDIT" data-en="YOUTUBE EDIT">YOUTUBE EDIT</span>
-                        <span class="discipline-tag" data-cs="FOTOGRAFIE" data-en="PHOTOGRAPHY">FOTOGRAFIE</span>
-                    </div>
+                    <ul class="hero-disciplines">
+                        <li class="discipline-tag" data-cs="VIDEOKLIPY" data-en="MUSIC VIDEOS">VIDEOKLIPY</li>
+                        <li class="discipline-tag" data-cs="NATÁČENÍ AKCÍ" data-en="EVENT FILMING">NATÁČENÍ
+                            AKCÍ</li>
+                        <li class="discipline-tag" data-cs="STŘIH" data-en="EDITING">STŘIH</li>
+                        <li class="discipline-tag" data-cs="COLOR GRADING" data-en="COLOR GRADING">COLOR
+                            GRADING</li>
+                        <li class="discipline-tag" data-cs="YOUTUBE EDIT" data-en="YOUTUBE EDIT">YOUTUBE EDIT</li>
+                        <li class="discipline-tag" data-cs="FOTOGRAFIE" data-en="PHOTOGRAPHY">FOTOGRAFIE</li>
+                    </ul>
 
 
                     <div class="hero-sales-actions">
@@ -381,10 +560,10 @@
                             <span class="mono-label" data-cs="[ PROFIL ]" data-en="[ PROFILE ]">[ PROFIL ]</span>
                             <i class="ph ph-identification-card"></i>
                         </div>
-                        <h3 class="section-title reveal-text"
+                        <h2 class="section-title reveal-text"
                             style="font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 2rem;"
                             data-cs="REŽISÉR &<br>VISUAL ARTIST" data-en="DIRECTOR &<br>VISUAL ARTIST">REŽISÉR
-                            &<br>VISUAL ARTIST</h3>
+                            &<br>VISUAL ARTIST</h2>
                         <!-- SEO_TODO: [FAJLAJP] ZDE DOPLŇ FINÁLNÍ SEO DATA -->
                         <p class="cell-desc"
                             data-cs="Sam Karban, působící pod značkou Karbyvisuals, je režisér a vizuální umělec specializovaný na natáčení videoklipů, střih videa a komerční fotografii. Jeho tvorba je založena na precizní práci s detailem, dynamické postprodukci a budování silné vizuální atmosféry. Zajišťuje kompletní realizaci projektů od kreativního návrhu až po finální export."
@@ -505,8 +684,10 @@
 
 
         <!-- 4. REVIEWS SECTION (Redesigned: Focus List) -->
-        <section id="reviews" class="reviews-section">
+        <section id="reviews" class="reviews-section" aria-labelledby="reviews-heading">
             <div class="container container-tight reviews-focus-container">
+                <h2 id="reviews-heading" class="sr-only" data-cs="Recenze klientů"
+                    data-en="Client reviews">Recenze klientů</h2>
                 <div class="section-top-label">
                     <span class="mono-label" data-cs="SYSTÉMOVÝ MONITOR // 03" data-en="SYSTEM MONITOR // 03">SYSTÉMOVÝ
                         MONITOR // 03</span>
@@ -547,8 +728,14 @@
 
 
         <!-- 7. CONTACT SECTION REDESIGNED (V2) -->
-        <section id="contact" class="contact-section bordered-section" style="border-top: none;">
+        <section id="contact" class="contact-section bordered-section" style="border-top: none;"
+            aria-labelledby="contact-heading">
             <div class="container container-tight contact-v2-wrapper">
+                <!-- Vizualne skryty nadpis sekce. Bez nej zacinala sekce trojici
+                     <h3> (kontaktni karty) drive nez svym <h2>, cimz se rozbijela
+                     osnova nadpisu pro roboty i ctecky obrazovky. -->
+                <h2 id="contact-heading" class="sr-only" data-cs="Kontakt"
+                    data-en="Contact">Kontakt</h2>
                 <div class="section-top-label" style="margin-bottom: 3rem;">
                     <span class="mono-label" data-cs="KONTAKT // 04" data-en="CONTACT // 04">KONTAKT // 04</span>
                 </div>
@@ -826,7 +1013,7 @@
             <div class="footer-col">
                 <div class="footer-col-title" data-cs="SPOJENÍ" data-en="CONNECT">SPOJENÍ</div>
                 <div class="footer-links-list">
-                    <a href="https://www.instagram.com/karbyvisuals/" target="_blank" class="footer-link"><i
+                    <a href="https://www.instagram.com/karbyvisuals/" target="_blank" rel="noopener noreferrer" class="footer-link"><i
                             class="ph ph-instagram-logo"></i> @KARBYVISUALS</a>
                     <a href="mailto:samkarban@gmail.com" class="footer-link"><i class="ph ph-envelope-simple"></i>
                         <span data-cs="samkarban@gmail.com" data-en="samkarban@gmail.com">samkarban@gmail.com</span></a>
@@ -873,8 +1060,8 @@
                 style="flex-grow: 1; display: flex; flex-direction: column; position: relative; padding: 2.5rem; min-height: 0;">
                 <div id="lightbox-media-container"></div>
                 <div class="lightbox-nav-btns">
-                    <button class="lb-nav-btn prev" id="lb-prev"><i class="ph ph-caret-left"></i></button>
-                    <button class="lb-nav-btn next" id="lb-next"><i class="ph ph-caret-right"></i></button>
+                    <button type="button" class="lb-nav-btn prev" id="lb-prev" aria-label="Předchozí položka"><i class="ph ph-caret-left"></i></button>
+                    <button type="button" class="lb-nav-btn next" id="lb-next" aria-label="Další položka"><i class="ph ph-caret-right"></i></button>
                 </div>
                 <div class="lightbox-info">
                     <h3 id="lightbox-title">RECORD_NAME</h3>
@@ -1282,7 +1469,7 @@
                                                     </div>
                                                     <div id="thumb-preview-container" class="preview-container hidden">
                                                         <div class="scanner-line"></div>
-                                                        <img id="thumb-preview-img" src="" alt="Thumbnail Preview"
+                                                        <img id="thumb-preview-img" alt="Thumbnail Preview"
                                                             style="width:100%; height:100%; object-fit:cover;">
                                                     </div>
                                                 </div>
@@ -1365,7 +1552,7 @@
                                             </div>
                                             <div id="avatar-preview-container" class="preview-container hidden">
                                                 <div class="scanner-line"></div>
-                                                <img id="avatar-preview-img" src="" alt="Avatar Preview">
+                                                <img id="avatar-preview-img" alt="Avatar Preview">
                                             </div>
                                         </div>
                                     </div>
@@ -1787,7 +1974,8 @@
                 <div class="logo">
                     <a href="#hero">KARBYVISUALS</a>
                 </div>
-                <div class="mobile-drawer-close" id="mobile-drawer-close">
+                <div class="mobile-drawer-close" id="mobile-drawer-close" role="button" tabindex="0"
+                    aria-label="Zavřít menu">
                     <div class="cad-focus-frame">
                         <span></span><span></span><span></span><span></span>
                     </div>
@@ -1857,7 +2045,7 @@
                         <button class="drawer-lang-btn en-btn" data-lang="en">EN</button>
                     </div>
                     <div class="drawer-footer-links" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.8rem;">
-                        <a href="https://www.instagram.com/karbyvisuals/" target="_blank" class="drawer-instagram-link">
+                        <a href="https://www.instagram.com/karbyvisuals/" target="_blank" rel="noopener noreferrer" class="drawer-instagram-link">
                             <i class="ph ph-instagram-logo"></i> @KARBYVISUALS
                         </a>
                         <a href="#" id="menu-cookie-trigger" class="drawer-cookie-link">
@@ -1870,7 +2058,7 @@
         </div>
     </div>
 
-    <script defer src="/main.js?v=55"></script>
+    <script defer src="/main.js?v=56"></script>
     <!-- admin.js nacita loadAdminBundle() v main.js jen prihlasenemu adminovi. -->
 </body>
 

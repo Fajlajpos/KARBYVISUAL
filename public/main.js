@@ -1765,7 +1765,9 @@ function renderTestimonials(data) {
         
         card.innerHTML = `
             <div class="dm-avatar-wrapper">
-                <img src="${avatarImg}" alt="${t.client_name}" class="dm-avatar" onerror="this.src='/assets/user-icon.png'">
+                <img src="${avatarImg}" alt="${escapeAttr(t.client_name)}" class="dm-avatar"
+                     width="48" height="48" loading="lazy" decoding="async"
+                     onerror="this.onerror=null;this.src='/assets/avatar-placeholder.svg'">
             </div>
             <div class="dm-content-wrapper">
                 <span class="dm-username">${t.client_name.toLowerCase().replace(/\s/g, '_')}</span>

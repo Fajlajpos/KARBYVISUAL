@@ -599,6 +599,7 @@ function initMobileMenu() {
         drawer.classList.add('open');
         overlay.classList.add('open');
         menuBtn.classList.add('active');
+        menuBtn.setAttribute('aria-expanded', 'true');
         
         if (window.lenis) window.lenis.stop();
         document.body.classList.add('modal-open');
@@ -634,6 +635,7 @@ function initMobileMenu() {
     const closeMenu = () => {
         overlay.classList.remove('open');
         menuBtn.classList.remove('active');
+        menuBtn.setAttribute('aria-expanded', 'false');
         
         if (window.lenis) window.lenis.start();
         document.body.classList.remove('modal-open');
@@ -678,6 +680,21 @@ function initMobileMenu() {
     if (drawerCloseBtn) {
         drawerCloseBtn.addEventListener('click', closeMenu);
     }
+
+    // Hamburger i krizek jsou <div role="button" tabindex="0">, ne <button>.
+    // Na <div> prohlizec Enter/Space na klik neprevadi sam, takze bez tohohle
+    // je cele mobilni menu z klavesnice nedostupne.
+    const activateOnKey = (el) => {
+        if (!el) return;
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                el.click();
+            }
+        });
+    };
+    activateOnKey(menuBtn);
+    activateOnKey(drawerCloseBtn);
 
     drawerLinks.forEach(link => {
         link.addEventListener('click', (e) => {
