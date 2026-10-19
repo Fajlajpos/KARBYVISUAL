@@ -9339,3 +9339,43 @@ li.discipline-tag {
         transition: none;
     }
 }
+
+/* Rozpocet v kontaktnim formulari - vetsi cisla nez u typu projektu.
+   !important kvuli mobilnim pravidlum .matrix-grid label vyse. */
+.matrix-budget label {
+    font-size: 0.85rem !important;
+    letter-spacing: 0.02em;
+    /* vetsi pismo nesmi zvetsit obdelnik oproti typum projektu */
+    line-height: 1;
+}
+
+/* Typ projektu a rozpocet vedle sebe: stejne siroke sloupce a stejne vysoke
+   obdelniky, aby obdelniky s cenami byly stejne velke jako ty se sluzbami. */
+.form-section:has(> .options-matrix) {
+    container-type: inline-size;
+}
+
+@media (min-width: 481px) {
+    .options-matrix .matrix-grid label {
+        min-height: 44px;
+    }
+}
+
+@media (min-width: 992px) {
+    .options-matrix {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .options-matrix .matrix-grid {
+        grid-auto-rows: 3.75rem;
+    }
+
+    /* uzky formular - mensi pismo cen, at se vejdou do obdelniku */
+    @container (max-width: 439px) {
+        .matrix-budget label {
+            font-size: clamp(0.5rem, 5cqi - 6px, 0.85rem) !important;
+            padding-left: 0.4rem;
+            padding-right: 0.4rem;
+        }
+    }
+}

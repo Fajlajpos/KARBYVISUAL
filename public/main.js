@@ -523,6 +523,12 @@ function updateLanguageUI(lang) {
         input.setAttribute('placeholder', input.getAttribute(`data-placeholder-${lang}`));
     });
 
+    // Localized input values (e.g. budget in CZK / EUR)
+    const translatableValues = document.querySelectorAll('[data-value-cs][data-value-en]');
+    translatableValues.forEach(input => {
+        input.value = input.getAttribute(`data-value-${lang}`);
+    });
+
     // Option tags might be handled by data-cs/en too
     const selectOptions = document.querySelectorAll('option[data-cs][data-en]');
     selectOptions.forEach(opt => {
