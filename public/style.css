@@ -8989,9 +8989,42 @@ body > .sortable-fallback.port-item .port-info {
 
 /* Navbar optimization */
 @media (max-width: 1024px) {
+    /* Prepinac jazyka zustava v horni liste i na mobilu, vedle hamburgeru */
     .navbar .lang-switcher {
-        display: none !important;
+        margin-left: auto;
+        margin-right: 0.6rem;
+        height: 44px;
+        padding: 2px;
+        box-sizing: border-box;
     }
+    .navbar .lang-btn {
+        height: 100%;
+        min-width: 44px;
+        padding: 0 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Nejmensi telefony - uzsi prepinac, at nelepi na logo */
+@media (max-width: 360px) {
+    .navbar .logo {
+        margin-right: 0.5rem;
+    }
+    .navbar .lang-switcher {
+        margin-right: 0.4rem;
+    }
+    .navbar .lang-switcher,
+    .mobile-menu-btn {
+        flex-shrink: 0;
+    }
+    .navbar .lang-btn {
+        min-width: 38px;
+        padding: 0 6px;
+        letter-spacing: 0;
+    }
+}
+
+@media (max-width: 1024px) {
     .mobile-menu-btn {
         display: flex !important;
         width: 44px !important;
